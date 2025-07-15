@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <title>상품 수정</title>
+</head>
+<body>
+<h1>상품 수정</h1>
+
+<form th:action="@{/admin/products/edit/{id}(id=${product.id})}" th:object="${product}" method="post">
+    <input type="hidden" name="_method" value="put"/>
+    <div class="form-row">
+        <label>상품명: </label>
+        <input type="text" th:field="*{name}"/>
+    </div>
+    <div class = "form-row" th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red;"></div>
+    <div class = "form-row" th:if="${globalErrorMessage}" th:text="${globalErrorMessage}" style="color: red;"></div>
+    <div class="form-row">
+        <label>가격: </label>
+        <input type="number" th:field="*{price}"/>
+    </div>
+    <div class="form-row">
+        <label>이미지: </label>
+        <input type="text" th:field="*{url}"/>
+    </div>
+    <hr/>
+    <h3>옵션 수정</h3>
+    <div id="option-container">
+        <div th:each="option, iterStat : *{options}" class="option-group">
+            <div class="form-row">
+                <label>옵션 이름:</label>
+                <input type="text" th:name="${'options[' + iterStat.index + '].name'}" th:value="${option.name}"/>
+            </div>
+            <div class="form-row">
+                <label>수량:</label>
+                <input type="number" th:name="${'options[' + iterStat.index + '].quantity'}" th:value="${option.quantity}"/>
+            </div>
+            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">삭제</button>
+            <hr/>
+        </div>
+    </div>
+
+    <button type="button" onclick="addOption()">+ 옵션 추가</button>
+    <div class="form-row">
+        <label></label>
+        <button type="submit">저장</button>
+    </div>
+</form>
+
+<a th:href="@{/admin/products}"><- 목록으로 돌아가기</a>
+
+<script>
+    function addOption() {
+        const container = document.getElementById('option-container');
+        const index = container.children.length;
+
+        const optionGroup = document.createElement('div');
+        optionGroup.className = 'option-group';
+
+        optionGroup.innerHTML = `
+            <div class="form-row">
+                <label>옵션 이름:</label>
+                <input type="text" name="options[${index}].name" maxlength="50" required/>
+            </div>
+            <div class="form-row">
+                <label>수량:</label>
+                <input type="number" name="options[${index}].quantity" min="1" max="99999999" required/>
+            </div>
+            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">삭제</button>
+            <hr/>
+        `;
+
+        container.appendChild(optionGroup);
+    }
+
+    //제출 버튼 눌렀을 때
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("productForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const optionRows = document.querySelectorAll(".option-group");
+            const options = [];
+
+            optionRows.forEach(row => {
+                const name = row.querySelector("input[class='optionName']").value.trim();
+                const quantity = parseInt(row.querySelector("input[class='optionQuantity']").value, 10);
+
+                if (name && !isNaN(quantity)) {
+                    options.push({name, quantity});
+                }
+            });
+
+            const formData = {
+                name: document.getElementById("name").value,
+                price: document.getElementById("price").value,
+                url: document.getElementById("url").value,
+                options: options
+            };
+            fetch("/admin/products/edit/", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(async (res) => {
+                    if (!(res.status === 201)) {
+                        const error = await res.json();
+                        document.getElementById(error.field).innerText = error.message;
+                    } else {
+                        location.href = "/admin/products";
+                    }
+                })
+                .catch((err) => {
+                    alert("서버 오류가 발생했습니다.");
+                });
+        });
+    });
+</script>
+</body>
+</html>

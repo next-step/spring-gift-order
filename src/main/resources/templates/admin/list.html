@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 목록</title>
+</head>
+<body>
+<h1>상품 목록</h1>
+
+<a th:href="@{/admin/products/add}">상품 추가</a>
+<div style="display: flex; gap:40px; align-items: flex-start;">
+    <div style="flex: 0 0 auto; overflow-y: auto;">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>상품명</th>
+                <th>가격</th>
+                <th>이미지</th>
+                <th>액션</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.id}">1</td>
+                <td th:text="${product.name}">상품명</td>
+                <td th:text="${product.price}">가격</td>
+                <td>
+                    <img th:src="${product.url}" alt="이미지" style="max-width: 20px; display: block; margin-top: 10px;"/>
+                </td>
+                <td>
+                    <form th:action="@{/admin/products/edit/{id}(id=${product.id})}" method="get"
+                          style="display:inline;">
+                        <button type="submit">수정</button>
+                    </form>
+                    <form th:action="@{/admin/products/delete/{id}(id=${product.id})}" method="post"
+                          style="display:inline;">
+                        <input type="hidden" name="_method" value="delete"/>
+                        <button type="submit">삭제</button>
+                    </form>
+                    <button type="button" th:attr="onclick=|loadDetail(${product.id})|">자세히 보기</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="flex: 0 0 auto; overflow-y: auto;">
+        <table id="detailTable" border="1" style="min-width: 300px; display: none;">
+            <thead>
+            <tr>
+                <th colspan="2">상품 상세 정보</th>
+            </tr>
+            </thead>
+            <tbody id="detailBody"></tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- AJAX방식으로 상품정보 받아와서 표시하기 -->
+<script>
+    function loadDetail(productId) {
+        fetch(`/admin/products/${productId}/detail`)
+            .then(res => {
+                if (!res.ok) throw new Error("상품 정보를 불러오는 데 실패했습니다.");
+                return res.json();
+            })
+            .then(product => {
+                const detailBody = document.getElementById("detailBody");
+                const detailTable = document.getElementById("detailTable");
+                detailBody.innerHTML = `
+                  <tr><th style="width: 70px;">상품 ID</th><td>${product.id}</td></tr>
+                  <tr><th style="width: 70px;">이름</th><td>${product.name}</td></tr>
+                  <tr><th style="width: 70px;">가격</th><td>${product.price}</td></tr>
+                  <tr><th style="width: 70px;">이미지</th><td><img src="${product.url}" style="max-width: 50px"/></td></tr>
+                  <tr><th style="width: 70px;">옵션</th><td>
+                    <ul>
+                      ${(product.options || []).map(option =>
+                    `<li>${option.name} (수량: ${option.quantity})</li>`
+                ).join("")}
+                    </ul>
+                  </td></tr>
+                `;
+                detailTable.style.display = "table";
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    }
+</script>
+
+</body>
+</html>

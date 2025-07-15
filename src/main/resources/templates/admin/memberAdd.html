@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <title>멤버추가</title>
+</head>
+<body>
+<h1>회원 추가</h1>
+
+<form th:action="@{/admin/members/add}" th:object="${member}" method="post">
+    <div class="form-row">
+        <label>회원명: </label>
+        <input type="text" th:field="*{name}"/>
+    </div>
+    <div class = "form-row" th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red;"></div>
+    <div class="form-row">
+        <label>이메일: </label>
+        <input type="email" th:field="*{email}"/>
+    </div>
+    <div class = "form-row" th:if="${emailErrorMessage}" th:text="${emailErrorMessage}" style="color: red;"></div>
+    <div class="form-row">
+        <label>비밀번호: </label>
+        <input type="password" th:field="*{password}"/>
+    </div>
+    </div>
+    <div class="form-row">
+        <label>등급: </label>
+        <input type="text" th:field="*{role}"/>
+    </div>
+    <div class = "form-row" th:if="${roleErrorMessage}" th:text="${roleErrorMessage}" style="color: red;"></div>
+    <div class="form-row">
+        <label></label>
+        <button type="submit">저장</button>
+    </div>
+
+</form>
+
+<a th:href="@{/admin/members}"><- 목록으로 돌아가기</a>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <title>상품추가</title>
+    <script>
+        let optionIndex = 0;
+
+        function addOptionField() {
+            const container = document.getElementById("option-container");
+
+            const optionDiv = document.createElement("div");
+            optionDiv.className = "option-group";
+            optionDiv.innerHTML = `
+                <div class="form-row">
+                    <label>옵션 이름:</label>
+                    <input class="optionName" type="text" name="options[${optionIndex}].name" maxlength="50" required />
+                </div>
+                <div class="form-row">
+                    <label>수량:</label>
+                    <input class="optionQuantity" type="number" name="options[${optionIndex}].quantity" min="1" max="99999999" required />
+                </div>
+                <button type="button" onclick="removeOptionField(this)">삭제</button>
+                <hr/>
+            `;
+
+            container.appendChild(optionDiv);
+            optionIndex++;
+        }
+
+        function removeOptionField(button) {
+            button.closest('.option-group').remove();
+        }
+
+        //제출 버튼 눌렀을 때
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("productForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const optionRows = document.querySelectorAll(".option-group");
+                const options = [];
+
+                optionRows.forEach(row => {
+                    const name = row.querySelector("input[class='optionName']").value.trim();
+                    const quantity = parseInt(row.querySelector("input[class='optionQuantity']").value, 10);
+
+                    if (name && !isNaN(quantity)) {
+                        options.push({name, quantity});
+                    }
+                });
+
+                const formData = {
+                    name: document.getElementById("name").value,
+                    price: document.getElementById("price").value,
+                    url: document.getElementById("url").value,
+                    options: options
+                };
+                fetch("/admin/products/add", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                })
+                    .then(async (res) => {
+                        if (!(res.status === 201)) {
+                            const error = await res.json();
+                            document.getElementById(error.field).innerText = error.message;
+                        } else {
+                            location.href = "/admin/products";
+                        }
+                    })
+                    .catch((err) => {
+                        alert("서버 오류가 발생했습니다.");
+                    });
+            });
+        });
+
+    </script>
+</head>
+<body>
+<h1>상품 추가</h1>
+
+<form id="productForm" method="post">
+    <div class="form-row">
+        <label>상품명: </label>
+        <input id="name" type="text"/>
+    </div>
+    <div class="form-row" id="productNameError" style="color: red;"></div>
+    <div class="form-row">
+        <label>가격: </label>
+        <input id="price" type="number"/>
+    </div>
+    <div class="form-row">
+        <label>이미지: </label>
+        <input id="url" type="text"/>
+    </div>
+    <hr>
+    <h3>옵션 추가</h3>
+    <div class="form-row" id="optionError" style="color: red;"></div>
+    <div id="option-container" class="form-row"></div>
+    <button type="button" onclick="addOptionField()">+ 옵션 추가</button>
+    <div class="form-row">
+        <label></label>
+        <button type="submit">저장</button>
+    </div>
+
+</form>
+
+<a th:href="@{/admin/products}"><- 목록으로 돌아가기</a>
+</body>
+</html>

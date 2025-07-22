@@ -38,3 +38,9 @@ out/
 
 ### Mac OS ###
 .DS_Store
+
+# application.yml 제외
+/src/main/resources/application.yml
+
+#env
+.env

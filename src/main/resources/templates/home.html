@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>선물 위시리스트</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 3em;
+      background-color: #f4f4f9;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .menu-section {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1.5em 2em;
+      margin-top: 2em;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #555;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 0.5em;
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 0.5em;
+      padding: 0.8em 1.5em;
+      font-size: 1.1em;
+      text-decoration: none;
+      color: white;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+
+    nav a.user-menu {
+      background-color: #28a745;
+    }
+
+    nav a.user-menu:hover {
+      background-color: #218838;
+    }
+
+    nav a.admin-menu {
+      background-color: #007bff;
+    }
+
+    nav a.admin-menu:hover {
+      background-color: #0056b3;
+    }
+
+    nav a.logout-menu {
+      background-color: #dc3545;
+    }
+
+    nav a.logout-menu:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🎁 선물 위시리스트 프로젝트</h1>
+
+  <div class="menu-section">
+    <h2>사용자 메뉴</h2>
+    <nav id="user-auth-nav"></nav>
+  </div>
+
+  <div class="menu-section">
+    <h2>관리자 메뉴</h2>
+    <nav>
+      <a class="admin-menu" href="/admin/products">상품 관리 페이지</a>
+      <a class="admin-menu" href="/admin/members">회원 관리 페이지</a>
+    </nav>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const userAuthNav = document.getElementById('user-auth-nav');
+    const token = localStorage.getItem('auth_token');
+
+    if (token) {
+      userAuthNav.innerHTML = `
+        <a href="/wishes" class="user-menu">나의 위시리스트</a>
+        <a onclick="logout()" class="logout-menu">로그아웃</a>
+      `;
+    } else {
+      userAuthNav.innerHTML = `
+        <a href="/login" class="user-menu">로그인</a>
+        <a href="/register" class="user-menu">회원가입</a>
+      `;
+    }
+  });
+
+  function logout() {
+    if (confirm('정말로 로그아웃하시겠습니까?')) {
+      localStorage.removeItem('auth_token');
+      alert('로그아웃되었습니다.');
+      window.location.reload();
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+    }
+
+    .register-container {
+      width: 320px;
+      padding: 2em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1em;
+    }
+
+    label {
+      display: block;
+      margin-bottom: .5em;
+    }
+
+    input {
+      width: 100%;
+      padding: .5em;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      width: 100%;
+      padding: .7em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .link-group {
+      text-align: center;
+      margin-top: 1em;
+    }
+
+    .link-group a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<div class="register-container">
+  <h2>회원가입</h2>
+  <form method="post" th:action="@{/register}">
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <input id="email" name="email" required type="email">
+    </div>
+    <div class="form-group">
+      <label for="password">비밀번호</label>
+      <input id="password" minlength="4" name="password" required type="password">
+    </div>
+    <button class="btn" type="submit">가입하기</button>
+  </form>
+  <div class="link-group">
+    <span>이미 회원이신가요? </span><a th:href="@{/login}">로그인</a>
+  </div>
+</div>
+
+<script>
+  // <form> 요소에 'submit' 이벤트 리스너를 추가합니다.
+  document.querySelector('form').addEventListener('submit', async function (event) {
+    // 1. 폼의 기본 제출 동작(페이지 새로고침)을 막습니다.
+    event.preventDefault();
+
+    // 2. 입력된 이메일과 비밀번호 값을 가져옵니다.
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      // 3. /api/members/register' API에 POST 요청을 보냅니다.
+      const response = await fetch('/api/members/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // 보내는 데이터가 JSON임을 명시
+        },
+        body: JSON.stringify({email, password}), // JS 객체를 JSON 문자열로 변환
+      });
+
+      // 4. 응답을 처리합니다.
+      if (response.ok) {
+        alert('회원가입에 성공했습니다! 로그인 페이지로 이동합니다.');
+        window.location.href = '/login'; // 로그인 페이지로 리다이렉트
+      } else {
+        // 서버에서 에러 응답이 온 경우 (예: 이메일 중복)
+        const errorData = await response.json();
+        alert(`회원가입 실패: ${errorData.message || '알 수 없는 오류'}`);
+      }
+    } catch (error) {
+      console.error('회원가입 요청 중 오류 발생:', error);
+      alert('요청 중 오류가 발생했습니다.');
+    }
+  });
+</script>
+
+</body>
+</html>

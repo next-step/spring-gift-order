@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원 관리</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2em;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .btn {
+      padding: 5px 10px;
+      text-decoration: none;
+      border-radius: 4px;
+      color: white;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+    }
+
+    .btn-edit {
+      background-color: #28a745;
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+      border: none;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .action-buttons form {
+      display: inline;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>회원 관리</h1>
+  <a style="text-decoration: none;" th:href="@{/}">🏠 홈으로 돌아가기</a>
+  <a class="btn btn-primary" th:href="@{/admin/members/new}">새 회원 등록</a>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Email</th>
+      <th>관리</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="member : ${members}">
+      <td th:text="${member.id()}">1</td>
+      <td th:text="${member.email()}">user@example.com</td>
+      <td class="action-buttons">
+        <a class="btn btn-edit" th:href="@{/admin/members/{id}/edit(id=${member.id()})}">수정</a>
+        <form method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?');"
+              th:action="@{/admin/members/{id}/delete(id=${member.id()})}">
+          <button class="btn btn-delete" type="submit">삭제</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

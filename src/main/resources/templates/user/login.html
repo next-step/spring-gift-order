@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+    }
+
+    .login-container {
+      width: 320px;
+      padding: 2em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 1em;
+    }
+
+    label {
+      display: block;
+      margin-bottom: .5em;
+    }
+
+    input {
+      width: 100%;
+      padding: .5em;
+      box-sizing: border-box;
+    }
+
+    .btn {
+      width: 100%;
+      padding: .7em;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .error {
+      color: red;
+      margin-bottom: 1em;
+      text-align: center;
+    }
+
+    .link-group {
+      text-align: center;
+      margin-top: 1em;
+    }
+
+    .link-group a {
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+<div class="login-container">
+  <h2>로그인</h2>
+  <div class="error" th:if="${param.error}">
+    이메일 또는 비밀번호가 올바르지 않습니다.
+  </div>
+  <form method="post" th:action="@{/login}">
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <input id="email" name="email" required type="email">
+    </div>
+    <div class="form-group">
+      <label for="password">비밀번호</label>
+      <input id="password" name="password" required type="password">
+    </div>
+    <button class="btn" type="submit">로그인</button>
+  </form>
+  <div class="link-group">
+    <span>아직 회원이 아니신가요? </span><a th:href="@{/register}">회원가입</a>
+  </div>
+</div>
+
+<script>
+  document.querySelector('form').addEventListener('submit', async function (event) {
+    // 1. 폼의 기본 제출 동작을 막습니다.
+    event.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      // 2. '/api/members/login' API에 POST 요청을 보냅니다.
+      const response = await fetch('/api/members/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email, password}),
+      });
+
+      if (response.ok) {
+        // 3. 응답이 성공적이면, 서버로부터 받은 JSON에서 토큰을 추출합니다.
+        const tokenResponse = await response.json();
+        const token = tokenResponse.token;
+
+        // 4. 추출한 토큰을 브라우저의 localStorage에 저장합니다.
+        localStorage.setItem('auth_token', token);
+
+        alert('로그인에 성공했습니다!');
+        window.location.href = '/'; // 홈페이지로 리다이렉트
+      } else {
+        // 로그인 실패 시
+        alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+      }
+    } catch (error) {
+      console.error('로그인 요청 중 오류 발생:', error);
+      alert('로그인 중 오류가 발생했습니다.');
+    }
+  });
+</script>
+
+</body>
+</html>

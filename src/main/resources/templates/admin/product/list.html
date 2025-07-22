@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 목록</title>
+  <style>
+    /* 전체 페이지 스타일 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 0;
+      padding: 2em;
+      background-color: #f8f9fa;
+    }
+
+    /* 컨텐츠를 중앙에 정렬하고 최대 너비 지정 */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 2em;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      color: #343a40;
+      border-bottom: 2px solid #dee2e6;
+      padding-bottom: 0.5em;
+      margin-bottom: 1em;
+    }
+
+    /* 테이블 스타일 */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse; /* 테두리 겹침 방지 */
+      margin-top: 1.5em;
+    }
+
+    .product-table th, .product-table td {
+      border: 1px solid #dee2e6;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .product-table th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    /* 짝수 번째 행에 배경색 적용 (가독성 향상) */
+    .product-table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    /* 마우스를 올렸을 때 행 강조 */
+    .product-table tbody tr:hover {
+      background-color: #e9ecef;
+    }
+
+    /* 이미지 셀 가운데 정렬 */
+    .product-table td.image-cell {
+      text-align: center;
+    }
+
+    .product-table img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    /* 버튼 공통 스타일 */
+    .btn {
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 400;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+
+    .btn-edit {
+      color: #fff;
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-delete {
+      color: #fff;
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+
+    .action-buttons form {
+      display: inline;
+      margin-right: 5px;
+    }
+
+    /* 페이지네이션 UI 스타일 */
+    .pagination {
+      margin-top: 2em;
+      text-align: center;
+    }
+
+    .pagination a, .pagination span {
+      display: inline-block;
+      padding: 8px 16px;
+      text-decoration: none;
+      color: #007bff;
+      border: 1px solid #dee2e6;
+      margin: 0 4px;
+      border-radius: 4px;
+    }
+
+    .pagination a:hover {
+      background-color: #e9ecef;
+    }
+
+    .pagination .current {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+      cursor: default;
+    }
+
+    .pagination .disabled {
+      color: #6c757d;
+      pointer-events: none;
+      border-color: #dee2e6;
+    }
+
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>상품 목록</h1>
+  <a style="text-decoration: none;" th:href="@{/}">🏠 홈으로 돌아가기</a>
+  <a class="btn btn-primary" th:href="@{/admin/products/new}">상품 등록</a>
+
+  <table class="product-table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>이름</th>
+      <th>가격</th>
+      <th>이미지</th>
+      <th>관리</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${productsPage.content}">
+      <td th:text="${product.id}">1</td>
+      <td th:text="${product.name}">상품명</td>
+      <td th:text="${product.price}">1000</td>
+      <td class="image-cell"><img alt="image" th:src="${product.imageUrl}"/></td>
+      <td class="action-buttons">
+        <form method="get" style="display:inline;"
+              th:action="@{'/admin/products/' + ${product.id} + '/edit'}">
+          <button class="btn btn-edit" type="submit">수정</button>
+        </form>
+        <form method="post" style="display:inline;"
+              th:action="@{'/admin/products/' + ${product.id} + '/delete'}">
+          <button class="btn btn-delete" type="submit">삭제</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <a th:classappend="${productsPage.first} ? 'disabled'"
+       th:href="@{/admin/products(page=${productsPage.number - 1})}">
+      &laquo; 이전
+    </a>
+
+    <th:block th:if="${!productsPage.empty}">
+      <span th:each="pageNumber : ${#numbers.sequence(0, productsPage.totalPages - 1)}">
+          <a th:classappend="${pageNumber == productsPage.number} ? 'current'"
+             th:href="@{/admin/products(page=${pageNumber})}"
+             th:text="${pageNumber + 1}"></a>
+      </span>
+    </th:block>
+
+    <a th:classappend="${productsPage.last} ? 'disabled'"
+       th:href="@{/admin/products(page=${productsPage.number + 1})}">
+      다음 &raquo;
+    </a>
+  </div>
+
+</div>
+</body>
+</html>

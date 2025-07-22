@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Products</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h3>Manage <strong>Products</strong></h3>
+    <a class="btn btn-success mb-3" th:href="@{/admin/create}">+ Add New Product</a>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th><th>Name</th><th>Price</th><th>ImageUrl</th><th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- products가 Page<ProductDto> 객체라면 content로 반복 -->
+        <tr th:each="product : ${products.content}">
+            <td th:text="${product.id}">Product id</td>
+            <td th:text="${product.name}">Product name</td>
+            <td th:text="${product.price}">product price</td>
+            <td th:text="${product.imageUrl}">product image link</td>
+            <td>
+                <a th:href="@{|/admin/patch/${product.id}|}" class="btn btn-warning btn-sm">✏️</a>
+                <form th:action="@{|/admin/delete/${product.id}|}" method="post" style="display:inline">
+                    <button class="btn btn-danger btn-sm" type="submit">🗑️</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav th:if="${products.totalPages > 1}">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${!products.hasPrevious()} ? ' disabled'">
+                <a class="page-link"
+                   th:href="@{/admin/products(page=${products.number - 1},size=${products.size})}"
+                   aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, products.totalPages - 1)}"
+                th:classappend="${i == products.number} ? ' active'">
+                <a class="page-link"
+                   th:href="@{/admin/products(page=${i},size=${products.size})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+
+            <li class="page-item" th:classappend="${!products.hasNext()} ? ' disabled'">
+                <a class="page-link"
+                   th:href="@{/admin/products(page=${products.number+1},size=${products.size})}"
+                   aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+</body>
+</html>

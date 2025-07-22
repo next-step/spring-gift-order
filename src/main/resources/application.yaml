@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: spring-gift
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/Database/kakaotech
+    username: sa
+    password: test
+  thymeleaf:
+    prefix: classpath:/templates/
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+jwt-secret-key: c4ddd8e4ddd7f363bfc2031da599d635d15dbca070c4ec144590d128bdff778fbf2c63f6fb85c23c8877947c0fc4b2c18be0131e430354937dca778cd490779d
+jwt-access-token-expire-time: 1800000

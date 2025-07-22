@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상품 목록</title>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/admin-products.css}">
+</head>
+<body>
+<div class="main-container">
+  <div class="main-header">
+    <h2>Manage <b>Products</b></h2>
+    <div class="header-actions">
+      <a href="/admin/products/new" class="btn btn-add"><i class="fa fa-plus-circle"></i> Add New
+        Product</a>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+      <tr>
+        <th>상품 이미지</th>
+        <th style="width: 220px; min-width: 120px;">
+          상품명
+          <a href="#" class="sort-icon" id="sort-name-asc"
+             onclick="toggleSort('name', 'asc'); return false;" title="이름 오름차순"><i
+              class="fa fa-arrow-up-wide-short"></i></a>
+          <a href="#" class="sort-icon" id="sort-name-desc"
+             onclick="toggleSort('name', 'desc'); return false;" title="이름 내림차순"><i
+              class="fa fa-arrow-down-wide-short"></i></a>
+        </th>
+        <th style="width: 120px; min-width: 80px;">
+          가격
+          <a href="#" class="sort-icon" id="sort-price-asc"
+             onclick="toggleSort('price', 'asc'); return false;" title="가격 오름차순"><i
+              class="fa fa-arrow-up-1-9"></i></a>
+          <a href="#" class="sort-icon" id="sort-price-desc"
+             onclick="toggleSort('price', 'desc'); return false;" title="가격 내림차순"><i
+              class="fa fa-arrow-down-1-9"></i></a>
+        </th>
+        <th>관리</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${#lists.isEmpty(productPage.content)}">
+        <td colspan="4" style="text-align:center; color:#888; padding:40px 0;">등록된 상품이 없습니다.</td>
+      </tr>
+      <tr th:each="product : ${productPage.content}">
+        <td><img th:src="${product.imageUrl}" alt="상품 이미지" class="product-image"></td>
+        <td th:text="${product.name}">상품명</td>
+        <td th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">10,000원</td>
+        <td class="actions-col">
+          <a th:href="@{'/admin/products/' + ${product.id} + '/edit'}" class="action-btn edit"
+             title="수정"><i class="fa fa-pencil-alt"></i></a>
+          <form th:action="@{'/admin/products/' + ${product.id} + '/delete'}" method="post"
+                style="display:inline;">
+            <button type="submit" class="action-btn delete" title="삭제"
+                    onclick="return confirm('정말 삭제하시겠습니까?')"><i class="fa fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <div class="pagination" th:if="${productPage.totalPages > 1}">
+      <a th:href="@{'/admin/products?page=1&size=' + ${productPage.size}}" class="page-link"
+         data-page="1">&laquo;</a>
+      <a th:href="@{'/admin/products?page=' + ${productPage.number} + '&size=' + ${productPage.size}}"
+         class="page-link" data-page="${productPage.number}">&lt;</a>
+      <span th:each="i : ${#numbers.sequence(1, productPage.totalPages)}">
+        <a th:href="@{'/admin/products?page=' + ${i} + '&size=' + ${productPage.size}}"
+           class="page-link" data-page="${i}"
+           th:classappend="${i == productPage.number + 1} ? 'active'">[[${i}]]</a>
+      </span>
+      <a th:href="@{'/admin/products?page=' + (${productPage.number} + 2) + '&size=' + ${productPage.size}}"
+         class="page-link" data-page="${productPage.number + 2}">&gt;</a>
+      <a th:href="@{'/admin/products?page=' + ${productPage.totalPages} + '&size=' + ${productPage.size}}"
+         class="page-link" data-page="${productPage.totalPages}">&raquo;</a>
+    </div>
+  </div>
+</div>
+</body>
+<script>
+  function toggleSort(field, dir) {
+    const url = new URL(window.location.href);
+    const sorts = url.searchParams.getAll('sort');
+    const target = field + ';' + dir;
+    let newSorts = [];
+    let removed = false;
+    for (let s of sorts) {
+      if (s.startsWith(field + ';')) {
+        if (s === target) {
+          removed = true;
+        }
+      } else {
+        newSorts.push(s);
+      }
+    }
+    if (!removed) {
+      newSorts.push(target);
+    }
+    url.searchParams.delete('sort');
+    for (let s of newSorts) {
+      url.searchParams.append('sort', s);
+    }
+    url.searchParams.set('page', 1);
+    window.location.href = url.pathname + '?' + url.searchParams.toString();
+  }
+
+  window.addEventListener('DOMContentLoaded', function () {
+    const url = new URL(window.location.href);
+    const sorts = url.searchParams.getAll('sort');
+    for (let s of sorts) {
+      if (s === 'name;asc') {
+        document.getElementById('sort-name-asc').classList.add('active');
+      }
+      if (s === 'name;desc') {
+        document.getElementById('sort-name-desc').classList.add('active');
+      }
+      if (s === 'price;asc') {
+        document.getElementById('sort-price-asc').classList.add('active');
+      }
+      if (s === 'price;desc') {
+        document.getElementById('sort-price-desc').classList.add('active');
+      }
+    }
+    if (sorts.length > 0) {
+      document.querySelectorAll('.page-link').forEach(function (link) {
+        const linkUrl = new URL(link.href, window.location.origin);
+        linkUrl.searchParams.delete('sort');
+        for (let s of sorts) {
+          linkUrl.searchParams.append('sort', s);
+        }
+        link.href = linkUrl.pathname + '?' + linkUrl.searchParams.toString();
+      });
+    }
+  });
+</script>
+</html>

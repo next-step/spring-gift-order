@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>상품 수정</title>
+  <style>
+    .error { color: red; }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>상품 수정</h1>
+
+<form th:action="@{|/admin/products/${productId}/update|}"
+      th:object="${product}"
+      method="post">
+
+  <div>
+    <label>이름:</label>
+    <input type="text" th:field="*{name}" required />
+    <div class="error"
+         th:if="${#fields.hasErrors('name')}"
+         th:errors="*{name}"></div>
+  </div>
+
+  <div>
+    <label>가격:</label>
+    <input type="number"
+           th:field="*{price}"
+           required
+           onkeydown="return event.keyCode !== 69 && event.keyCode !== 190" />
+    <div class="error"
+         th:if="${#fields.hasErrors('price')}"
+         th:errors="*{price}"></div>
+  </div>
+
+  <div>
+    <label>이미지 URL:</label>
+    <input type="text" th:field="*{imageUrl}" />
+    <div class="error"
+         th:if="${#fields.hasErrors('imageUrl')}"
+         th:errors="*{imageUrl}"></div>
+  </div>
+
+  <button type="submit">수정 완료</button>
+</form>
+
+<p><a th:href="@{/admin/products}">목록으로</a></p>
+
+
+</body>
+</html>

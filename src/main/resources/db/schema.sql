@@ -1,0 +1,28 @@
+DROP TABLE IF EXISTS product_options;
+DROP TABLE IF EXISTS wishes;
+DROP TABLE IF EXISTS products;
+
+CREATE TABLE products (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(20) NOT NULL,
+        price BIGINT NOT NULL,
+        image_url VARCHAR(1000),
+        md_approved BOOLEAN NOT NULL DEFAULT FALSE COMMENT '담당 MD 협의 여부'
+);
+
+CREATE TABLE IF NOT EXISTS members (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'USER'
+);
+
+CREATE TABLE IF NOT EXISTS wishes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    UNIQUE (member_id, product_id)
+);

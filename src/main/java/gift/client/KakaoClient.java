@@ -47,4 +47,21 @@ public class KakaoClient {
 
         return response.getBody();
     }
+
+    public KakaoProfileDto fetchProfile(String token) {
+        String baseUrl = "https://kapi.kakao.com/v2/user/me";
+        String bearerToken = "Bearer " + token;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", bearerToken);
+        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<>(headers,
+            HttpMethod.POST, URI.create(baseUrl));
+
+        ResponseEntity<KakaoProfileDto> response = restTemplate.exchange(request,
+            KakaoProfileDto.class);
+
+        return response.getBody();
+    }
 }

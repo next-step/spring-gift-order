@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인 성공</title>
+
+  <style>
+    html,body{height:100%;margin:0;font-family:"Pretendard",sans-serif;background:#f7f9fc;}
+    .wrap{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;}
+    h1{color:#4e5968;margin-bottom:12px;font-size:28px;}
+    p{color:#6b7684;margin:4px 0 24px;}
+    .btn-home{
+      padding:12px 28px;border:none;border-radius:6px;
+      background:#6a5acd;color:#fff;font-size:16px;cursor:pointer;
+    }
+    .btn-home:hover{background:#5948c6;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎉 로그인에 성공했습니다!</h1>
+  <p>환영합니다!</p>
+
+  <!-- 홈으로 이동 -->
+  <a th:href="@{/view/products}" class="btn-home">홈으로 돌아가기</a>
+</div>
+</body>
+</html>

@@ -10,25 +10,21 @@ import gift.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 
-import java.util.List;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = WishController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
-@Import(LoginMemberArgumentResolver.class)
 class WishControllerTest {
 
     @Autowired
@@ -43,8 +39,8 @@ class WishControllerTest {
     @MockBean
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private HandlerMethodArgumentResolver argumentResolver;
+    @MockBean
+    private LoginMemberArgumentResolver loginMemberArgumentResolver;
 
     private final Long memberId = 1L;
     private final Long productId = 4L;
@@ -52,9 +48,13 @@ class WishControllerTest {
 
     @BeforeEach
     void setup() {
-        when(jwtUtil.isValidToken(any())).thenReturn(true);
-        when(jwtUtil.extractMemberId(any())).thenReturn(memberId);
-        when(jwtUtil.createToken(any())).thenReturn("test-token");
+        given(jwtUtil.isValidToken(any())).willReturn(true);
+        given(jwtUtil.extractMemberId(any())).willReturn(memberId);
+        given(jwtUtil.createToken(any())).willReturn("test-token");
+
+        given(loginMemberArgumentResolver.supportsParameter(any())).willReturn(true);
+        given(loginMemberArgumentResolver.resolveArgument(any(), any(), any(), any()))
+                .willReturn(fakeMember);
     }
 
     @Test
@@ -109,4 +109,5 @@ class WishControllerTest {
         verify(wishService).getWishesPage(eq(memberId), any(Pageable.class));
     }
 }
+
 

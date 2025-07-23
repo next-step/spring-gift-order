@@ -4,10 +4,10 @@
 
 ### 0 단계 : 프로젝트 `spring-gift-order`로 이관
 
-+ [ ] 모든 코드 이관
++ [X] 모든 코드 이관
   + [X] README.md 작성 
-  + [ ] build.gradle 수정 & gitignore 작성
-  + [ ] 기존코드 이관
+  + [X] build.gradle 수정 & gitignore 작성
+  + [X] 기존코드 이관
 
 ---
 ## 이전 단계 요약

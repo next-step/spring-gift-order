@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품 추가 폼</title>
+    <link rel="stylesheet" th:href="@{/product-form.css}">
+    <style>
+        .fieldError { color: red; }
+        .option-block { margin-bottom: 1em; }
+    </style>
+</head>
+<body>
+<h2>상품 추가</h2>
+
+<form th:action="@{/admin/products}" th:method="post" th:object="${request}">
+    <!-- 상품 이름 -->
+    <div>
+        <label for="name">이름:</label>
+        <input id="name" type="text" th:field="*{name}">
+        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="fieldError"></p>
+    </div>
+
+    <!-- 이미지 URL -->
+    <div>
+        <label for="imageUrl">이미지:</label>
+        <input id="imageUrl" type="text" th:field="*{imageUrl}">
+        <p th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}" class="fieldError"></p>
+    </div>
+
+    <!-- 옵션 영역 -->
+    <!-- 옵션 리스트 전체 유효성 에러 메시지 -->
+    <p th:if="${#fields.hasErrors('options')}" th:errors="*{options}" class="fieldError"></p>
+    <div id="options">
+        <div class="option-block" th:each="option, iterStat : *{options}">
+            <label>옵션 [[${iterStat.index} + 1]]:</label><br>
+            이름: <input type="text" th:field="*{options[__${iterStat.index}__].name}">
+            <p th:if="${#fields.hasErrors('options[' + ${iterStat.index} + '].name')}"
+               th:errors="*{options[__${iterStat.index}__].name}" class="fieldError"></p>
+
+            가격: <input type="number" th:field="*{options[__${iterStat.index}__].price}">
+            <p th:if="${#fields.hasErrors('options[' + ${iterStat.index} + '].price')}"
+               th:errors="*{options[__${iterStat.index}__].price}" class="fieldError"></p>
+
+            수량: <input type="number" th:field="*{options[__${iterStat.index}__].quantity}">
+            <p th:if="${#fields.hasErrors('options[' + ${iterStat.index} + '].quantity')}"
+               th:errors="*{options[__${iterStat.index}__].quantity}" class="fieldError"></p>
+        </div>
+    </div>
+
+    <!-- 옵션 추가 버튼 -->
+    <button type="button" onclick="addOption()">옵션 추가</button><br><br>
+
+    <!-- 전송 -->
+    <input type="submit" value="추가">
+</form>
+
+<script>
+    let optionIndex = /*[[${#lists.size(request.options)}]]*/ 0;
+
+    function addOption() {
+        const container = document.getElementById("options");
+        const div = document.createElement("div");
+        div.className = "option-block";
+        div.innerHTML = `
+            <label>옵션 ${optionIndex + 1}:</label><br>
+            이름: <input type="text" name="options[${optionIndex}].name"><br>
+            가격: <input type="number" name="options[${optionIndex}].price"><br>
+            수량: <input type="number" name="options[${optionIndex}].quantity"><br>
+        `;
+        container.appendChild(div);
+        optionIndex++;
+    }
+</script>
+
+</body>
+</html>

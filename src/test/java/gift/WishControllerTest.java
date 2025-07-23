@@ -30,7 +30,7 @@ public class WishControllerTest {
     private String productUrl;
     private String wishUrl;
     private String accessToken;
-    private Long productId = 1L;
+    private Long productId;
     private List<OptionRequestDto> options;
 
     @BeforeEach
@@ -72,6 +72,8 @@ public class WishControllerTest {
                 .body(productRequestDto)
                 .retrieve()
                 .toEntity(ProductResponseDto.class);
+
+        this.productId = response.getBody().id();
     }
 
     @Autowired
@@ -80,6 +82,10 @@ public class WishControllerTest {
     @AfterEach
     void rollback() {
         jdbcClient.sql("DELETE FROM wishlist")
+                .update();
+        jdbcClient.sql("DELETE FROM options")
+                .update();
+        jdbcClient.sql("DELETE FROM products")
                 .update();
         jdbcClient.sql("DELETE FROM members")
                 .update();

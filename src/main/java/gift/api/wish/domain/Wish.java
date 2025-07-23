@@ -60,4 +60,8 @@ public class Wish {
     public LocalDateTime getCreatedDate() {
         return createdDate;
     }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
 }

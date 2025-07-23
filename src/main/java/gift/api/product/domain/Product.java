@@ -75,17 +75,14 @@ public class Product {
         validateOptionNameDuplicate(name);
 
         Option newOption = new Option(name, quantity, this);
-        this.options.add(newOption);
+        options.add(newOption);
         newOption.setProduct(this);
 
         return newOption;
     }
 
     public Option updateOption(Long optionId, String name, int quantity) {
-        Option optionToUpdate = this.options.stream()
-                .filter(option -> option.getId().equals(optionId))
-                .findFirst()
-                .orElseThrow(() -> new OptionNotFoundException(optionId));
+        Option optionToUpdate = findOptionById(optionId);
 
         if (!optionToUpdate.getName().equals(name)) {
             validateOptionNameDuplicate(name);
@@ -97,20 +94,25 @@ public class Product {
     }
 
     public void removeOption(Long optionId) {
-        if (this.options.size() <= 1) {
+        if (options.size() <= 1) {
             throw new OptionPolicyException("상품에는 최소 1개의 옵션이 존재해야 합니다.");
         }
 
-        Option optionToRemove = this.options.stream()
+        Option optionToRemove = findOptionById(optionId);
+
+        options.remove(optionToRemove);
+        optionToRemove.setProduct(null);
+    }
+
+    private Option findOptionById(Long optionId) {
+        return options.stream()
                 .filter(option -> option.getId().equals(optionId))
                 .findFirst()
                 .orElseThrow(() -> new OptionNotFoundException(optionId));
-
-        this.options.remove(optionToRemove);
     }
 
     private void validateOptionNameDuplicate(String name) {
-        boolean isDuplicate = this.options.stream()
+        boolean isDuplicate = options.stream()
                 .anyMatch(option -> option.getName().equals(name));
 
         if (isDuplicate) {

@@ -69,22 +69,23 @@ public class Member {
     }
 
     public Wish addWish(Product product) {
-        if (this.wishList.stream().anyMatch(wish -> wish.getProduct().equals(product))) {
+        if (wishList.stream().anyMatch(wish -> wish.getProduct().equals(product))) {
             throw new WishDuplicateException(product.getName());
         }
 
         Wish newWish = new Wish(this, product);
-        this.wishList.add(newWish);
+        wishList.add(newWish);
 
         return newWish;
     }
 
     public void removeWish(Long wishId) {
-        Wish wishToRemove = this.wishList.stream()
+        Wish wishToRemove = wishList.stream()
                 .filter(wish -> wish.getId().equals(wishId))
                 .findFirst()
                 .orElseThrow(() -> new WishNotFoundException(wishId));
 
-        this.wishList.remove(wishToRemove);
+        wishList.remove(wishToRemove);
+        wishToRemove.setMember(null);
     }
 }

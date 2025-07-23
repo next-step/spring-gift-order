@@ -59,7 +59,7 @@ class WishPaginationTest {
 
     @Test
     void 위시리스트_페이지네이션_조회() throws Exception {
-        mockMvc.perform(get("/api/wishes/member")
+        mockMvc.perform(get("/api/wishes")
                         .header("Authorization", "Bearer " + jwtToken)
                         .param("page", "0")
                         .param("size", "5")

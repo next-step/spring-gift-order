@@ -3,9 +3,11 @@ package gift.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.ProductRequest;
 import gift.service.ProductService;
+import gift.util.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -14,7 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = ProductController.class)
+@WebMvcTest(controllers = ProductController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class ProductControllerValidationTest {
 
     @Autowired
@@ -25,6 +27,9 @@ class ProductControllerValidationTest {
 
     @MockBean
     private ProductService productService;
+
+    @MockBean
+    private JwtUtil jwtUtil;
 
     @Test
     @DisplayName("유효하지 않은 상품명 입력 시 JSON 형식의 에러 메시지를 반환한다")

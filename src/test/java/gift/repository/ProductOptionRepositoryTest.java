@@ -15,8 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 public class ProductOptionRepositoryTest {
-    @Autowired
-    private ProductOptionRepository productOptionRepository;
 
     @Autowired
     private ProductRepository productRepository;
@@ -25,28 +23,31 @@ public class ProductOptionRepositoryTest {
     @Test
     @DisplayName("옵션을 추가한다")
     void save_test() {
-        Product test_product = productRepository.save(ProductFixture.createProduct2());
+        Product testProduct =ProductFixture.createProduct2();
+        testProduct.addOption("테스트 옵션",9999);
+        Product savedProduct=productRepository.save(testProduct);
 
-        ProductOption option = new ProductOption("테스트 옵션", 9999,test_product);
-        ProductOption savedOption = productOptionRepository.save(option);
+        Product product = productRepository.findById(savedProduct.getId()).get();
+        assertThat(product).isNotNull();
 
+        List<ProductOption> foundOptions = product.getOptions();
 
-        assertThat(savedOption.getId()).isNotNull();
-        assertThat(savedOption.getName()).isEqualTo("테스트 옵션");
-        assertThat(savedOption.getQuantity()).isEqualTo(9999);
-        assertThat(savedOption.getProduct().getId()).isEqualTo(test_product.getId());
+        assertThat(foundOptions.getFirst().getName()).isEqualTo("테스트 옵션");
+
 
     }
 
     @Test
     @DisplayName("상품의 옵션을 조회한다")
     void find_test() {
-        Product test_product = productRepository.save(ProductFixture.createProduct2());
+        Product testProduct =ProductFixture.createProduct2();
+        testProduct.addOption("테스트 옵션",9999);
+        Product savedProduct=productRepository.save(testProduct);
 
-        ProductOption option = new ProductOption("테스트 옵션", 9999,test_product);
-        ProductOption savedOption = productOptionRepository.save(option);
+        Product product = productRepository.findById(savedProduct.getId()).get();
+        assertThat(product).isNotNull();
 
-        List<ProductOption> foundOptions = productOptionRepository.findByProductId(savedOption.getId());
+        List<ProductOption> foundOptions = product.getOptions();
 
 
         assertThat(foundOptions).hasSize(1);

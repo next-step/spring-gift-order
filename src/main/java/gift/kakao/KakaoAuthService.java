@@ -18,10 +18,8 @@ public class KakaoAuthService {
     @Value("${custom.kakao-redirect}")
     private String redirectUri;
 
-    @Value("${custom.kakao-auth-key}")
-    private String authKey;
 
-    public ResponseEntity<String> getAuthorization() {
+    public ResponseEntity<String> getAuthorization(String authKey) {
         ResponseEntity<String> response = null;
         RestClient restClient = RestClient.create();
 

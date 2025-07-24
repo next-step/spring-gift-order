@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/users/login", Set.of(HttpMethod.POST),
             "/admin/login", Set.of(HttpMethod.GET, HttpMethod.POST),
             "/api/products", Set.of(HttpMethod.GET),
+            "/kakao/callback", Set.of(HttpMethod.GET),
 
             "/favicon.ico", Set.of(HttpMethod.GET),
             "/product-form.css", Set.of(HttpMethod.GET),

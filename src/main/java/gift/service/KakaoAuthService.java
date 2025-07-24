@@ -10,8 +10,8 @@ import org.springframework.web.client.RestClient;
 
 
 @Service
-public class KaKaoAuthService {
-    private  RestClient restClient=RestClient.create();
+public class KakaoAuthService {
+    private RestClient restClient = RestClient.create();
 
     @Value("${kakao.client-id}")
     private String clientId;
@@ -19,15 +19,13 @@ public class KaKaoAuthService {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
-
-
     public KaKaoTokenResponseDto requestToken(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", clientId);
         body.add("redirect_uri", redirectUri);
         body.add("code", code);
-        
+
         return restClient.post()
                 .uri("https://kauth.kakao.com/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)

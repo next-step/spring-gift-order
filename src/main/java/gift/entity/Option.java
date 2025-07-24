@@ -13,7 +13,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
-import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Table(name = "option")

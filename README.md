@@ -6,7 +6,7 @@
 
 ## 구현할 기능 목록 (1단계 - 카카오 로그인)
 
-- [ ] `feat`: 카카오 OAuth 클라이언트 정보 관리 설정 (`KakaoOauthProperties`)
+- [x] `feat`: 카카오 OAuth 클라이언트 정보 관리 설정 (`KakaoOauthProperties`)
 - [ ] `feat`: 카카오 로그인 페이지 리다이렉션 컨트롤러 구현
 - [ ] `feat`: 카카오 API 통신을 위한 DTO 정의 (`KakaoTokenResponse`, `KakaoUserInfoResponse`)
 - [ ] `feat`: 카카오 인증 콜백 처리 및 액세스 토큰 요청 서비스 구현

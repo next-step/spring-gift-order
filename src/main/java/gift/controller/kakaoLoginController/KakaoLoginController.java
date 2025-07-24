@@ -1,44 +1,40 @@
 package gift.controller.kakaoLoginController;
 
+
 import gift.service.kakaoService.KakaoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/login")
 public class KakaoLoginController {
 
     private final KakaoService kakaoService;
-    private final String clientId;
-    private final String redirectUri;
 
-    public KakaoLoginController(KakaoService kakaoService, @Value("${kakao.client_id}") String clientId, @Value("${kakao.redirect_uri}") String redirectUri) {
+    public KakaoLoginController(KakaoService kakaoService) {
         this.kakaoService = kakaoService;
-        this.clientId = clientId;
-        this.redirectUri = redirectUri;
     }
 
-    @GetMapping("/url")
-    public ResponseEntity<String> getKakaoLoginUrl() {
-        String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize" + "?response_type=code" + "&client_id=" + clientId + "&redirect_uri=" + redirectUri;
+    @Value("${kakao.client_id}")
+    private String clientId;
 
-        return ResponseEntity.ok(kakaoAuthUrl);
+    @Value("${kakao.redirect_uri}")
+    private String redirectUri;
+
+    @GetMapping("/login/page")
+    public ResponseEntity<Void> redirectToKakao() {
+        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + clientId + "&redirect_uri=" + redirectUri;
+        return ResponseEntity.status(302).header("Location", location).build();
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<Map<String, String>> callback(@RequestParam("code") String code) {
-        String token = kakaoService.getAccessTokenFromKakao(code);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("access_token", token);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> callback(@RequestParam("code") String code) {
+        String accessToken = kakaoService.getAccessTokenFromKakao(code);
+        System.out.println(accessToken);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

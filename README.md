@@ -4,7 +4,7 @@
 
 ### step1 구현 기능
 
-- [ ] kakao api key 등록
+- [x] kakao api key 등록
 - [ ] 로그인 페이지 구현
 - [ ] 리다이렉트 api 구현
 - [ ] 테스트 코드 작성

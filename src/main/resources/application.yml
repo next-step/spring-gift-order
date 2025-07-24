@@ -27,3 +27,7 @@ logging:
 jwt:
   secret: kakaoTechCampus2025KNUFightingAzaAzaAza
   access-token-validity: 1800 # 단위: s
+
+kakao:
+  app:
+    key: ${KAKAO_REST_API_KEY}

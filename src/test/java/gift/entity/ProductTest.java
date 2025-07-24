@@ -1,5 +1,6 @@
 package gift.entity;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import gift.exception.InvalidOptionNameException;

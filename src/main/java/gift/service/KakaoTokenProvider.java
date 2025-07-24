@@ -26,10 +26,8 @@ public class KakaoTokenProvider {
     ) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.restClient = builder.baseUrl(GET_TOKEN_URL).build();
+        this.restClient = builder.baseUrl("https://kauth.kakao.com/oauth/token").build();
     }
-
-    private static final String GET_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
 
     public KakaoTokenResponse getAccessToken(String code) {
         try {

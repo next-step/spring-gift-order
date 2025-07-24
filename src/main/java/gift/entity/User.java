@@ -79,8 +79,8 @@ public class User {
         this.password = newPassword;
     }
 
-    public User updateFrom(UserUpdateDto dto) {
-        return new User(this.getId(), dto.email(), dto.password(), this.role);
+    public User updateFrom(String email, String password) {
+        return new User(this.id, email, password, this.role);
     }
 
     public void checkAuthorization() {

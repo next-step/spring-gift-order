@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -24,12 +26,12 @@ class UserRepositoryTest {
         User user = new User("example@example.com", "1234", UserRole.USER);
         userRepository.save(user);
 
-        User targetUser = userRepository.findUserByEmail("example@example.com");
+        Optional<User> targetUser = userRepository.findUserByEmail("example@example.com");
 
         assertThat(targetUser).isNotNull();
-        assertThat(targetUser.getEmail()).isEqualTo("example@example.com");
-        assertThat(targetUser.getPassword()).isEqualTo("1234");
-        assertThat(targetUser.getRole()).isEqualTo(UserRole.USER);
+        assertThat(targetUser.get().getEmail()).isEqualTo("example@example.com");
+        assertThat(targetUser.get().getPassword()).isEqualTo("1234");
+        assertThat(targetUser.get().getRole()).isEqualTo(UserRole.USER);
     }
 
     @Test

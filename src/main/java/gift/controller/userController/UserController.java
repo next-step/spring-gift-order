@@ -30,19 +30,17 @@ public class UserController {
         this.tokenUtils = tokenUtils;
     }
 
-    /***
-     * Todo. 관리자 User 관리 페이지를 위한 model 생성
-     *
-     */
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody @Valid UserRegisterDto dto) {
-        String token = userService.registerUser(dto);
+        String token = userService.registerUser(dto.dtoToUser());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("token", token));
     }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody @Valid UserLoginDto dto) {
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", userService.loginUser(dto)));
+
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", userService.loginUser(dto.email(),dto.password())));
     }
 
 
@@ -70,10 +68,11 @@ public class UserController {
     public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody @Valid UserUpdateDto dto) {
         String token = tokenUtils.extractToken(authHeader);
         tokenUtils.validateToken(token);
-        boolean isAdmin = tokenUtils.requireAdmin(token);
-        Long loginId = tokenUtils.extractUserId(token);
+        Long loginToken = tokenUtils.extractUserId(token);
+        String email = dto.email();
+        String password = dto.password();
 
-        User updatedUser = userService.updateUser(id, dto, loginId);
+        User updatedUser = userService.updateUser(id, email, password, loginToken);
 
         return ResponseEntity.ok(updatedUser);
     }

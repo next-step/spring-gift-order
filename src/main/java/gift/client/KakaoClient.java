@@ -3,35 +3,31 @@ package gift.client;
 import gift.config.KakaoProperties;
 import gift.dto.login.KakaoProfileDto;
 import gift.dto.login.KakaoTokenDto;
-import java.net.URI;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 @Component
 public class KakaoClient {
 
     private final KakaoProperties kakaoProperties;
 
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
-    public KakaoClient(KakaoProperties kakaoProperties, RestTemplateBuilder builder) {
+    public KakaoClient(KakaoProperties kakaoProperties) {
         this.kakaoProperties = kakaoProperties;
-        this.restTemplate = builder.build();
+        this.restClient = RestClient.create();
     }
 
     public KakaoTokenDto fetchToken(String code) {
         String baseUrl = "https://kauth.kakao.com/oauth/token";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+        headers.add(HttpHeaders.CONTENT_TYPE,
+            "application/x-www-form-urlencoded;charset=utf-8");
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
@@ -39,11 +35,12 @@ public class KakaoClient {
         body.add("redirect_uri", kakaoProperties.redirectUri());
         body.add("code", code);
 
-        RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<>(body, headers,
-            HttpMethod.POST, URI.create(baseUrl));
-
-        ResponseEntity<KakaoTokenDto> response = restTemplate.exchange(request,
-            KakaoTokenDto.class);
+        ResponseEntity<KakaoTokenDto> response = restClient.post()
+            .uri(baseUrl)
+            .headers(h -> h.addAll(headers))
+            .body(body)
+            .retrieve()
+            .toEntity(KakaoTokenDto.class);
 
         return response.getBody();
     }
@@ -56,11 +53,11 @@ public class KakaoClient {
         headers.add("Authorization", bearerToken);
         headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
 
-        RequestEntity<MultiValueMap<String, String>> request = new RequestEntity<>(headers,
-            HttpMethod.POST, URI.create(baseUrl));
-
-        ResponseEntity<KakaoProfileDto> response = restTemplate.exchange(request,
-            KakaoProfileDto.class);
+        ResponseEntity<KakaoProfileDto> response = restClient.post()
+            .uri(baseUrl)
+            .headers(h -> h.addAll(headers))
+            .retrieve()
+            .toEntity(KakaoProfileDto.class);
 
         return response.getBody();
     }

@@ -1,7 +1,6 @@
 package gift.controller.login;
 
 import gift.config.KakaoProperties;
-import gift.dto.login.KakaoTokenDto;
 import gift.service.member.OauthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +18,11 @@ public class LoginViewController {
         this.oauthService = oauthService;
     }
 
+    @GetMapping("/login-success")
+    public String viewLoginSuccess() {
+        return "login-success";
+    }
+
     @GetMapping("/view/login")
     public String loginPage(Model model) {
         model.addAttribute("kakaoRestApiKey", kakaoProperties.restApiKey());
@@ -32,6 +36,6 @@ public class LoginViewController {
         @RequestParam String code
     ) {
         String accessToken = oauthService.fetchKakaoToken(code);
-        return "login-success";
+        return "redirect:/login-success";
     }
 }

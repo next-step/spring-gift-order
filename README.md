@@ -6,7 +6,7 @@
 
 - [x] kakao api key 등록
 - [x] 로그인 페이지 구현
-- [ ] 리다이렉트 api 구현
+- [x] 리다이렉트 api 구현
 - [ ] 테스트 코드 작성
 
 # spring-gift-enhancement

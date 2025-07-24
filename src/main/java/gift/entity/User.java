@@ -1,6 +1,7 @@
 package gift.entity;
 
 import gift.dto.userDto.UserUpdateDto;
+import gift.exception.userException.UserAuthorizationException;
 import gift.exception.userException.UserEmailException;
 import gift.exception.userException.UserPasswordException;
 import jakarta.persistence.*;
@@ -41,8 +42,10 @@ public class User {
         this.role = role;
     }
 
-    public boolean checkPassword(String password) {
-        return this.password.equals(password);
+    public void checkPassword(String password) {
+        if (this.password.equals(password)) {
+            throw new UserPasswordException();
+        }
     }
 
 
@@ -78,5 +81,11 @@ public class User {
 
     public User updateFrom(UserUpdateDto dto) {
         return new User(this.getId(), dto.email(), dto.password(), this.role);
+    }
+
+    public void checkAuthorization() {
+        if (this.role == UserRole.USER) {
+            throw new UserAuthorizationException();
+        }
     }
 }

@@ -11,13 +11,13 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
     String registerUser(UserRegisterDto userRegisterDto);
 
-    Page<User> getUserList(String email, boolean isAdmin, Pageable pageable);
+    Page<User> getUserList(String email, Long loginId, Pageable pageable);
 
     User finUserById(Long id);
 
-    User updateUser(Long id, @Valid UserUpdateDto userUpdateDto, boolean isAdmin);
+    User updateUser(Long id, @Valid UserUpdateDto userUpdateDto, Long loginId);
 
-    void deleteUserById(Long id, boolean isAdmin);
+    void deleteUserById(Long id, Long loginId);
 
     String loginUser(@Valid UserLoginDto userLoginDto);
 

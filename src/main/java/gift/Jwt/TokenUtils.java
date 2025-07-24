@@ -52,6 +52,11 @@ public class TokenUtils {
         return true;
     }
 
+    public Long extractUserId(String token) {
+        Claims claims = jwtUtil.getClaims(token);
+        return claims.get("id", Long.class);
+    }
+
     public Claims getClaims(String token) {
         return jwtUtil.getClaims(token);
     }

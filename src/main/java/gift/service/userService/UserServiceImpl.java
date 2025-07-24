@@ -47,13 +47,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String loginUser(UserLoginDto userLoginDto) {
-        String targetEmail = userLoginDto.email();
+        User findUser = findUserByEmail(userLoginDto.email());
 
-        User findUser = findUserByEmail(targetEmail);
+        findUser.checkPassword(userLoginDto.password());
 
-        if (!findUser.checkPassword(userLoginDto.password())) {
-            throw new UserPasswordInputException();
-        }
         return jwtUtil.generateToken(findUser);
 
     }
@@ -70,11 +67,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getUserList(String email, boolean isAdmin, Pageable pageable) {
+    public Page<User> getUserList(String email, Long loginId, Pageable pageable) {
 
-        if (!isAdmin) {
-            throw new UserAuthorizationException();
-        }
+        findUserById(loginId).checkAuthorization();
+
         if (email != null) {
             return getUsersByEmail(email, pageable);
         }
@@ -87,15 +83,13 @@ public class UserServiceImpl implements UserService {
     }
 
     private Page<User> getUsersByEmail(String email, Pageable pageable) {
-        if (email == null) {
+
+        Page<User> users = userRepository.findByEmailContaining(email, pageable);
+        if (users.isEmpty()) {
             throw new UserNotFoundException();
-        } else {
-            Page<User> users = userRepository.findByEmailContaining(email, pageable);
-            if (users.isEmpty()) {
-                throw new UserNotFoundException();
-            }
-            return users;
         }
+
+        return users;
     }
 
     @Override
@@ -108,16 +102,13 @@ public class UserServiceImpl implements UserService {
     }
 
     private User findUserById(Long id) {
-        User user = userRepository.findUserById(id);
-        return user;
+        return userRepository.findUserById(id);
     }
 
     @Override
     @Transactional
-    public User updateUser(Long id, UserUpdateDto userUpdateDto, boolean isAdmin) {
-        if (!isAdmin) {
-            throw new UserAuthorizationException();
-        }
+    public User updateUser(Long id, UserUpdateDto userUpdateDto, Long loginId) {
+        findUserById(loginId).checkAuthorization();
 
         User findUser = userRepository.findById(id).orElse(null);
 
@@ -133,10 +124,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUserById(Long id, boolean isAdmin) {
-        if (!isAdmin) {
-            throw new UserAuthorizationException();
-        }
+    public void deleteUserById(Long id, Long loginId) {
+        findUserById(loginId).checkAuthorization();
 
         userRepository.deleteUserById(id);
     }

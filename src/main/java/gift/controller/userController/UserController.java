@@ -50,9 +50,9 @@ public class UserController {
     public ResponseEntity<?> getUserList(@RequestHeader("Authorization") String authHeader, @RequestParam(required = false) String email, Pageable pageable, Model model) {
         String token = tokenUtils.extractToken(authHeader);
         tokenUtils.validateToken(token);
-        boolean isAdmin = tokenUtils.requireAdmin(token);
+        Long loginId = tokenUtils.extractUserId(token);
 
-        Page<User> users = userService.getUserList(email, isAdmin, pageable);
+        Page<User> users = userService.getUserList(email, loginId, pageable);
         return ResponseEntity.ok(users);
     }
 
@@ -60,9 +60,8 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String authHeader, @RequestParam Long id, Model model) {
         String token = tokenUtils.extractToken(authHeader);
         tokenUtils.validateToken(token);
-        boolean isAdmin = tokenUtils.requireAdmin(token);
-
-        userService.deleteUserById(id, isAdmin);
+        Long loginId = tokenUtils.extractUserId(token);
+        userService.deleteUserById(id, loginId);
 
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -72,8 +71,9 @@ public class UserController {
         String token = tokenUtils.extractToken(authHeader);
         tokenUtils.validateToken(token);
         boolean isAdmin = tokenUtils.requireAdmin(token);
+        Long loginId = tokenUtils.extractUserId(token);
 
-        User updatedUser = userService.updateUser(id, dto, isAdmin);
+        User updatedUser = userService.updateUser(id, dto, loginId);
 
         return ResponseEntity.ok(updatedUser);
     }

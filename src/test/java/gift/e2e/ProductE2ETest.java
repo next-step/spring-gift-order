@@ -9,6 +9,8 @@ import gift.common.dto.CustomResponseBody;
 import gift.dto.ProductOptionRequest;
 import gift.dto.ProductRequest;
 import gift.dto.ProductResponse;
+import gift.entity.Member;
+import gift.repository.MemberRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,18 +34,29 @@ public class ProductE2ETest {
     private int port;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     private RestClient client;
 
     @BeforeEach
     void setup() {
-        String token = jwtUtil.generateToken("test@domain.com", 1L);
-        String url = "http://localhost:" + port + "/api/products";
+        String baseUrl = "http://localhost:" + port + "/api/products";
+
+        Member member = memberRepository.save(new Member(
+            123456L,
+            "test@domain.com",
+            "테스트 사용자",
+            "https://example.com/profile.jpg"
+        ));
+
+        String token = "Bearer " + jwtUtil.generateToken(member);
 
         this.client = RestClient.builder()
-            .baseUrl(url)
-            .defaultHeader("Authorization", "Bearer " + token)
+            .baseUrl(baseUrl)
+            .defaultHeader("Authorization", token)
             .build();
     }
 

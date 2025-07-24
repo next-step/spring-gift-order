@@ -3,21 +3,23 @@ package gift.e2e;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import gift.auth.jwt.JwtUtil;
 import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
-import gift.dto.AuthRequest;
-import gift.dto.AuthResponse;
 import gift.dto.PageResponse;
 import gift.dto.ProductOptionRequest;
 import gift.dto.ProductRequest;
 import gift.dto.ProductResponse;
 import gift.dto.WishRequest;
 import gift.dto.WishResponse;
+import gift.entity.Member;
+import gift.repository.MemberRepository;
 import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -35,11 +37,13 @@ public class PaginationE2ETest {
     @LocalServerPort
     private int port;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
     private RestClient client;
-
-    private final String TEST_EMAIL = "testuser1@domain.com";
-
-    private final String TEST_PASSWORD = "password";
 
     private String authToken;
 
@@ -48,29 +52,16 @@ public class PaginationE2ETest {
         String baseUrl = "http://localhost:" + port + "/api";
         client = RestClient.builder().baseUrl(baseUrl).build();
 
-        AuthRequest request = new AuthRequest(TEST_EMAIL, TEST_PASSWORD);
+        Member member = memberRepository.save(new Member(
+            123456L,
+            "test@domain.com",
+            "테스트 사용자",
+            "https://example.com/profile.jpg"
+        ));
 
-        // 로그인
-        client.post()
-            .uri("/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(request)
-            .retrieve()
-            .toBodilessEntity();
-
-        // 회원 가입
-        CustomResponseBody<AuthResponse> loginResponse = client.post()
-            .uri("/auth/login")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(request)
-            .retrieve()
-            .body(new ParameterizedTypeReference<>() {
-            });
-
-        this.authToken = "Bearer " + loginResponse.data().token();
+        this.authToken = "Bearer " + jwtUtil.generateToken(member);
 
         for (int i = 1; i <= 25; i++) {
-            // 더미 상품 생성
             ProductRequest product = new ProductRequest("상품" + i, i * 100,
                 "https://img" + i + ".jpg", createDummyOptions());
 
@@ -84,7 +75,6 @@ public class PaginationE2ETest {
                 })
                 .data();
 
-            // 더미 위시 리스트 생성
             WishRequest wish = new WishRequest(created.id(), 1);
 
             client.post()
@@ -366,7 +356,7 @@ public class PaginationE2ETest {
     private List<ProductOptionRequest> createDummyOptions() {
         return List.of(new ProductOptionRequest("기본 옵션", 10L));
     }
-    
+
     private void assertValidationError(ResponseEntity<String> response, String expectedMessage) {
         assertAll("응답 객체 검증",
             () -> assertThat(response).isNotNull(),

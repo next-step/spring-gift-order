@@ -15,7 +15,7 @@
 - [x] application.properties에 키값을 적어놔서 유출을 방지함
 
 
-2. 액세스 토큰 발급 API
+## 액세스 토큰 발급 API
 
 - **HTTP Method**: `GET`
 - **URL**: `/kakao`

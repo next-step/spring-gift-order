@@ -7,8 +7,10 @@ CREATE TABLE product (
 
 CREATE TABLE member (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    provider_id BIGINT NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    nickname VARCHAR(255) NOT NULL,
+    profile_image VARCHAR(500)
 );
 
 CREATE TABLE wish (

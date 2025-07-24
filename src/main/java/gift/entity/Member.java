@@ -1,5 +1,6 @@
 package gift.entity;
 
+import gift.dto.AuthUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,38 +16,54 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "provider_id", nullable = false, unique = true)
+    private Long providerId;
+
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String nickname;
+
+    @Column(name = "profile_image")
+    private String profileImage;
 
     protected Member() {
     }
 
-    public Member(Long id, String email, String password) {
+    public Member(Long id, Long providerId, String email, String nickname, String profileImage) {
         this.id = id;
+        this.providerId = providerId;
         this.email = email;
-        this.password = password;
+        this.nickname = nickname;
+        this.profileImage = profileImage;
     }
 
-    public Member(String email, String password) {
-        this(null, email, password);
+    public Member(Long providerId, String email, String nickname, String profileImage) {
+        this(null, providerId, email, nickname, profileImage);
+    }
+
+    public static Member from(AuthUser user) {
+        return new Member(user.providerId(), user.email(), user.nickname(), user.profileImage());
     }
 
     public Long getId() {
         return id;
     }
 
+    public Long getProviderId() {
+        return providerId;
+    }
+
     public String getEmail() {
         return email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void update(String email) {
-        this.email = email;
+    public String getProfileImage() {
+        return profileImage;
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 // 예외 관리 핸들러
 @RestControllerAdvice
@@ -23,6 +25,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({IncorrectResultSizeDataAccessException.class, DecryptFailedException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleInternalServerError(RuntimeException e) { return e.getMessage(); }
+    @ExceptionHandler(HttpServerErrorException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleInternalServerError(HttpServerErrorException e) { return e.getMessage(); }
 
     // FORBIDDEN 응답하는 예외처리 핸들러
     @ExceptionHandler(InvalidProductNameException.class)
@@ -42,6 +47,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBadRequest(ConstraintViolationException e) { return e.getMessage(); }
+    @ExceptionHandler(HttpClientErrorException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleBadRequest(HttpClientErrorException e) { return e.getMessage(); }
 
     // CONFLICT 응답하는 예외처리 핸들러
     @ExceptionHandler(DuplicateKeyException.class)

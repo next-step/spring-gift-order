@@ -28,6 +28,7 @@ public class KakaoAuthService {
         var url = "https://kauth.kakao.com/oauth/token";
         var headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+
         var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoRestApiKey);

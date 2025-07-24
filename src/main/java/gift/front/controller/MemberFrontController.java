@@ -2,9 +2,11 @@ package gift.front.controller;
 
 import gift.api.product.service.ProductService;
 import gift.api.wish.service.WishService;
+import gift.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -24,6 +26,9 @@ public class MemberFrontController {
     private final ProductService productService;
     private final WishService wishService;
 
+    @Value("${kakao.client-id}")
+    private String clientId;
+
     public MemberFrontController(ProductService productService, WishService wishService) {
         this.productService = productService;
         this.wishService = wishService;
@@ -42,11 +47,15 @@ public class MemberFrontController {
     @GetMapping("/logout")
     public String logout(HttpServletResponse response) {
         // Authorization 쿠키를 삭제
-        Cookie cookie = new Cookie("Authorization", null);
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
-        return "redirect:/members/login";
+
+        String kakaoLogoutUrl = "https://kauth.kakao.com/oauth/logout?client_id=" + clientId +
+                "&logout_redirect_uri=http://localhost:8080/members/login";
+
+        return "redirect:" + kakaoLogoutUrl;
     }
 
     @GetMapping("/products")

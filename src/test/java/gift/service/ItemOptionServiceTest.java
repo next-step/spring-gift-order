@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -51,7 +52,7 @@ public class ItemOptionServiceTest {
         when(itemService.findById(1L)).thenReturn(item);
         when(optionRepository.save(any())).thenReturn(savedOption);
 
-        ItemOption result = optionService.save(requestDto, 1L);
+        ItemOption result = optionService.save(requestDto.dtoToEntity(), 1L);
 
         assertThat(result.getOptionName()).isEqualTo("다크초콜릿");
         assertThat(result.getQuantity()).isEqualTo(5);
@@ -78,7 +79,7 @@ public class ItemOptionServiceTest {
     void 옵션_아이템없으면예외() {
         when(itemService.findById(1L)).thenThrow(new ItemNotFoundException());
 
-        assertThatThrownBy(() -> optionService.save(new OptionRequestDto("옵션", 1), 1L))
+        assertThatThrownBy(() -> optionService.save(new OptionRequestDto("옵션", 1).dtoToEntity(), 1L))
                 .isInstanceOf(ItemNotFoundException.class);
     }
 
@@ -88,10 +89,10 @@ public class ItemOptionServiceTest {
         ItemOption modified = new ItemOption(item, "옵션", 10);
 
         when(itemService.findById(1L)).thenReturn(item);
-        when(optionRepository.findByItem(item)).thenReturn(option);
+        when(optionRepository.findByItem(item)).thenReturn(Optional.of(option));
         when(optionRepository.save(any())).thenReturn(modified);
 
-        ItemOption result = optionService.quantityControl(new OptionRequestDto("옵션", 10), 1L);
+        ItemOption result = optionService.quantityControl(new OptionRequestDto("옵션", 10).dtoToEntity(), 1L);
 
         assertThat(result.getQuantity()).isEqualTo(10);
         verify(optionRepository).save(any(ItemOption.class));
@@ -106,7 +107,7 @@ public class ItemOptionServiceTest {
         when(itemService.findById(1L)).thenReturn(item);
         when(optionRepository.save(any())).thenReturn(savedOption);
 
-        ItemOption result = optionService.save(requestDto, 1L);
+        ItemOption result = optionService.save(requestDto.dtoToEntity(), 1L);
 
         assertThat(result.getOptionName()).isEqualTo(optionName);
     }
@@ -118,7 +119,7 @@ public class ItemOptionServiceTest {
 
         when(itemService.findById(1L)).thenReturn(item);
 
-        assertThatThrownBy(() -> optionService.save(requestDto, 1L))
+        assertThatThrownBy(() -> optionService.save(requestDto.dtoToEntity(), 1L))
                 .isInstanceOf(OptionExceptionException.class);
     }
 
@@ -131,7 +132,7 @@ public class ItemOptionServiceTest {
 
         when(itemService.findById(1L)).thenReturn(item);
 
-        assertThatThrownBy(() -> optionService.save(requestDto, 1L))
+        assertThatThrownBy(() -> optionService.save(requestDto.dtoToEntity(), 1L))
                 .isInstanceOf(OptionDuplicatedException.class);
     }
 

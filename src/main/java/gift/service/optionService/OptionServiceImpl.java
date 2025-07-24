@@ -5,6 +5,7 @@ import gift.entity.Item;
 import gift.entity.ItemOption;
 import gift.exception.itemException.ItemNotFoundException;
 import gift.exception.itemException.OptionDuplicatedException;
+import gift.exception.itemException.OptionNotFoundException;
 import gift.repository.itemRepository.ItemRepository;
 import gift.repository.optionRepository.OptionRepository;
 import gift.service.itemService.ItemService;
@@ -25,18 +26,13 @@ public class OptionServiceImpl implements OptionService {
     }
 
     @Override
-    public ItemOption save(OptionRequestDto optionRequestDto, Long itemId) {
+    public ItemOption save(ItemOption itemOption, Long itemId) {
         Item item = itemService.findById(itemId);
+        item.checkDuplicatedItem(itemOption.getOptionName());
 
-        for (ItemOption option : item.getOptions()) {
-            if (option.getOptionName().equals(optionRequestDto.optionName())) {
-                throw new OptionDuplicatedException();
-            }
-        }
+        ItemOption savedItemOption = new ItemOption(item, itemOption.getOptionName(), itemOption.getQuantity());
 
-        ItemOption itemOption = new ItemOption(item, optionRequestDto.optionName(), optionRequestDto.quantity());
-
-        return optionRepository.save(itemOption);
+        return optionRepository.save(savedItemOption);
     }
 
     @Override
@@ -48,13 +44,17 @@ public class OptionServiceImpl implements OptionService {
 
     @Transactional
     @Override
-    public ItemOption quantityControl(OptionRequestDto optionRequestDto, Long itemId) {
+    public ItemOption quantityControl(ItemOption targetOption, Long itemId) {
         Item item = itemService.findById(itemId);
 
-        ItemOption itemOption = optionRepository.findByItem(item);
-        ItemOption changedOption = itemOption.quantityControl(optionRequestDto.quantity());
+        ItemOption itemOption = getByItem(item);
+        ItemOption changedOption = itemOption.quantityControl(targetOption.getQuantity());
 
         return optionRepository.save(changedOption);
+    }
+
+    private ItemOption getByItem(Item item) {
+        return optionRepository.findByItem(item).orElseThrow(OptionNotFoundException::new);
     }
 
 

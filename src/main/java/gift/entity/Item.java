@@ -4,6 +4,7 @@ import gift.dto.itemDto.ItemUpdateDto;
 import gift.exception.itemException.ItemImageurlException;
 import gift.exception.itemException.ItemNameException;
 import gift.exception.itemException.ItemPriceException;
+import gift.exception.itemException.OptionDuplicatedException;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -115,5 +116,13 @@ public class Item {
 
     public List<ItemOption> getOptions() {
         return this.options;
+    }
+
+    public void checkDuplicatedItem(String optionName) {
+        for (ItemOption itemOption : getOptions()) {
+            if (itemOption.getOptionName().equals(optionName)) {
+                throw new OptionDuplicatedException();
+            }
+        }
     }
 }

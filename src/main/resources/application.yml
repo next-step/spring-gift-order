@@ -1,0 +1,28 @@
+spring:
+    application:
+        name: spring-gift
+    mvc:
+        hiddenmethod:
+            filter:
+                enabled: true
+    h2:
+        console:
+            enabled: true
+    sql:
+        init:
+            data-locations: classpath:data.sql
+    datasource:
+        url: jdbc:h2:mem:test
+
+    jpa:
+        show-sql: true
+        properties:
+          hibernate.hibernate.format_sql: true
+
+        hibernate:
+            ddl-auto: create
+        defer-datasource-initialization: true
+
+jwt:
+    secret: fe1a340e3813faa8630be358ce1ab6cc13a65f4ff0ee7ecb28101130437ccefc
+    expiration: 86400000

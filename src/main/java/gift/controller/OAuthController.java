@@ -5,12 +5,11 @@ import gift.dto.TokenResponse;
 import gift.service.OAuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/oauth")
@@ -36,10 +35,10 @@ public class OAuthController {
     }
 
     @GetMapping("/kakao/callback")
-    @ResponseBody
-    public ResponseEntity<TokenResponse> kakaoCallback(@RequestParam("code") String code) {
-        TokenResponse response = oAuthService.loginWithKakao(code);
+    public String kakaoCallback(@RequestParam("code") String code, Model model) {
+        TokenResponse tokenResponse = oAuthService.loginWithKakao(code);
+        model.addAttribute("token", tokenResponse.token());
 
-        return ResponseEntity.ok(response);
+        return "oauth-redirect";
     }
 }

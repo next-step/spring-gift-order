@@ -2,6 +2,7 @@ package gift.controller.wishListController;
 
 import gift.config.LoginUser;
 import gift.dto.wishListDto.*;
+import gift.entity.ItemOption;
 import gift.entity.WishItem;
 import gift.service.wishListService.WishListService;
 import jakarta.validation.Valid;
@@ -26,8 +27,8 @@ public class WishListController {
 
     @PostMapping
     public ResponseEntity<ResponseWishItemDto> addItem(@RequestBody @Valid CreateWishItemRequestDto dto, @LoginUser String userEmail) {
-
-        WishItem addedWishItem = wishListService.addWishItem(dto, userEmail);
+        ItemOption option = dto.toEntity();
+        WishItem addedWishItem = wishListService.addWishItem(option, userEmail);
 
         return new ResponseEntity<>(ResponseWishItemDto.from(addedWishItem), HttpStatus.CREATED);
     }

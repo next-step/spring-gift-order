@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -59,12 +61,8 @@ public class KaKaoAuthServiceImpl implements AuthService {
 
     @Override
     public AuthUser authenticate(String code) {
-        try {
-            String accessToken = requestAccessToken(code);
-            return requestUserInfo(accessToken);
-        } catch (Exception e) {
-            throw new CustomException(CustomResponseCode.LOGIN_FAILED);
-        }
+        String accessToken = requestAccessToken(code);
+        return requestUserInfo(accessToken);
     }
 
     @Override
@@ -82,23 +80,38 @@ public class KaKaoAuthServiceImpl implements AuthService {
         formData.add("code", code);
         formData.add("client_secret", clientSecret);
 
-        ResponseEntity<Map> response = restClient.post()
-            .uri(tokenUrl)
-            .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
-            .body(formData)
-            .retrieve()
-            .toEntity(Map.class);
+        try {
+            ResponseEntity<Map> response = restClient.post()
+                .uri(tokenUrl)
+                .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .body(formData)
+                .retrieve()
+                .toEntity(Map.class);
 
-        return (String) response.getBody().get("access_token");
+            return (String) response.getBody().get("access_token");
+
+        } catch (HttpClientErrorException e) {
+            throw new CustomException(CustomResponseCode.VALIDATION_FAILED);
+        } catch (HttpServerErrorException e) {
+            throw new CustomException(CustomResponseCode.SERVER_ERROR);
+        }
+
     }
 
     private AuthUser requestUserInfo(String accessToken) {
-        ResponseEntity<Map> response = restClient.get()
-            .uri(userInfoUrl)
-            .header("Authorization", "Bearer " + accessToken)
-            .retrieve()
-            .toEntity(Map.class);
+        try {
+            ResponseEntity<Map> response = restClient.get()
+                .uri(userInfoUrl)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .toEntity(Map.class);
 
-        return AuthUser.fromKakao(response.getBody());
+            return AuthUser.fromKakao(response.getBody());
+
+        } catch (HttpClientErrorException e) {
+            throw new CustomException(CustomResponseCode.VALIDATION_FAILED);
+        } catch (HttpServerErrorException e) {
+            throw new CustomException(CustomResponseCode.SERVER_ERROR);
+        }
     }
 }

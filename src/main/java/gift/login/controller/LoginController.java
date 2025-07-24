@@ -8,11 +8,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class LoginController {
 
-    @Value("${kakao.app.key}")
-    private String clientId;
+    private final String clientId;
+    private final String redirectUri;
 
-    @Value("${kakao.redirect_url}")
-    private String redirectUri;
+    public LoginController(
+        @Value("${kakao.app.key}") String clientId,
+        @Value("${kakao.redirect_url}") String redirectUri
+    ) {
+        this.clientId = clientId;
+        this.redirectUri = redirectUri;
+    }
 
     @GetMapping("/login")
     public String kakaoLogin(Model model) {

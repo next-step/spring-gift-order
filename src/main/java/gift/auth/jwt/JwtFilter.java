@@ -18,15 +18,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtFilter implements Filter {
 
-    private final JwtProvider jwtProvider;
-
     private static final Set<String> EXCLUDED_PATHS = Set.of(
-        "/api/auth/register",
-        "/api/auth/login",
+        "/api/auth",
         "/h2-console",
         "/admin/products",
         "/css"
     );
+    private final JwtProvider jwtProvider;
 
     public JwtFilter(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
@@ -40,21 +38,12 @@ public class JwtFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         try {
-            String path = httpRequest.getRequestURI();
-
-            for (String excludedPath : EXCLUDED_PATHS) {
-                if (path.startsWith(excludedPath)) {
-                    chain.doFilter(request, response);
-                    return;
-                }
+            if (isExcludedPath(httpRequest.getRequestURI())) {
+                chain.doFilter(request, response);
+                return;
             }
 
-            String token = jwtProvider.extractToken(httpRequest);
-            Map<String, Object> claims = jwtProvider.getClaimsFromToken(token);
-            Long memberId = ((Number) claims.get("memberId")).longValue();
-            String email = (String) claims.get("sub");
-
-            Member member = new Member(memberId, email, null);
+            Member member = extractMemberFromToken(httpRequest);
             httpRequest.setAttribute("member", member);
 
             chain.doFilter(request, response);
@@ -62,6 +51,24 @@ public class JwtFilter implements Filter {
         } catch (CustomException e) {
             sendErrorResponse(httpResponse, e.getErrorCode());
         }
+    }
+
+
+    private boolean isExcludedPath(String path) {
+        return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
+    }
+
+    private Member extractMemberFromToken(HttpServletRequest request) {
+        String token = jwtProvider.extractToken(request);
+        Map<String, Object> claims = jwtProvider.getClaimsFromToken(token);
+
+        Long providerId = Long.valueOf((String) claims.get("sub"));
+        Long memberId = ((Number) claims.get("memberId")).longValue();
+        String email = (String) claims.get("email");
+        String nickname = (String) claims.get("nickname");
+        String profileImage = (String) claims.get("profileImage");
+
+        return new Member(memberId, providerId, email, nickname, profileImage);
     }
 
     private void sendErrorResponse(HttpServletResponse response, CustomResponseCode code)

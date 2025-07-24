@@ -2,6 +2,7 @@ package gift.controller;
 
 import gift.config.KakaoOauthProperties;
 import gift.dto.kakao.KakaoTokenResponse;
+import gift.dto.kakao.KakaoUserInfoResponse;
 import gift.service.OAuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,9 +38,12 @@ public class OAuthController {
 
     @GetMapping("/kakao/callback")
     @ResponseBody
-    public ResponseEntity<KakaoTokenResponse> kakaoCallback(@RequestParam("code") String code) {
+    public ResponseEntity<KakaoUserInfoResponse> kakaoCallback(@RequestParam("code") String code) {
         KakaoTokenResponse tokenResponse = oAuthService.getKakaoToken(code);
 
-        return ResponseEntity.ok(tokenResponse);
+        KakaoUserInfoResponse userInfoResponse = oAuthService.getKakaoUserInfo(
+                tokenResponse.accessToken());
+
+        return ResponseEntity.ok(userInfoResponse);
     }
 }

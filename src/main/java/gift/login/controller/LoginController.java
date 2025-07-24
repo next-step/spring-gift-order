@@ -1,4 +1,4 @@
-package gift.login;
+package gift.login.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -15,7 +15,7 @@ public class LoginController {
     private String redirectUri;
 
     @GetMapping("/login")
-    public String login(Model model) {
+    public String kakaoLogin(Model model) {
         String location =
             "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + clientId
                 + "&redirect_uri=" + redirectUri;

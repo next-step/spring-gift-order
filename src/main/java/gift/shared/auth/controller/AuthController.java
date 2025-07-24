@@ -3,6 +3,7 @@ package gift.shared.auth.controller;
 import gift.shared.auth.dto.request.LoginRequest;
 import gift.shared.auth.dto.request.SignUpRequest;
 import gift.shared.auth.dto.response.TokenResponse;
+import gift.shared.auth.service.KakaoService;
 import gift.shared.exception.user.InValidPasswordException;
 import gift.shared.exception.user.NoUserException;
 import gift.shared.auth.service.AuthService;
@@ -18,9 +19,11 @@ import static gift.user.status.UserStatus.NO_USER;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
+    private final KakaoService kakaoService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, KakaoService kakaoService) {
         this.authService = authService;
+        this.kakaoService = kakaoService;
     }
 
     @PostMapping("/signup")

@@ -2,7 +2,7 @@ package gift.Test.e2e.user;
 
 import gift.common.model.CustomPage;
 import gift.dto.user.UserAdminResponse;
-import gift.entity.UserRole;
+import gift.entity.type.UserRole;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import org.junit.jupiter.api.DisplayName;

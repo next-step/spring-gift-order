@@ -3,7 +3,7 @@ package gift.Test.e2e.user;
 import gift.common.util.PasswordEncoder;
 import gift.dto.user.UserAdminResponse;
 import gift.dto.user.UserUpdateRequest;
-import gift.entity.UserRole;
+import gift.entity.type.UserRole;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

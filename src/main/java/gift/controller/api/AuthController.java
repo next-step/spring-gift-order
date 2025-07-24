@@ -3,7 +3,7 @@ package gift.controller.api;
 import gift.dto.auth.LoginRequest;
 import gift.dto.auth.SignupRequest;
 import gift.dto.auth.TokenResponse;
-import gift.entity.UserRole;
+import gift.entity.type.UserRole;
 import gift.service.auth.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

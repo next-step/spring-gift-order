@@ -4,7 +4,7 @@ import gift.common.exception.UnauthorizedException;
 import gift.common.util.PasswordEncoder;
 import gift.common.util.TokenProvider;
 import gift.entity.User;
-import gift.entity.UserRole;
+import gift.entity.type.UserRole;
 import gift.service.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

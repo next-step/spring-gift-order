@@ -1,6 +1,6 @@
 package gift.service.auth;
 
-import gift.entity.UserRole;
+import gift.entity.type.UserRole;
 
 import java.util.Set;
 

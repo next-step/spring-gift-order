@@ -3,9 +3,9 @@ spring:
     name: spring-gift
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/Database/kakaotech
-    username: sa
-    password: test
+    url: ${KAKAO_TECH_CAMPUS_DB}
+    username: ${KAKAO_TECH_CAMPUS_DB_USERNAME}
+    password: ${KAKAO_TECH_CAMPUS_DB_PASSWORD}
   thymeleaf:
     prefix: classpath:/templates/
   sql:
@@ -16,5 +16,8 @@ spring:
       ddl-auto: create-drop
     show-sql: true
 
-jwt-secret-key: c4ddd8e4ddd7f363bfc2031da599d635d15dbca070c4ec144590d128bdff778fbf2c63f6fb85c23c8877947c0fc4b2c18be0131e430354937dca778cd490779d
-jwt-access-token-expire-time: 1800000
+jwt-secret-key: ${JWT_SECRET_KEY}
+jwt-access-token-expire-time: ${JWT_ACCESS_TOKEN_EXPIRED_TIME}
+
+kakao-client-id: ${KAKAO_TECH_CAMPUS_CLIENT_ID}
+kakao-redirect-url: ${KAKAO_TECH_CAMPUS_REDIRECT_URL}

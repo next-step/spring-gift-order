@@ -3,7 +3,8 @@ package gift.service;
 import gift.common.exception.KakaoLoginException;
 import gift.dto.kakao.KakaoTokenResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -12,11 +13,21 @@ import org.springframework.web.client.RestClient;
 @Component
 public class KakaoTokenProvider {
 
-    @Value("${spring.kakao.client_id}")
-    private String clientId;
+    private final String clientId;
 
-    @Value("${spring.kakao.client_secret}")
-    private String clientSecret;
+    private final String clientSecret;
+
+    private final RestClient restClient;
+
+    public KakaoTokenProvider(
+            @Value("${spring.kakao.client_id}") String clientId,
+            @Value("${spring.kakao.client_secret}") String clientSecret,
+            RestClient.Builder builder
+    ) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.restClient = builder.baseUrl(GET_TOKEN_URL).build();
+    }
 
     private static final String GET_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
 
@@ -28,9 +39,8 @@ public class KakaoTokenProvider {
             body.add("client_secret", clientSecret);
             body.add("code", code);
 
-            ResponseEntity<KakaoTokenResponse> entity = RestClient.create()
+            ResponseEntity<KakaoTokenResponse> entity = restClient
                     .post()
-                    .uri(GET_TOKEN_URL)
                     .body(body)
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .retrieve()

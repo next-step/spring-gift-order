@@ -1,0 +1,80 @@
+package gift.controller.userController;
+
+
+import gift.Jwt.TokenUtils;
+import gift.dto.userDto.UserLoginDto;
+import gift.dto.userDto.UserRegisterDto;
+import gift.dto.userDto.UserUpdateDto;
+import gift.entity.User;
+import gift.service.userService.UserService;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@Controller
+@RequestMapping("/api/users")
+public class UserController {
+
+    private final UserService userService;
+    private final TokenUtils tokenUtils;
+
+    public UserController(UserService userService, TokenUtils tokenUtils) {
+        this.userService = userService;
+        this.tokenUtils = tokenUtils;
+    }
+
+    /***
+     * Todo. 관리자 User 관리 페이지를 위한 model 생성
+     *
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody @Valid UserRegisterDto dto) {
+        String token = userService.registerUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("token", token));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody @Valid UserLoginDto dto) {
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", userService.loginUser(dto)));
+    }
+
+
+    @GetMapping()
+    public ResponseEntity<?> getUserList(@RequestHeader("Authorization") String authHeader, @RequestParam(required = false) String email, Pageable pageable, Model model) {
+        String token = tokenUtils.extractToken(authHeader);
+        tokenUtils.validateToken(token);
+        Long loginId = tokenUtils.extractUserId(token);
+
+        Page<User> users = userService.getUserList(email, loginId, pageable);
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String authHeader, @RequestParam Long id, Model model) {
+        String token = tokenUtils.extractToken(authHeader);
+        tokenUtils.validateToken(token);
+        Long loginId = tokenUtils.extractUserId(token);
+        userService.deleteUserById(id, loginId);
+
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}/edit")
+    public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody @Valid UserUpdateDto dto) {
+        String token = tokenUtils.extractToken(authHeader);
+        tokenUtils.validateToken(token);
+        boolean isAdmin = tokenUtils.requireAdmin(token);
+        Long loginId = tokenUtils.extractUserId(token);
+
+        User updatedUser = userService.updateUser(id, dto, loginId);
+
+        return ResponseEntity.ok(updatedUser);
+    }
+}

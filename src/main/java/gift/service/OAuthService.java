@@ -1,8 +1,12 @@
 package gift.service;
 
+import gift.auth.JwtTokenProvider;
 import gift.config.KakaoOauthProperties;
+import gift.dto.TokenResponse;
 import gift.dto.kakao.KakaoTokenResponse;
 import gift.dto.kakao.KakaoUserInfoResponse;
+import gift.entity.Member;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,12 +21,28 @@ import org.springframework.web.client.RestTemplate;
 public class OAuthService {
 
     private final KakaoOauthProperties kakaoOauthProperties;
+    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public OAuthService(KakaoOauthProperties kakaoOauthProperties) {
+    public OAuthService(KakaoOauthProperties kakaoOauthProperties, MemberService memberService,
+            JwtTokenProvider jwtTokenProvider) {
         this.kakaoOauthProperties = kakaoOauthProperties;
+        this.memberService = memberService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public KakaoTokenResponse getKakaoToken(String code) {
+    @Transactional
+    public TokenResponse loginWithKakao(String code) {
+        KakaoTokenResponse kakaoToken = getKakaoToken(code);
+        KakaoUserInfoResponse userInfo = getKakaoUserInfo(kakaoToken.accessToken());
+
+        Member member = memberService.findOrCreateMember(userInfo.getEmail());
+
+        String accessToken = jwtTokenProvider.createToken(member.getId().toString());
+        return new TokenResponse(accessToken);
+    }
+
+    private KakaoTokenResponse getKakaoToken(String code) {
         String url = "https://kauth.kakao.com/oauth/token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -49,7 +69,7 @@ public class OAuthService {
         return responseEntity.getBody();
     }
 
-    public KakaoUserInfoResponse getKakaoUserInfo(String accessToken) {
+    private KakaoUserInfoResponse getKakaoUserInfo(String accessToken) {
         String url = "https://kapi.kakao.com/v2/user/me";
 
         HttpHeaders headers = new HttpHeaders();

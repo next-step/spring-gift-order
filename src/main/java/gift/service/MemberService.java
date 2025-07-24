@@ -79,4 +79,14 @@ public class MemberService {
         Member member = new Member(request.email(), encodedPassword);
         memberRepository.save(member);
     }
+
+    @Transactional
+    public Member findOrCreateMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    String temporaryPassword = java.util.UUID.randomUUID().toString();
+                    Member newMember = new Member(email, passwordEncoder.encode(temporaryPassword));
+                    return memberRepository.save(newMember);
+                });
+    }
 }

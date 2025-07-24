@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.config.KakaoProperties;
 import gift.dto.response.KaKaoTokenResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -12,18 +13,17 @@ import org.springframework.web.client.RestClient;
 @Service
 public class KakaoAuthService {
     private RestClient restClient = RestClient.create();
+    private final KakaoProperties kakaoProperties;
 
-    @Value("${kakao.client-id}")
-    private String clientId;
-
-    @Value("${kakao.redirect-uri}")
-    private String redirectUri;
+    public KakaoAuthService(KakaoProperties kakaoProperties) {
+        this.kakaoProperties = kakaoProperties;
+    }
 
     public KaKaoTokenResponseDto requestToken(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", clientId);
-        body.add("redirect_uri", redirectUri);
+        body.add("client_id", kakaoProperties.getClientId());
+        body.add("redirect_uri", kakaoProperties.getRedirectUri());
         body.add("code", code);
 
         return restClient.post()

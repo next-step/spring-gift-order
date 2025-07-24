@@ -1,6 +1,7 @@
 package gift.service;
 
 import gift.dto.KakaoTokenDto;
+import gift.dto.KakaoUserInfoDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,16 @@ public class KakaoAuthService {
         var request = new RequestEntity<>(body, headers, HttpMethod.POST, URI.create(url));
         ResponseEntity<KakaoTokenDto> response = restTemplate.exchange(request, KakaoTokenDto.class);
 
+        return response.getBody();
+    }
+
+    public KakaoUserInfoDto getKakaoUserInfo(KakaoTokenDto token) {
+        var url = "https://kauth.kakao.com/oauth/userinfo";
+        var headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.access_token());
+
+        var request = new RequestEntity<>(headers, HttpMethod.GET, URI.create(url));
+        ResponseEntity<KakaoUserInfoDto> response = restTemplate.exchange(request, KakaoUserInfoDto.class);
         return response.getBody();
     }
 }

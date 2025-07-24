@@ -1,20 +1,27 @@
 package gift.controller;
 
 import gift.config.KakaoOauthProperties;
+import gift.dto.kakao.KakaoTokenResponse;
+import gift.service.OAuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/oauth")
 public class OAuthController {
 
     private final KakaoOauthProperties kakaoOauthProperties;
+    private final OAuthService oAuthService;
 
-    public OAuthController(KakaoOauthProperties kakaoOauthProperties) {
+    public OAuthController(KakaoOauthProperties kakaoOauthProperties, OAuthService oAuthService) {
         this.kakaoOauthProperties = kakaoOauthProperties;
+        this.oAuthService = oAuthService;
     }
 
     @GetMapping("/kakao")
@@ -26,5 +33,13 @@ public class OAuthController {
                 + "&scope=talk_message";
 
         response.sendRedirect(url);
+    }
+
+    @GetMapping("/kakao/callback")
+    @ResponseBody
+    public ResponseEntity<KakaoTokenResponse> kakaoCallback(@RequestParam("code") String code) {
+        KakaoTokenResponse tokenResponse = oAuthService.getKakaoToken(code);
+
+        return ResponseEntity.ok(tokenResponse);
     }
 }

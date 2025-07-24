@@ -1,6 +1,10 @@
 # spring-gift-order
 
-**TBD**
+#### 카카오 로그인 기능 구현
+- 카카오 로그인 페이지 구현
+- RestClient를 이용한 카카오 토큰 발급 기능 구현
+- 카카오 토큰 예외 핸들러 및 예외 코드 추가
+- 로그인 성공에 따른 302 redirect 테스트 코드 추가
 
 # spring-gift-enhancement
 

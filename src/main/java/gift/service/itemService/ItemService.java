@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface ItemService {
-    Item saveItem(ItemCreateDto itemCreateDto);
+    Item saveItem(Item item);
 
     Page<Item> getItems(String name, Integer price, Pageable pageable);
 
@@ -17,15 +17,17 @@ public interface ItemService {
 
     Item updateItem(Long id, Item item);
 
-    Optional<Item> findById(Long id);
+    Item findById(Long id);
 
     void deleteById(Long id);
 
+    void deleteByItem(Item item);
+
     Page<Item> getAllItems(Pageable pageable);
 
-    Optional<Item> findItemByName(@NotNull String name);
+    Item findItemByName(@NotNull String name);
 
-    Optional<Item> findItemById(Long itemId);
+    Item findItemById(Long itemId);
 
     Page<Item> findItemsByName(String name, Pageable pageable);
 

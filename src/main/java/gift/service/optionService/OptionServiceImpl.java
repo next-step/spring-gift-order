@@ -26,8 +26,7 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public ItemOption save(OptionRequestDto optionRequestDto, Long itemId) {
-        Item item = itemService.findById(itemId)
-                .orElseThrow(ItemNotFoundException::new);
+        Item item = itemService.findById(itemId);
 
         for (ItemOption option : item.getOptions()) {
             if (option.getOptionName().equals(optionRequestDto.optionName())) {
@@ -42,8 +41,7 @@ public class OptionServiceImpl implements OptionService {
 
     @Override
     public List<ItemOption> getOptions(Long itemId) {
-        Item item = itemService.findById(itemId)
-                .orElseThrow(ItemNotFoundException::new);
+        Item item = itemService.findById(itemId);
 
         return item.getOptions();
     }
@@ -51,8 +49,7 @@ public class OptionServiceImpl implements OptionService {
     @Transactional
     @Override
     public ItemOption quantityControl(OptionRequestDto optionRequestDto, Long itemId) {
-        Item item = itemService.findById(itemId)
-                .orElseThrow(ItemNotFoundException::new);
+        Item item = itemService.findById(itemId);
 
         ItemOption itemOption = optionRepository.findByItem(item);
         ItemOption changedOption = itemOption.quantityControl(optionRequestDto.quantity());

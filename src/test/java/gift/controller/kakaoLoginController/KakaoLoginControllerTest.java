@@ -42,7 +42,7 @@ class KakaoLoginControllerTest {
         Mockito.when(kakaoService.getAccessTokenFromKakao(anyString()))
                 .thenReturn("mock-access-token");
 
-        mockMvc.perform(get("/callback").param("code", "test-code")).andExpect(status().isOk());
+        mockMvc.perform(get("").param("code", "test-code")).andExpect(status().isCreated());
     }
 }
 

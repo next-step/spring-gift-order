@@ -117,8 +117,6 @@ public class ItemOptionServiceTest {
         String optionName = "초콜릿#다크 맛있음!";
         OptionRequestDto requestDto = new OptionRequestDto(optionName, 5);
 
-        when(itemService.findById(1L)).thenReturn(item);
-
         assertThatThrownBy(() -> optionService.save(requestDto.dtoToEntity(), 1L))
                 .isInstanceOf(OptionExceptionException.class);
     }

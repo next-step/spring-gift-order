@@ -22,12 +22,21 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    @Column(unique = true)
+    private Long kakaoId;
+
     protected Member() {
     }
 
     public Member(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public Member(String email, String password, Long kakaoId) {
+        this.email = email;
+        this.password = password;
+        this.kakaoId = kakaoId;
     }
 
     public Long getId() {

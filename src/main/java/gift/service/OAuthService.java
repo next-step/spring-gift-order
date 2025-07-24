@@ -36,7 +36,7 @@ public class OAuthService {
         KakaoTokenResponse kakaoToken = getKakaoToken(code);
         KakaoUserInfoResponse userInfo = getKakaoUserInfo(kakaoToken.accessToken());
 
-        Member member = memberService.findOrCreateMember(userInfo.getEmail());
+        Member member = memberService.findOrCreateMemberByKakaoId(userInfo.id());
 
         String accessToken = jwtTokenProvider.createToken(member.getId().toString());
         return new TokenResponse(accessToken);

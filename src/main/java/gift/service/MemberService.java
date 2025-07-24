@@ -81,11 +81,13 @@ public class MemberService {
     }
 
     @Transactional
-    public Member findOrCreateMember(String email) {
-        return memberRepository.findByEmail(email)
+    public Member findOrCreateMemberByKakaoId(Long kakaoId) {
+        return memberRepository.findByKakaoId(kakaoId)
                 .orElseGet(() -> {
+                    String email = kakaoId + "@kakao.user";
                     String temporaryPassword = java.util.UUID.randomUUID().toString();
-                    Member newMember = new Member(email, passwordEncoder.encode(temporaryPassword));
+                    Member newMember = new Member(email, passwordEncoder.encode(temporaryPassword),
+                            kakaoId);
                     return memberRepository.save(newMember);
                 });
     }

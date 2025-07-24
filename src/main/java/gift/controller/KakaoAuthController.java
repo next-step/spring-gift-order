@@ -1,5 +1,6 @@
 package gift.controller;
 
+import gift.dto.KakaoTokenDto;
 import gift.service.KakaoAuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,13 @@ public class KakaoAuthController {
         this.kakaoAuthService = kakaoAuthService;
     }
 
+    /**
+     *
+     * @param code 사용자 인가 코드
+     * @return KakaoTokenDto 카카오가 발급한 토큰
+     */
     @GetMapping
-    public ResponseEntity<String> getKakaoToken(@RequestParam("code") String code) {
+    public ResponseEntity<KakaoTokenDto> getKakaoToken(@RequestParam("code") String code) {
         return new ResponseEntity<>(kakaoAuthService.getKakaoToken(code), HttpStatus.OK);
     }
 }

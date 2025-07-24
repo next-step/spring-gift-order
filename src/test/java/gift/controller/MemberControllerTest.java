@@ -4,6 +4,7 @@ import gift.dto.request.MemberRequsetDto;
 import gift.dto.response.ProductResponseDto;
 import gift.dto.response.TokenResponseDto;
 import gift.fixture.MemberFixture;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional
 public class MemberControllerTest {
 
     @LocalServerPort

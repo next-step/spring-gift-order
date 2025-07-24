@@ -4,6 +4,7 @@ import gift.builder.ProductBuilder;
 import gift.dto.request.ProductRequestDto;
 import gift.dto.response.ProductResponseDto;
 import gift.fixture.ProductFixture;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Transactional
 public class ProductControllerTest {
     @LocalServerPort
     private int port;

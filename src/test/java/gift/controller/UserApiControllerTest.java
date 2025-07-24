@@ -1,7 +1,7 @@
 package gift.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gift.dto.jwt.TokenResponse;
+import gift.dto.jwt.JwtTokenResponse;
 import gift.dto.user.ChangePasswordRequest;
 import gift.dto.user.CreateUserRequest;
 import gift.dto.user.LoginRequest;
@@ -80,7 +80,7 @@ class UserApiControllerTest {
                 .andReturn();
 
         //get accessToken
-        String accessToken = mapper.readValue(result.getResponse().getContentAsString(), TokenResponse.class).accessToken();
+        String accessToken = mapper.readValue(result.getResponse().getContentAsString(), JwtTokenResponse.class).accessToken();
 
         String changePw = mapper.writeValueAsString(
                 new ChangePasswordRequest("tkddnr@thanks.com", "1234", "12345")

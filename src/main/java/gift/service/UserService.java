@@ -5,7 +5,7 @@ import gift.common.exception.UserAlreadyExistsException;
 import gift.common.exception.UserNotFoundException;
 import gift.domain.Role;
 import gift.domain.User;
-import gift.dto.jwt.TokenResponse;
+import gift.dto.jwt.JwtTokenResponse;
 import gift.dto.user.ChangePasswordRequest;
 import gift.dto.user.ChangeRoleRequest;
 import gift.dto.user.CreateUserRequest;
@@ -37,12 +37,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public TokenResponse login(LoginRequest request) {
+    public JwtTokenResponse login(LoginRequest request) {
         User user = getUserByEmail(request.email());
         if (!request.password().equals(user.getPassword())) {
             throw new InvalidUserException();
         }
-        return TokenResponse.from(jwtTokenProvider.createToken(user));
+        return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
     }
 
     public User getUserByEmail(String email) {

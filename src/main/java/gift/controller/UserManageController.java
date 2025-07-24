@@ -1,7 +1,7 @@
 package gift.controller;
 
 import gift.common.interceptor.AdminOnly;
-import gift.dto.jwt.TokenResponse;
+import gift.dto.jwt.JwtTokenResponse;
 import gift.dto.user.LoginRequest;
 import gift.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -34,9 +34,9 @@ public class UserManageController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute("request") LoginRequest request, HttpServletResponse response) {
-        TokenResponse tokenResponse = userService.login(request);
+        JwtTokenResponse jwtTokenResponse = userService.login(request);
 
-        Cookie cookie = new Cookie("accessToken", URLEncoder.encode("Bearer " + tokenResponse.accessToken(), StandardCharsets.UTF_8));
+        Cookie cookie = new Cookie("accessToken", URLEncoder.encode("Bearer " + jwtTokenResponse.accessToken(), StandardCharsets.UTF_8));
         cookie.setHttpOnly(true);
         cookie.setMaxAge(1800);
         response.addCookie(cookie);

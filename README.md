@@ -9,6 +9,24 @@
   + [X] build.gradle 수정 & gitignore 작성
   + [X] 기존코드 이관
 
+### 1 단계 : 카카오 로그인 구현
+
++ [ ] users 스키마 & 엔티티 변경
+  + [ ] users 테이블에 `client_id` 와 `provider` 컬럼 추가
+  + [ ] users 엔티티 수정
+  + [ ] users 엔티티에 대응하는 변경사항 수정
+
++ [ ] 카카오 oauth 서비스 구현
+  + [ ] 카카오 oauth 로그인을 위한 `restClient` 구현
+  + [ ] 해당 클래스 테스트 코드 작성
+  + [ ] 카카오 oauth 로그인 기능 구현
+
++ [ ] auth controller 구현 및 엔드포인트 수정
+  + 기존 로그인 `/api/auth/login` 엔드포인트를 `/api/auth/login/local`로 변경
+  + 새로운 카카오 로그인 엔드포인트 `/api/auth/login/kakao` 구현
+
++ [ ] 기존 interceptor 수정
+  + [ ] oauth 도 수정 가능하도록 수정 
 ---
 ## 이전 단계 요약
 

@@ -13,7 +13,7 @@ public class LoginController {
 
     public LoginController(
         @Value("${kakao.app.key}") String clientId,
-        @Value("${kakao.redirect_url}") String redirectUri
+        @Value("${kakao.redirect_uri}") String redirectUri
     ) {
         this.clientId = clientId;
         this.redirectUri = redirectUri;

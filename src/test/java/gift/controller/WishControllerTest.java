@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gift.dto.OptionRequestDTO;
 import gift.dto.ProductRequestDTO;
 import gift.dto.ProductResponseDTO;
 import gift.dto.RegisterRequestDTO;
@@ -41,6 +42,7 @@ class WishControllerTest {
   @BeforeEach
   void setupTest() {
     jdbcTemplate.update("DELETE FROM wish");
+    jdbcTemplate.update("DELETE FROM option");
     jdbcTemplate.update("DELETE FROM product");
     jdbcTemplate.update("DELETE FROM member");
 
@@ -82,6 +84,7 @@ class WishControllerTest {
     request.setName(name);
     request.setPrice(price);
     request.setImageUrl("https://test.jpg");
+    request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
     ResponseEntity<ProductResponseDTO> response = productClient.post()
         .uri("")

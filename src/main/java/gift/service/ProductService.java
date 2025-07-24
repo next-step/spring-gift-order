@@ -30,12 +30,7 @@ public class ProductService {
         product.updateFromProductRequestDTO(dto);
         Product savedProduct = productRepository.save(product);
 
-        for (OptionRequestDTO optionDto : dto.getOptions()) {
-            Option option = new Option(optionDto.name(), optionDto.quantity(), savedProduct);
-            savedProduct.addOption(option);
-        }
-
-        return new ProductResponseDTO(productRepository.save(savedProduct));
+        return new ProductResponseDTO(savedProduct);
     }
 
     @Transactional

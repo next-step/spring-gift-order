@@ -8,6 +8,7 @@ import gift.entity.User;
 import gift.entity.type.UserRole;
 import gift.external.KakaoTokenClient;
 import gift.service.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,27 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    private HttpStatus mapErrorCodeToStatus(String errorCode) {
+        if (errorCode.length() >= 6 && errorCode.startsWith("KOE")) {
+            int codeNum = Integer.parseInt(errorCode.substring(3, 6));
+            return switch (codeNum) {
+                case 1, 2, 4, 5, 6, 7, 8, 201, 202, 203, 204, 205, 206, 207 -> HttpStatus.BAD_REQUEST;
+                case 101, 102 -> HttpStatus.UNAUTHORIZED;
+                default -> HttpStatus.INTERNAL_SERVER_ERROR;
+            };
+        } else if (errorCode.contains("access_denied")) {
+            return HttpStatus.UNAUTHORIZED;
+        } else if (
+                errorCode.contains("login_required") ||
+                        errorCode.contains("consent_required") ||
+                        errorCode.contains("interaction_required")
+        ) {
+            return HttpStatus.FORBIDDEN;
+        } else {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+    }
+
     @Override
     public String login(String email, String password) {
         User user;
@@ -52,7 +74,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String kakaoLogin(String code, String error, String errorDescription) {
         if (code == null || code.isBlank()) {
-            throw new KakaoAuthorizationException(error, errorDescription);
+            HttpStatus status = mapErrorCodeToStatus(error);
+            throw new KakaoAuthorizationException(status, error, errorDescription);
         }
         var tokenResponse = kakaoOauth2Client.getTokenResponse(code);
         return tokenResponse.accessToken();

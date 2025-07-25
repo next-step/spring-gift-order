@@ -3,7 +3,7 @@ spring:
     name: spring-gift
 
   profiles:
-    active: prod
+    active: dev
 
   h2:
     console:
@@ -45,3 +45,7 @@ server:
 jwt:
   secret: your-secret-here-must-be-32-bytes
   expiration: 3600000
+
+kakao:
+  client-id: {카카오-rest-api-key}
+  redirect-uri: http://localhost:8080/oauth/callback/kakao

@@ -1,6 +1,7 @@
 package gift.controller;
 
 import gift.dto.KakaoTokenResponseDTO;
+import gift.service.KakaoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -13,22 +14,18 @@ import org.springframework.web.client.RestClient;
 @Controller
 public class KakaoController {
 
-    private final String CLIENT_ID;
-    private final String REDIRECT_URI;
-    private final RestClient restClient;
 
-    public KakaoController(@Value("${kakao.client-id}") String clientId,
-                          @Value("${kakao.redirect-uri}") String redirectUri) {
-        this.CLIENT_ID = clientId;
-        this.REDIRECT_URI = redirectUri;
-        this.restClient = RestClient.create();
+    private final KakaoService kakaoService;
+
+    public KakaoController(KakaoService kakaoService) {
+        this.kakaoService = kakaoService;
     }
 
     @GetMapping("/")
     @ResponseBody
     public String handleKakaoCallback(@RequestParam("code") String authorizationCode) {
         try {
-            KakaoTokenResponseDTO tokenResponse = requestKakaoToken(authorizationCode);
+            KakaoTokenResponseDTO tokenResponse = kakaoService.requestKakaoToken(authorizationCode);
 
             StringBuilder result = new StringBuilder();
             result.append("토큰 요청 성공\n");
@@ -52,22 +49,4 @@ public class KakaoController {
         }
     }
 
-    private KakaoTokenResponseDTO requestKakaoToken(String authorizationCode) {
-        final String url = "https://kauth.kakao.com/oauth/token";
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-
-        var body = new LinkedMultiValueMap<String, String>();
-        body.add("grant_type", "authorization_code");
-        body.add("client_id", CLIENT_ID);
-        body.add("redirect_uri", REDIRECT_URI);
-        body.add("code", authorizationCode);
-
-        return restClient.post()
-                .uri(url)
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .body(body)
-                .retrieve()
-                .body(KakaoTokenResponseDTO.class);
-    }
 }

@@ -72,8 +72,8 @@ public class KakaoClient {
         String bearerToken = "Bearer " + token;
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", bearerToken);
-        headers.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        headers.add(HttpHeaders.AUTHORIZATION, bearerToken);
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
 
         ResponseEntity<KakaoProfileDto> response = restClient.post()
             .uri(baseUrl)

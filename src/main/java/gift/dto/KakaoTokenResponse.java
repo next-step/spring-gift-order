@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class KakaoTokenResponse {
 
+    @JsonProperty("id_token")
+    private String idToken;
+
     @JsonProperty("access_token")
     private String accessToken;
 
@@ -21,6 +24,10 @@ public class KakaoTokenResponse {
 
     @JsonProperty("refresh_token_expires_in")
     private Integer refreshTokenExpiresIn;
+
+    public String getIdToken() {
+        return idToken;
+    }
 
     public String getAccessToken() {
         return accessToken;

@@ -1,8 +1,10 @@
 package gift.service;
 
 import gift.dto.KakaoTokenResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestClient;
@@ -17,7 +19,11 @@ public class KakaoApiService {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
-    private final RestClient restClient = RestClient.create();
+    private final RestClient restClient;
+
+    public KakaoApiService(RestClient restClient) {
+        this.restClient = restClient;
+    }
 
     public String getAuthUrl() {
         return UriComponentsBuilder
@@ -26,7 +32,7 @@ public class KakaoApiService {
                 .queryParam("client_id", clientId)
                 .queryParam("redirect_uri", redirectUri)
                 .queryParam("response_type", "code")
-                .queryParam("scope", "talk_message")
+                .queryParam("scope", "talk_message,openid,account_email")
                 .build()
                 .toString();
     }

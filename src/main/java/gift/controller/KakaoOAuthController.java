@@ -1,6 +1,7 @@
 package gift.controller;
 
 import gift.dto.KakaoTokenResponse;
+import gift.dto.KakaoUserResponse;
 import gift.service.KakaoOAuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class KakaoOAuthController {
     public void redirectToKakao(HttpServletResponse response,
                                 @Value("${kakao.client-id}") String clientId,
                                 @Value("${kakao.redirect-uri}") String redirectUri) throws IOException {
-        String url = "https://kauth.kakao.com/oauth/authorize"
+        String url = " http://localhost:8080/oauth/callback/kakao"
                 + "?client_id=" + clientId
                 + "&redirect_uri=" + redirectUri
                 + "&response_type=code";
@@ -32,8 +33,9 @@ public class KakaoOAuthController {
     }
 
     @GetMapping("/callback/kakao")
-    public KakaoTokenResponse callback(@RequestParam("code") String code) {
-        return kakaoOAuthService.getToken(code);
+    public KakaoUserResponse callback(@RequestParam("code") String code) {
+        KakaoTokenResponse tokenResponse = kakaoOAuthService.getToken(code);
+        return kakaoOAuthService.getUserInfo(tokenResponse.accessToken());
     }
 }
 

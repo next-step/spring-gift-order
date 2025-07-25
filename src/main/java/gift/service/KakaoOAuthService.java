@@ -1,6 +1,7 @@
 package gift.service;
 
 import gift.dto.KakaoTokenResponse;
+import gift.dto.KakaoUserResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,6 @@ public class KakaoOAuthService {
     @Value("${kakao.client-id}")
     private String clientId;
 
-    @Value("${kakao.client-secret}")
-    private String clientSecret;
-
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
@@ -28,7 +26,6 @@ public class KakaoOAuthService {
         params.add("client_id", clientId);
         params.add("redirect_uri", redirectUri);
         params.add("code", code);
-        params.add("client_secret", clientSecret);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -40,6 +37,23 @@ public class KakaoOAuthService {
                 HttpMethod.POST,
                 request,
                 KakaoTokenResponse.class
+        );
+
+        return response.getBody();
+    }
+
+    public KakaoUserResponse getUserInfo(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<KakaoUserResponse> response = restTemplate.exchange(
+                "https://kapi.kakao.com/v2/user/me",
+                HttpMethod.GET,
+                request,
+                KakaoUserResponse.class
         );
 
         return response.getBody();

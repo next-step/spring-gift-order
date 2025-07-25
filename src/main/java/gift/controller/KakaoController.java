@@ -1,6 +1,6 @@
 package gift.controller;
 
-import gift.dto.KakaoTokenResponse;
+import gift.dto.KakaoTokenResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -28,21 +28,21 @@ public class KakaoController {
     @ResponseBody
     public String handleKakaoCallback(@RequestParam("code") String authorizationCode) {
         try {
-            KakaoTokenResponse tokenResponse = requestKakaoToken(authorizationCode);
+            KakaoTokenResponseDTO tokenResponse = requestKakaoToken(authorizationCode);
 
             StringBuilder result = new StringBuilder();
             result.append("토큰 요청 성공\n");
-            result.append("Token Type: ").append(tokenResponse.getTokenType()).append("\n");
-            result.append("Access Token: ").append(tokenResponse.getAccessToken()).append("\n");
-            result.append("Expires In: ").append(tokenResponse.getExpiresIn()).append(" seconds\n");
-            result.append("Refresh Token: ").append(tokenResponse.getRefreshToken()).append("\n");
-            result.append("Refresh Token Expires In: ").append(tokenResponse.getRefreshTokenExpiresIn()).append(" seconds\n");
+            result.append("Token Type: ").append(tokenResponse.tokenType()).append("\n");
+            result.append("Access Token: ").append(tokenResponse.accessToken()).append("\n");
+            result.append("Expires In: ").append(tokenResponse.expiresIn()).append(" seconds\n");
+            result.append("Refresh Token: ").append(tokenResponse.refreshToken()).append("\n");
+            result.append("Refresh Token Expires In: ").append(tokenResponse.refreshTokenExpiresIn()).append(" seconds\n");
 
-            if (tokenResponse.getIdToken() != null) {
-                result.append("ID Token: ").append(tokenResponse.getIdToken()).append("\n");
+            if (tokenResponse.idToken() != null) {
+                result.append("ID Token: ").append(tokenResponse.idToken()).append("\n");
             }
-            if (tokenResponse.getScope() != null) {
-                result.append("Scope: ").append(tokenResponse.getScope()).append("\n");
+            if (tokenResponse.scope() != null) {
+                result.append("Scope: ").append(tokenResponse.scope()).append("\n");
             }
 
             return result.toString();
@@ -52,7 +52,7 @@ public class KakaoController {
         }
     }
 
-    private KakaoTokenResponse requestKakaoToken(String authorizationCode) {
+    private KakaoTokenResponseDTO requestKakaoToken(String authorizationCode) {
         final String url = "https://kauth.kakao.com/oauth/token";
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
@@ -68,6 +68,6 @@ public class KakaoController {
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .body(body)
                 .retrieve()
-                .body(KakaoTokenResponse.class);
+                .body(KakaoTokenResponseDTO.class);
     }
 }

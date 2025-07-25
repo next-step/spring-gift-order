@@ -23,10 +23,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql("/cleanup.sql")
 class ProductControllerTest {
 
     @LocalServerPort
@@ -61,14 +63,6 @@ class ProductControllerTest {
             .baseUrl(url)
             .defaultHeader("Authorization", "Bearer " + jwtToken)
             .build();
-    }
-
-    @BeforeEach
-    void clearDatabase() {
-        jdbcTemplate.update("DELETE FROM wish");
-        jdbcTemplate.update("DELETE FROM `option`");
-        jdbcTemplate.update("DELETE FROM product");
-        jdbcTemplate.update("DELETE FROM member");
     }
 
     @Test
@@ -558,7 +552,7 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("상품 목록 조회 - 페이징 파라미터 유효��� 검증: 극단적 페이지 크기 (1억)")
+    @DisplayName("상품 목록 조회 - 페이징 파라미터 유효성 검증: 극단적 페이지 크기 (1억)")
     void getProducts_InvalidExtremePageSize() {
         HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
             client.get()

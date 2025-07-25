@@ -25,10 +25,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql("/cleanup.sql")
 class WishControllerTest {
 
   @LocalServerPort
@@ -41,11 +43,6 @@ class WishControllerTest {
 
   @BeforeEach
   void setupTest() {
-    jdbcTemplate.update("DELETE FROM wish");
-    jdbcTemplate.update("DELETE FROM option");
-    jdbcTemplate.update("DELETE FROM product");
-    jdbcTemplate.update("DELETE FROM member");
-
     String memberUrl = "http://localhost:" + port + "/api/members";
     RestClient memberClient = RestClient.builder().baseUrl(memberUrl).build();
 

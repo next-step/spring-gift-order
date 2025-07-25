@@ -32,9 +32,9 @@ public enum KakaoErrorCode {
     SCOPE_NOT_GRANTED(HttpStatus.FORBIDDEN, "-402", "해당 리소스에 대한 사용자 동의가 필요합니다."),
     UNDER_14_RESTRICTED(HttpStatus.UNAUTHORIZED, "-406", "14세 미만 사용자는 호출할 수 없는 API입니다.");
 
-    private HttpStatus status;
-    private String errorCode;
-    private String message;
+    private final HttpStatus status;
+    private final String errorCode;
+    private final String message;
 
     KakaoErrorCode(HttpStatus status, String errorCode, String message) {
         this.status = status;

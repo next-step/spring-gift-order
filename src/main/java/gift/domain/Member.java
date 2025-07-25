@@ -15,7 +15,7 @@ public class Member {
     @Column(nullable = true)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "provider", nullable = false)
     @Enumerated(EnumType.STRING)
     private AuthProvider authProvider;
 
@@ -27,6 +27,14 @@ public class Member {
     private Role role;
 
     public Member(){
+    }
+
+    public Member(String email, String password, AuthProvider authProvider, String providerId, Role role) {
+        this.email = email;
+        this.password = password;
+        this.authProvider = authProvider;
+        this.providerId = providerId;
+        this.role = role;
     }
 
     public Member(Long id) {
@@ -58,12 +66,13 @@ public class Member {
         return member;
     }
 
-    public static Member createKakaoMember(String providerId) {
-        Member member = new Member();
-        member.authProvider = AuthProvider.KAKAO;
-        member.providerId = providerId;
-        member.role = Role.USER;
-        return member;
+    public static Member createKakaoMember(String kakaoId) {
+        return new Member(
+                null,
+                null,
+                AuthProvider.KAKAO,
+                kakaoId,
+                Role.USER
+        );
     }
-
 }

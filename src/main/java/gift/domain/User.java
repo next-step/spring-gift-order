@@ -10,15 +10,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Role role;
+
+    private Long kakaoId;
 
     public User(String email, String password, Role role) {
         this.email = email;
@@ -30,6 +31,11 @@ public class User {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.role = role;
+    }
+
+    public User(Long kakaoId, Role role) {
+        this.kakaoId = kakaoId;
         this.role = role;
     }
 
@@ -55,6 +61,10 @@ public class User {
 
     public Role getRole() {
         return role;
+    }
+
+    public Long getKakaoId() {
+        return kakaoId;
     }
 
     protected User() {

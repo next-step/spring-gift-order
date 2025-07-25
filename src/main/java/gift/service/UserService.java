@@ -45,6 +45,17 @@ public class UserService {
         return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
     }
 
+    public JwtTokenResponse kakaoLogin(Long kakaoId) {
+        Optional<User> getUser = userRepository.findByKakaoId(kakaoId);
+        if (getUser.isPresent()) {
+            return JwtTokenResponse.from(jwtTokenProvider.createToken(getUser.get()));
+        }
+        else {
+            User user = userRepository.save(new User(kakaoId, Role.USER));
+            return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
+        }
+    }
+
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }

@@ -2,6 +2,7 @@ package gift.controller;
 
 import gift.dto.KakaoTokenResponse;
 import gift.dto.KakaoUserResponse;
+import gift.service.AuthService;
 import gift.service.KakaoOAuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import java.io.IOException;
 public class KakaoOAuthController {
 
     private final KakaoOAuthService kakaoOAuthService;
+    private final AuthService authService;
 
     @Autowired
-    public KakaoOAuthController(KakaoOAuthService kakaoOAuthService) {
+    public KakaoOAuthController(KakaoOAuthService kakaoOAuthService, AuthService authService) {
         this.kakaoOAuthService = kakaoOAuthService;
+        this.authService = authService;
     }
 
     @GetMapping("/login/kakao")
@@ -33,9 +36,11 @@ public class KakaoOAuthController {
     }
 
     @GetMapping("/callback/kakao")
-    public KakaoUserResponse callback(@RequestParam("code") String code) {
+    public String callback(@RequestParam("code") String code) {
         KakaoTokenResponse tokenResponse = kakaoOAuthService.getToken(code);
-        return kakaoOAuthService.getUserInfo(tokenResponse.accessToken());
+        KakaoUserResponse kakaoUser = kakaoOAuthService.getUserInfo(tokenResponse.accessToken());
+
+        return authService.loginOrRegisterWithKakao(kakaoUser);
     }
 }
 

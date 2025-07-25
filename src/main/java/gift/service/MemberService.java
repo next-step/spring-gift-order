@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.domain.AuthProvider;
 import gift.domain.Member;
 import gift.dto.MemberRegisterRequest;
 import gift.repository.MemberRepository;
@@ -18,11 +19,14 @@ public class MemberService {
     }
 
     public Member register(MemberRegisterRequest request) {
-        if (memberRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (memberRepository.findByEmailAndAuthProvider(request.getEmail(), AuthProvider.LOCAL).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
         String encodedPw = passwordEncoder.encode(request.getPassword());
-        return memberRepository.save(new Member(request.getEmail(), encodedPw));
+
+        Member member = Member.createLocalMember(request.getEmail(), encodedPw);
+
+        return memberRepository.save(member);
     }
 }

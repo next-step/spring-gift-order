@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.domain.AuthProvider;
 import gift.domain.Member;
+import gift.dto.KakaoUserResponse;
 import gift.dto.MemberLoginRequest;
 import gift.dto.MemberRegisterRequest;
 import gift.repository.MemberRepository;
@@ -38,6 +39,18 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 틀렸습니다.");
         }
+        return jwtUtil.createToken(member);
+    }
+
+    public String loginOrRegisterWithKakao(KakaoUserResponse kakaoUser) {
+        String kakaoId = String.valueOf(kakaoUser.id());
+
+        Member member = memberRepository.findByProviderIdAndAuthProvider(kakaoId, AuthProvider.KAKAO)
+                .orElseGet(() -> {
+                    Member newMember = Member.createKakaoMember(kakaoId);
+                    return memberRepository.save(newMember);
+                });
+
         return jwtUtil.createToken(member);
     }
 }

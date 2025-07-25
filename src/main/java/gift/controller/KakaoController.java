@@ -13,15 +13,14 @@ import org.springframework.web.client.RestClient;
 @Controller
 public class KakaoController {
 
-    @Value("${kakao.client-id}")
-    private String CLIENT_ID;
-
-    @Value("${kakao.redirect-uri}")
-    private String REDIRECT_URI;
-
+    private final String CLIENT_ID;
+    private final String REDIRECT_URI;
     private final RestClient restClient;
 
-    public KakaoController() {
+    public KakaoController(@Value("${kakao.client-id}") String clientId,
+                          @Value("${kakao.redirect-uri}") String redirectUri) {
+        this.CLIENT_ID = clientId;
+        this.REDIRECT_URI = redirectUri;
         this.restClient = RestClient.create();
     }
 

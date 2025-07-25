@@ -31,8 +31,6 @@ public class KakaoClient {
     }
 
     public KakaoTokenDto fetchToken(String code) {
-        String baseUrl = "https://kauth.kakao.com/oauth/token";
-
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE,
             "application/x-www-form-urlencoded;charset=utf-8");
@@ -45,7 +43,7 @@ public class KakaoClient {
 
         try {
             ResponseEntity<KakaoTokenDto> response = restClient.post()
-                .uri(baseUrl)
+                .uri(kakaoProperties.tokenUri())
                 .headers(h -> h.addAll(headers))
                 .body(body)
                 .retrieve()
@@ -68,7 +66,6 @@ public class KakaoClient {
     }
 
     public KakaoProfileDto fetchProfile(String token) {
-        String baseUrl = "https://kapi.kakao.com/v2/user/me";
         String bearerToken = "Bearer " + token;
 
         HttpHeaders headers = new HttpHeaders();
@@ -76,7 +73,7 @@ public class KakaoClient {
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
 
         ResponseEntity<KakaoProfileDto> response = restClient.post()
-            .uri(baseUrl)
+            .uri(kakaoProperties.profileUri())
             .headers(h -> h.addAll(headers))
             .retrieve()
             .toEntity(KakaoProfileDto.class);

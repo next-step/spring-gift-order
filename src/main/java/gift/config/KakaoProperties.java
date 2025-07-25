@@ -9,5 +9,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "kakao")
 public record KakaoProperties (
     @NotNull String restApiKey,
-    @URL String redirectUri
+    @URL String redirectUri,
+    @URL String tokenUri,
+    @URL String profileUri
 ) {}

@@ -1,5 +1,6 @@
 package gift.config;
 
+import gift.repository.MemberRepository;
 import gift.resolver.LoginMemberArgumentResolver;
 import gift.util.JwtUtil;
 import org.springframework.context.annotation.Configuration;
@@ -12,13 +13,15 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final JwtUtil jwtUtil;
+    private final MemberRepository memberRepository;
 
-    public WebConfig(JwtUtil jwtUtil) {
+    public WebConfig(JwtUtil jwtUtil, MemberRepository memberRepository) {
         this.jwtUtil = jwtUtil;
+        this.memberRepository = memberRepository;
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new LoginMemberArgumentResolver(jwtUtil));
+        resolvers.add(new LoginMemberArgumentResolver(jwtUtil, memberRepository));
     }
 }

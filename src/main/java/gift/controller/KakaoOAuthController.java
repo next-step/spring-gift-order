@@ -1,7 +1,10 @@
 package gift.controller;
 
+import gift.domain.Member;
 import gift.dto.KakaoTokenResponse;
 import gift.dto.KakaoUserResponse;
+import gift.dto.LoginMemberResponse;
+import gift.resolver.LoginMember;
 import gift.service.AuthService;
 import gift.service.KakaoOAuthService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,6 +44,11 @@ public class KakaoOAuthController {
         KakaoUserResponse kakaoUser = kakaoOAuthService.getUserInfo(tokenResponse.accessToken());
 
         return authService.loginOrRegisterWithKakao(kakaoUser);
+    }
+
+    @GetMapping("/me")
+    public LoginMemberResponse getCurrentUser(@LoginMember Member member) {
+        return new LoginMemberResponse(member.getId());
     }
 }
 

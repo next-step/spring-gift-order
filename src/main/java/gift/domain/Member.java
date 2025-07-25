@@ -53,6 +53,14 @@ public class Member {
         return password;
     }
 
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
     public Role getRole() {
         return role;
     }

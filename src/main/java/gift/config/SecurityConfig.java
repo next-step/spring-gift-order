@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/oauth/callback/kakao/**",
                                 "/login/kakao",
+                                "/me",
                                 "/api/members/register",
                                 "/api/members/login",
                                 "/h2-console/**",

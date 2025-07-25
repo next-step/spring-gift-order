@@ -1,6 +1,5 @@
 package gift.service.auth;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import gift.config.KakaoProperties;
 import gift.dto.kakao.KakaoTokenResponse;
 import org.springframework.http.MediaType;

@@ -1,6 +1,7 @@
 package gift.controller;
 
 import gift.domain.Member;
+import gift.dto.JwtResponse;
 import gift.dto.KakaoTokenResponse;
 import gift.dto.KakaoUserResponse;
 import gift.dto.LoginMemberResponse;
@@ -39,11 +40,12 @@ public class KakaoOAuthController {
     }
 
     @GetMapping("/oauth/callback/kakao")
-    public String callback(@RequestParam("code") String code) {
+    public JwtResponse callback(@RequestParam("code") String code) {
         KakaoTokenResponse tokenResponse = kakaoOAuthService.getToken(code);
         KakaoUserResponse kakaoUser = kakaoOAuthService.getUserInfo(tokenResponse.accessToken());
 
-        return authService.loginOrRegisterWithKakao(kakaoUser);
+        String jwt = authService.loginOrRegisterWithKakao(kakaoUser);
+        return new JwtResponse(jwt);
     }
 
     @GetMapping("/me")

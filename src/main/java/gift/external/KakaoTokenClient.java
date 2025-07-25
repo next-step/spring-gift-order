@@ -1,13 +1,15 @@
 package gift.external;
 
 import gift.common.exception.KakaoAuthorizationException;
-import gift.dto.auth.KakaoErrorResponse;
-import gift.dto.auth.KakaoTokenRequest;
-import gift.dto.auth.KakaoTokenResponse;
+import gift.dto.external.KakaoErrorResponse;
+import gift.dto.external.KakaoTokenRequest;
+import gift.dto.external.KakaoTokenResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 @Component
@@ -28,6 +30,15 @@ public class KakaoTokenClient {
                 .build();
     }
 
+    private MultiValueMap<String, String> convertToMultiValueMap(KakaoTokenRequest request) {
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("grant_type", request.grantType());
+        map.add("client_id", request.clientId());
+        map.add("redirect_uri", request.redirectUri());
+        map.add("code", request.code());
+        return map;
+    }
+
 
     public KakaoTokenResponse getTokenResponse(String code) {
         var requestBody = new KakaoTokenRequest(
@@ -40,7 +51,7 @@ public class KakaoTokenClient {
                 .post()
                 .uri("/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(requestBody.toMultiValueMap())
+                .body(convertToMultiValueMap(requestBody))
                 .exchange((req, res)-> {
                     if (res.getStatusCode().is4xxClientError() || res.getStatusCode().is5xxServerError()) {
                         int statusCode = res.getStatusCode().value();

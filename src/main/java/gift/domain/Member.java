@@ -15,7 +15,7 @@ public class Member {
     @Column(nullable = true)
     private String password;
 
-    @Column(name = "provider", nullable = false)
+    @Column(name = "provider")
     @Enumerated(EnumType.STRING)
     private AuthProvider authProvider;
 
@@ -29,6 +29,14 @@ public class Member {
     public Member(){
     }
 
+    public Member(Long id, String email, String password, AuthProvider authProvider, Role role) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.authProvider = authProvider;
+        this.role = role;
+    }
+
     public Member(String email, String password, AuthProvider authProvider, String providerId, Role role) {
         this.email = email;
         this.password = password;
@@ -39,6 +47,11 @@ public class Member {
 
     public Member(Long id) {
         this.id = id;
+    }
+
+    public Member(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public Long getId() {

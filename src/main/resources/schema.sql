@@ -2,7 +2,7 @@ CREATE TABLE members (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(320) UNIQUE,
     password VARCHAR(255),
-    provider VARCHAR(50) NOT NULL,
+    provider VARCHAR(50),
     provider_id VARCHAR(100),
     role VARCHAR(50) DEFAULT 'USER'
 );

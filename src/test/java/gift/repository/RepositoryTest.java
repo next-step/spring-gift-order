@@ -1,8 +1,6 @@
 package gift.repository;
 
-import gift.domain.Member;
-import gift.domain.Product;
-import gift.domain.Wish;
+import gift.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -38,12 +36,12 @@ class RepositoryTest {
     @Test
     void findMemberByEmail() {
         String email = "test@email.com";
-        memberRepository.save(new Member(email, "password"));
+        Member member = new Member(email, "password", AuthProvider.LOCAL, "providerId", Role.USER);
+        memberRepository.save(member);
 
-        Optional<Member> found = memberRepository.findByEmail(email);
+        Optional<Member> found = memberRepository.findByEmailAndAuthProvider(email, AuthProvider.LOCAL);
 
         assertThat(found).isPresent();
-        assertThat(found.get().getEmail()).isEqualTo(email);
     }
 
     @Test

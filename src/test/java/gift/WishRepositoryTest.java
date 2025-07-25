@@ -4,12 +4,13 @@ import gift.Entity.Member;
 import gift.Entity.Option;
 import gift.Entity.Product;
 import gift.Entity.Wish;
+import gift.repository.MemberRepository;
+import gift.repository.OptionRepository;
+import gift.repository.ProductRepository;
 import gift.repository.WishRepository;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 
@@ -21,15 +22,37 @@ public class WishRepositoryTest {
 
     @Autowired
     private WishRepository wishRepository;
-
     @Autowired
-    private TestEntityManager entityManager;
+    private MemberRepository memberRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private OptionRepository optionRepository;
+
+    private Member createMember(String name) {
+        return memberRepository.save(new Member(
+                name,
+                "test@kakao.com",
+                "pw",
+                "테스터",
+                "주소",
+                "USER"
+        ));
+    }
+
+    private Product createProduct(String name, int price) {
+        return productRepository.save(new Product(null, name, price, "https://img.com/"));
+    }
+
+    private Option createOption(String name, int quantity, Product product) {
+        return optionRepository.save(new Option(name, quantity, product));
+    }
 
     @Test
     void testDeleteWish() {
-        Member member = entityManager.persist(new Member("deleteUser", "d@k.com", "pw", "유저", "주소", "USER"));
-        Product product = entityManager.persist(new Product(2L, "라떼", 3000, "https://latte.com"));
-        Option option = entityManager.persist(new Option("HOT", 5, product));
+        Member member = createMember("deleteUser");
+        Product product = createProduct("라떼", 3000);
+        Option option = createOption("HOT", 5, product);
         Wish wish = wishRepository.save(new Wish(member, product, option));
 
         wishRepository.delete(wish);
@@ -41,9 +64,9 @@ public class WishRepositoryTest {
     @Test
     void testSaveWishWithOption() {
         // given
-        Member member = entityManager.persist(new Member("testId", "test@kakao.com", "123456789", "테스트", "테스트 주소", "USER"));
-        Product product = entityManager.persist(new Product(5L, "아메리카노", 2000, "https://test.com"));
-        Option option = entityManager.persist(new Option("ICE", 10, product));
+        Member member = createMember("testId");
+        Product product = createProduct("아메리카노", 2000);
+        Option option = createOption("ICE", 10, product);
         Wish wish = new Wish(member, product, option);
 
         // when
@@ -61,9 +84,9 @@ public class WishRepositoryTest {
 
     @Test
     void testDuplicateWishNotAllowed() {
-        Member member = entityManager.persist(new Member("dupe", "dupe@k.com", "pw", "듀플", "주소", "USER"));
-        Product product = entityManager.persist(new Product(3L, "녹차라떼", 3500, "https://green.com"));
-        Option option = entityManager.persist(new Option("Regular", 7, product));
+        Member member = createMember("test");
+        Product product = createProduct("카푸치노", 3000);
+        Option option = createOption("ice", 5, product);
 
         Wish wish1 = new Wish(member, product, option);
         Wish wish2 = new Wish(member, product, option);

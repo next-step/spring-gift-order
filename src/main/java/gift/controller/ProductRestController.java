@@ -1,4 +1,4 @@
-package gift.Controller;
+package gift.controller;
 
 import gift.Entity.Product;
 import gift.service.ProductService;

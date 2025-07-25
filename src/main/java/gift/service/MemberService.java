@@ -5,6 +5,7 @@ import gift.LoginResult;
 import gift.Jwt.JwtUtil;
 import gift.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
@@ -17,8 +18,9 @@ public class MemberService {
         this.jwtUtil = jwtUtil;
     }
 
+    @Transactional
     public void register(Member member) {
-        if (memberRepository.existsById(member.getId())) {
+        if (memberRepository.existsByNickname(member.getNickname())) {
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
@@ -29,9 +31,10 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public LoginResult login(String id, String rawPassword) {
+    @Transactional(readOnly = true)
+    public LoginResult login(String nickname, String rawPassword) {
         // 아이디를 탐색하고 없다면 오류메시지를 던짐
-        Member member = memberRepository.findById(id)
+        Member member = memberRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
         // 비밀번호를 탐색하고 일치하지 않다면 오류메시지를 던짐

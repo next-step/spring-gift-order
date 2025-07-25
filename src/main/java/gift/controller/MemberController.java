@@ -1,4 +1,4 @@
-package gift.Controller;
+package gift.controller;
 
 import gift.Entity.Member;
 import gift.LoginResult;
@@ -27,7 +27,7 @@ public class MemberController {
     // 로그인 하기
     @PostMapping("/login")
     public ResponseEntity<LoginResult> login(@RequestBody MemberRequest request) {
-        LoginResult result = memberService.login(request.getId(), request.getPassword());
+        LoginResult result = memberService.login(request.getNickname(), request.getPassword());
         return ResponseEntity.ok(result);
     }
 }

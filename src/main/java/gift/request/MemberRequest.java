@@ -1,17 +1,14 @@
 package gift.request;
 
 public class MemberRequest {
-    private final String id;
+    private final String nickname;
     private final String password;
-    private final String name;
 
-    public MemberRequest(String id, String password, String name) {
-        this.id = id;
+    public MemberRequest(String nickname, String password) {
+        this.nickname = nickname;
         this.password = password;
-        this.name = name;
     }
 
-    public String getId() { return id; }
+    public String getNickname() { return nickname; }
     public String getPassword() { return password; }
-    public String getName() { return name; }
 }

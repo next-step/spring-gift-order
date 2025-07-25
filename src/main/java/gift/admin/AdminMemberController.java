@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/members")
@@ -23,6 +23,7 @@ public class AdminMemberController {
         this.memberRepository = memberRepository;
     }
 
+    // 목록 조회
     @GetMapping
     public String list(Model model) {
         List<Member> members = memberRepository.findAll();
@@ -30,6 +31,7 @@ public class AdminMemberController {
         return "admin/member_list";
     }
 
+    // 등록 폼
     @GetMapping("/add")
     public String createForm(Model model) {
         model.addAttribute("member", new Member());
@@ -45,7 +47,7 @@ public class AdminMemberController {
         try {
             memberService.register(member);
         } catch (Exception e) {
-            bindingResult.rejectValue("id", "duplicate.id", e.getMessage());
+            bindingResult.rejectValue("nickname", "duplicate.nickname", e.getMessage());
             model.addAttribute("formType", "add");
             return "admin/member_form";
         }
@@ -53,11 +55,11 @@ public class AdminMemberController {
         return "redirect:/admin/members";
     }
 
-    // 회원 수정
+    // 수정 폼
     @GetMapping("/{id}/edit")
-    public String editMember(@PathVariable String id, Model model) {
+    public String editMember(@PathVariable Long id, Model model) {
         Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 아이디의 회원을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원을 찾을 수 없습니다."));
 
         model.addAttribute("member", member);
         model.addAttribute("formType", "edit");
@@ -66,10 +68,13 @@ public class AdminMemberController {
 
     // 회원 수정 처리
     @PostMapping("/{id}")
-    public String updateMember(@PathVariable String id, @ModelAttribute @Valid Member member,
+    public String updateMember(@PathVariable Long id,
+                               @ModelAttribute @Valid Member member,
                                BindingResult bindingResult,
                                Model model) {
         try {
+            // ID를 유지한 채 업데이트
+            member.setId(id);
             memberRepository.save(member);
         } catch (Exception e) {
             bindingResult.reject("updateError", e.getMessage());
@@ -80,12 +85,10 @@ public class AdminMemberController {
         return "redirect:/admin/members";
     }
 
-    // 상품 삭제 처리
-    // 메소드 이름 중 첫 글자는 소문자로 시작하도록 통일
+    // 회원 삭제
     @PostMapping("/{id}/delete")
-    public String deleteMember(@PathVariable String id) {
+    public String deleteMember(@PathVariable Long id) {
         memberRepository.deleteById(id);
         return "redirect:/admin/members";
     }
-
 }

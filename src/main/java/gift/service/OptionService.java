@@ -2,7 +2,6 @@ package gift.service;
 
 import gift.Entity.Option;
 import gift.repository.OptionRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

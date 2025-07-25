@@ -1,11 +1,10 @@
-package gift.Controller;
+package gift.controller;
 
 import gift.Entity.Member;
 import gift.Entity.Option;
 import gift.Entity.Product;
 import gift.annotation.LoginMember;
 import gift.request.WishRequest;
-import gift.response.ProductResponse;
 import gift.response.WishResponse;
 import gift.service.ProductService;
 import gift.service.WishService;

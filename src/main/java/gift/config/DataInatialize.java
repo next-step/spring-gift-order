@@ -9,14 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class DataInatializer {
+public class DataInatialize {
 
     @Bean
     public CommandLineRunner initData(MemberRepository memberRepository, ProductRepository productRepository) {
         return args -> {
             System.out.println("DataInitializer 실행됨");
 
-            if (memberRepository.findById("admin01").isEmpty()) {
+            if (memberRepository.findByNickname("admin01").isEmpty()) {
                 memberRepository.save(new Member(
                         "admin01",
                         "admin@kakao.com",
@@ -27,7 +27,7 @@ public class DataInatializer {
                 ));
             }
 
-            if (memberRepository.findById("helloworld").isEmpty()) {
+            if (memberRepository.findByNickname("helloworld").isEmpty()) {
                 memberRepository.save(new Member(
                         "helloworld",
                         "helloworld@test.com",

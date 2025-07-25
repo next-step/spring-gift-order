@@ -15,7 +15,7 @@ public class JwtUtil {
     // 토큰 생성
     public String createToken(Member member) {
         return Jwts.builder()
-                .setSubject(member.getId())
+                .setSubject(member.getNickname())
                 .claim("name", member.getName())
                 .claim("email", member.getEmail())
                 .claim("address", member.getAddress())

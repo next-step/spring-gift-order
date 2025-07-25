@@ -1,7 +1,6 @@
-package gift.Controller;
+package gift.controller;
 
 import gift.Entity.Member;
-import gift.Jwt.JwtUtil;
 import gift.LoginResult;
 import gift.repository.MemberRepository;
 import gift.request.MemberRequest;
@@ -35,7 +34,7 @@ public class LoginViewController {
                         Model model,
                         HttpServletResponse response) {
         try{
-            LoginResult result = memberService.login(memberRequest.getId(), memberRequest.getPassword());
+            LoginResult result = memberService.login(memberRequest.getNickname(), memberRequest.getPassword());
             // JWT를 쿠키에 저장 (HttpOnly, Secure 적용은 환경에 따라 추가)
             Cookie cookie = new Cookie("Authorization", result.getToken());
             cookie.setHttpOnly(true);
@@ -44,7 +43,7 @@ public class LoginViewController {
             response.addCookie(cookie);
 
             // 로그인한 사용자 정보 조회
-            Member member = memberRepository.findById(memberRequest.getId())
+            Member member = memberRepository.findByNickname(memberRequest.getNickname())
                     .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));;
 
             // 관리자면 /admin, 아니면 /user/products

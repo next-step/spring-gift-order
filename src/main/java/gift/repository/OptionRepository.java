@@ -4,7 +4,6 @@ import gift.Entity.Option;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,6 @@ public interface OptionRepository extends JpaRepository<Option, Long> {
     boolean existsByProductIdAndName(Long productId, String name);
 
     @Modifying
-    @Transactional
     @Query("DELETE FROM Option o WHERE o.product.id = :productId")
     void deleteByProductId(Long productId);
 }

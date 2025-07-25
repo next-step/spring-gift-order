@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.Entity.Product;
 import gift.Entity.Option;
+import gift.exception.ProductNotFoundException;
 import gift.repository.OptionRepository;
 import gift.repository.ProductRepository;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,7 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
 
+    @Transactional
     public void delete(Long id) {
         productRepository.deleteById(id);
     }
@@ -72,28 +74,16 @@ public class ProductService {
     }
 
     @Transactional
-    public void updateProduct(Long id, Product product) {
-        Product existing = productRepository.findById(id).orElseThrow();
+    public void updateProduct(Long id, Product updatedProduct) {
+        Product existing = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다."));
 
-        // 옵션 먼저 삭제
-        optionRepository.deleteByProductId(id);
+        // 기본 상품 정보 업데이트
+        existing.updateBasicInfo(updatedProduct);
 
-        // 기존 상품 정보 업데이트
-        existing.setName(product.getName());
-        existing.setPrice(product.getPrice());
-        existing.setImageUrl(product.getImageUrl());
-        existing.setMDapproved(product.getMDapproved());
+        // 옵션을 교체 (orphanRemoval=true 로 인해 기존 옵션 자동 삭제됨)
+        existing.setOptions(updatedProduct.getOptions());
 
-        // 새 옵션 세팅
-        if (product.getOptions() != null) {
-            for (Option opt : product.getOptions()) {
-                opt.setProduct(existing); // 양방향 연관
-            }
-            existing.getOptions().clear(); // 리스트 클리어
-            existing.getOptions().addAll(product.getOptions());
-        }
-
-        productRepository.save(existing);
     }
 
 

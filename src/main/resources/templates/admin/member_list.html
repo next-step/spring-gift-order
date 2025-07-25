@@ -8,12 +8,12 @@
         <th>ID</th><th>email</th><th>address</th><th>Manage</th>
     </tr>
     <tr th:each="m : ${members}">
-        <td th:text="${m.id}">1</td>
+        <td th:text="${m.nickname}">1</td>
         <td th:text="${m.email}">이메일</td>
         <td th:text="${m.address}">주소</td>
         <td>
-            <a th:href="@{'/admin/members/' + ${m.id} + '/edit'}">수정</a>
-            <form th:action="@{'/admin/members/' + ${m.id} + '/delete'}" method="post" style="display: inline">
+            <a th:href="@{'/admin/members/' + ${m.nickname} + '/edit'}">수정</a>
+            <form th:action="@{'/admin/members/' + ${m.nickname} + '/delete'}" method="post" style="display: inline">
                 <button type="submit">삭제</button>
             </form>
         </td>

@@ -56,7 +56,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
                 Claims claims = jwtUtil.parseToken(token);
 
                 Member member = new Member();
-                member.setId(claims.getSubject());
+                member.setNickname(claims.getSubject());
                 member.setName((String) claims.get("name"));
                 member.setEmail((String) claims.get("email"));
                 member.setAddress((String) claims.get("address"));

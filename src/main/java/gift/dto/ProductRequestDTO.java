@@ -55,4 +55,8 @@ public class ProductRequestDTO {
     public List<OptionRequestDTO> getOptions() {
         return options;
     }
+
+    public void setOptions(List<OptionRequestDTO> options) {
+        this.options = options;
+    }
 }

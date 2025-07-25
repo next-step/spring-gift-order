@@ -19,10 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql("/cleanup.sql")
 class MemberControllerTest {
     @LocalServerPort
     private int port;
@@ -35,11 +37,6 @@ class MemberControllerTest {
     void setup() {
         String url = "http://localhost:" + port + "/api/members";
         client = RestClient.builder().baseUrl(url).build();
-    }
-
-    @BeforeEach
-    void clearDatabase() {
-        jdbcTemplate.update("DELETE FROM member");
     }
 
     @Test

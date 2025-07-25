@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gift.dto.OptionRequestDTO;
 import gift.dto.ProductRequestDTO;
 import gift.dto.ProductResponseDTO;
 import gift.dto.RegisterRequestDTO;
@@ -24,10 +25,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql("/cleanup.sql")
 class WishControllerTest {
 
   @LocalServerPort
@@ -40,10 +43,6 @@ class WishControllerTest {
 
   @BeforeEach
   void setupTest() {
-    jdbcTemplate.update("DELETE FROM wish");
-    jdbcTemplate.update("DELETE FROM product");
-    jdbcTemplate.update("DELETE FROM member");
-
     String memberUrl = "http://localhost:" + port + "/api/members";
     RestClient memberClient = RestClient.builder().baseUrl(memberUrl).build();
 
@@ -82,6 +81,7 @@ class WishControllerTest {
     request.setName(name);
     request.setPrice(price);
     request.setImageUrl("https://test.jpg");
+    request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
     ResponseEntity<ProductResponseDTO> response = productClient.post()
         .uri("")

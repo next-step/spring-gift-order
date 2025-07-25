@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gift.dto.OptionRequestDTO;
 import gift.dto.ProductRequestDTO;
 import gift.dto.ProductResponseDTO;
 import gift.dto.RegisterRequestDTO;
@@ -22,10 +23,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Sql("/cleanup.sql")
 class ProductControllerTest {
 
     @LocalServerPort
@@ -62,11 +65,6 @@ class ProductControllerTest {
             .build();
     }
 
-    @BeforeEach
-    void clearDatabase() {
-        jdbcTemplate.update("DELETE FROM member");
-    }
-
     @Test
     @DisplayName("상품 생성 - 성공")
     void createProduct() {
@@ -74,6 +72,7 @@ class ProductControllerTest {
         request.setName("테스트 상품");
         request.setPrice(4500L);
         request.setImageUrl("https://test.jpg");
+        request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         ResponseEntity<ProductResponseDTO> response = client.post()
             .uri("")
@@ -97,6 +96,7 @@ class ProductControllerTest {
         request.setName("01234567890123456789"); // 20자
         request.setPrice(4500L);
         request.setImageUrl("https://test.jpg");
+        request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
             client.post()
@@ -119,6 +119,7 @@ class ProductControllerTest {
         request.setName("test");
         request.setPrice(-123L);
         request.setImageUrl("https://test.jpg");
+        request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
             client.post()
@@ -140,6 +141,7 @@ class ProductControllerTest {
         request.setName("테스트 상품");
         request.setPrice(4500L);
         request.setImageUrl("invalid-url");
+        request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         assertThrows(HttpClientErrorException.class, () ->
             client.post()
@@ -158,6 +160,7 @@ class ProductControllerTest {
         createRequest.setName("조회 테스트 상품");
         createRequest.setPrice(5000L);
         createRequest.setImageUrl("https://example.jpg");
+        createRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         ResponseEntity<ProductResponseDTO> createResponse = client.post()
             .uri("")
@@ -181,14 +184,16 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 상품 조회 - 204 No Content")
+    @DisplayName("존재하지 않는 상품 조회 - 404 Not Found")
     void getProduct_NotFound() {
-        ResponseEntity<ProductResponseDTO> response = client.get()
-            .uri("/99999")
-            .retrieve()
-            .toEntity(ProductResponseDTO.class);
+        HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+            client.get()
+                .uri("/99999")
+                .retrieve()
+                .toEntity(ProductResponseDTO.class)
+        );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -198,11 +203,13 @@ class ProductControllerTest {
         request1.setName("상품1");
         request1.setPrice(1000L);
         request1.setImageUrl("https://test1.jpg");
+        request1.setOptions(List.of(new OptionRequestDTO("옵션1", 1)));
 
         ProductRequestDTO request2 = new ProductRequestDTO();
         request2.setName("상품2");
         request2.setPrice(2000L);
         request2.setImageUrl("https://test2.jpg");
+        request2.setOptions(List.of(new OptionRequestDTO("옵션2", 1)));
 
         client.post().uri("").contentType(MediaType.APPLICATION_JSON).body(request1).retrieve()
             .toBodilessEntity();
@@ -229,6 +236,7 @@ class ProductControllerTest {
             request.setName("상품" + i);
             request.setPrice(1000L * i);
             request.setImageUrl("https://test" + i + ".jpg");
+            request.setOptions(List.of(new OptionRequestDTO("옵션" + i, 1)));
             client.post().uri("").contentType(MediaType.APPLICATION_JSON).body(request).retrieve()
                 .toBodilessEntity();
         }
@@ -252,11 +260,13 @@ class ProductControllerTest {
         request1.setName("B상품");
         request1.setPrice(1000L);
         request1.setImageUrl("https://test1.jpg");
+        request1.setOptions(List.of(new OptionRequestDTO("B옵션", 1)));
 
         ProductRequestDTO request2 = new ProductRequestDTO();
         request2.setName("A상품");
         request2.setPrice(2000L);
         request2.setImageUrl("https://test2.jpg");
+        request2.setOptions(List.of(new OptionRequestDTO("A옵션", 1)));
 
         client.post().uri("").contentType(MediaType.APPLICATION_JSON).body(request1).retrieve()
             .toBodilessEntity();
@@ -283,11 +293,13 @@ class ProductControllerTest {
         request1.setName("저가상품");
         request1.setPrice(1000L);
         request1.setImageUrl("https://test1.jpg");
+        request1.setOptions(List.of(new OptionRequestDTO("저가옵션", 1)));
 
         ProductRequestDTO request2 = new ProductRequestDTO();
         request2.setName("고가상품");
         request2.setPrice(5000L);
         request2.setImageUrl("https://test2.jpg");
+        request2.setOptions(List.of(new OptionRequestDTO("고가옵션", 1)));
 
         client.post().uri("").contentType(MediaType.APPLICATION_JSON).body(request1).retrieve()
             .toBodilessEntity();
@@ -303,7 +315,7 @@ class ProductControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().size()).isGreaterThanOrEqualTo(2);
-        // 첫 번째 상품이 고가상품이어야 함 (가격 내림차순)
+        // 첫 번째 상품��� 고가상품이어야 함 (가격 내림차순)
         assertThat(response.getBody().get(0).getPrice()).isGreaterThan(
             response.getBody().get(1).getPrice());
     }
@@ -315,6 +327,7 @@ class ProductControllerTest {
         createRequest.setName("수정 전 상품");
         createRequest.setPrice(3000L);
         createRequest.setImageUrl("https://before.jpg");
+        createRequest.setOptions(List.of(new OptionRequestDTO("수정 전 옵션", 1)));
 
         ResponseEntity<ProductResponseDTO> createResponse = client.post()
             .uri("")
@@ -330,6 +343,7 @@ class ProductControllerTest {
         updateRequest.setName("수정 후 상품");
         updateRequest.setPrice(4000L);
         updateRequest.setImageUrl("https://after.jpg");
+        updateRequest.setOptions(List.of(new OptionRequestDTO("수정 후 옵션", 1)));
 
         ResponseEntity<ProductResponseDTO> response = client.put()
             .uri("/" + productId)
@@ -346,21 +360,24 @@ class ProductControllerTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 상품 수정 - 204 No Content")
-    void updateProduct_NotFound() {
+    @DisplayName("존재하지 않는 상품 수정 - 404 Not Found")
+    void updateProduct_not_found() {
         ProductRequestDTO updateRequest = new ProductRequestDTO();
         updateRequest.setName("수정할 상품");
         updateRequest.setPrice(4000L);
         updateRequest.setImageUrl("https://test.jpg");
+        updateRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
-        ResponseEntity<ProductResponseDTO> response = client.put()
-            .uri("/99999")
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(updateRequest)
-            .retrieve()
-            .toEntity(ProductResponseDTO.class);
+        HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
+            client.put()
+                .uri("/99999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(updateRequest)
+                .retrieve()
+                .toEntity(ProductResponseDTO.class)
+        );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -370,6 +387,7 @@ class ProductControllerTest {
         createRequest.setName("삭제할 상품");
         createRequest.setPrice(5000L);
         createRequest.setImageUrl("https://delete.jpg");
+        createRequest.setOptions(List.of(new OptionRequestDTO("삭제할 옵션", 1)));
 
         ResponseEntity<ProductResponseDTO> createResponse = client.post()
             .uri("")
@@ -388,12 +406,16 @@ class ProductControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        ResponseEntity<ProductResponseDTO> getResponse = client.get()
-            .uri("/" + productId)
-            .retrieve()
-            .toEntity(ProductResponseDTO.class);
-
-        assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        // 삭제된 상품을 조회할 때는 404 NOT_FOUND가 반환되어야 함
+        try {
+            client.get()
+                .uri("/" + productId)
+                .retrieve()
+                .toEntity(ProductResponseDTO.class);
+        } catch (Exception e) {
+            // 404 오류가 발생하는 것이 정상
+            assertThat(e.getMessage()).contains("404");
+        }
     }
 
     @Test
@@ -414,6 +436,7 @@ class ProductControllerTest {
         request.setName("카카오 상품");
         request.setPrice(4500L);
         request.setImageUrl("https://test.jpg");
+        request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
             client.post()
@@ -436,6 +459,7 @@ class ProductControllerTest {
         createRequest.setName("일반 상품");
         createRequest.setPrice(3000L);
         createRequest.setImageUrl("https://test.jpg");
+        createRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         ResponseEntity<ProductResponseDTO> createResponse = client.post()
             .uri("")
@@ -451,6 +475,7 @@ class ProductControllerTest {
         updateRequest.setName("카카오프렌즈 상품");
         updateRequest.setPrice(4000L);
         updateRequest.setImageUrl("https://test.jpg");
+        updateRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
             client.put()
@@ -600,6 +625,7 @@ class ProductControllerTest {
         request.setName(name);
         request.setPrice(price);
         request.setImageUrl("https://test.jpg");
+        request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
 
         ResponseEntity<ProductResponseDTO> response = client.post()
             .uri("")

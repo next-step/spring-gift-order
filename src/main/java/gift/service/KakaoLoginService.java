@@ -11,7 +11,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 @Component
-public class KakaoTokenProvider {
+public class KakaoLoginService {
 
     private final String clientId;
 
@@ -19,7 +19,7 @@ public class KakaoTokenProvider {
 
     private final RestClient restClient;
 
-    public KakaoTokenProvider(
+    public KakaoLoginService(
             @Value("${spring.kakao.client_id}") String clientId,
             @Value("${spring.kakao.client_secret}") String clientSecret,
             RestClient.Builder builder

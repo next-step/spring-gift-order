@@ -15,11 +15,11 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RestClientTest(value = KakaoTokenProvider.class)
-public class KakaoTokenProviderTest {
+@RestClientTest(value = KakaoLoginService.class)
+public class KakaoLoginServiceTest {
 
     @Autowired
-    private KakaoTokenProvider kakaoTokenProvider;
+    private KakaoLoginService kakaoLoginService;
 
     @Autowired
     private MockRestServiceServer mockServer;
@@ -42,7 +42,7 @@ public class KakaoTokenProviderTest {
         this.mockServer.expect(requestTo("https://kauth.kakao.com/oauth/token"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        KakaoTokenResponse token = kakaoTokenProvider.getAccessToken(code);
+        KakaoTokenResponse token = kakaoLoginService.getAccessToken(code);
 
         Assertions.assertThat("sample_access_token").isEqualTo(token.accessToken());
         mockServer.verify();
@@ -56,6 +56,6 @@ public class KakaoTokenProviderTest {
         this.mockServer.expect(requestTo("https://kauth.kakao.com/oauth/token"))
                 .andRespond(withBadRequest());
 
-        assertThatThrownBy(() -> kakaoTokenProvider.getAccessToken(code)).isInstanceOf(KakaoLoginException.class);
+        assertThatThrownBy(() -> kakaoLoginService.getAccessToken(code)).isInstanceOf(KakaoLoginException.class);
     }
 }

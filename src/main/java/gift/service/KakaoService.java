@@ -3,6 +3,7 @@ package gift.service;
 import gift.dto.KakaoTokenResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,6 +38,12 @@ public class KakaoService {
             .headers(httpHeaders -> httpHeaders.addAll(headers))
             .body(body)
             .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                throw new IllegalArgumentException("인가 코드가 유효하지 않습니다.");
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                throw new IllegalStateException("카카오 서버에 문제가 발생했습니다.");
+            })
             .body(KakaoTokenResponseDTO.class);
     }
 }

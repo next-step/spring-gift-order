@@ -1,7 +1,7 @@
 package gift.service;
 
+import gift.config.KakaoProperties;
 import gift.dto.KakaoTokenResponseDto;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -11,26 +11,22 @@ import org.springframework.web.client.RestClient;
 
 @Service
 public class KakaoAuthService {
-    private final String clientId;
-    private final String redirectUri;
+    private static final String KAKAO_AUTH_URL = "https://kauth.kakao.com";
     private final RestClient restClient;
+    private final KakaoProperties kakaoProperties;
 
-    public KakaoAuthService(
-            @Value("${kakao.client-id}") String clientId,
-            @Value("${kakao.redirect-uri}") String redirectUri
-    ) {
-        this.clientId = clientId;
-        this.redirectUri = redirectUri;
+    public KakaoAuthService(KakaoProperties kakaoProperties) {
         this.restClient = RestClient.builder()
-                .baseUrl("https://kauth.kakao.com")
+                .baseUrl(KAKAO_AUTH_URL)
                 .build();
+        this.kakaoProperties = kakaoProperties;
     }
 
     public String getAccessToken(String authorizeCode) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", clientId);
-        body.add("redirect_uri", redirectUri);
+        body.add("client_id", kakaoProperties.getClientId());
+        body.add("redirect_uri", kakaoProperties.getRedirectUri());
         body.add("code", authorizeCode);
 
         KakaoTokenResponseDto response = restClient.post()

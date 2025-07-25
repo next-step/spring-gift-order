@@ -1,22 +1,21 @@
 package gift.controller;
 
-import org.springframework.beans.factory.annotation.Value;
+import gift.config.KakaoProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class KakaoLoginPageController {
-    @Value("${kakao.client-id}")
-    private String clientId;
+    private final KakaoProperties kakaoProperties;
 
-    @Value("${kakao.redirect-uri}")
-    private String redirectUri;
+    public KakaoLoginPageController(KakaoProperties kakaoProperties) {
+        this.kakaoProperties = kakaoProperties;
+    }
 
     @GetMapping("/kakao/login")
     public String loginPage(Model model) {
-        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + clientId + "&redirect_uri=" + redirectUri;
-        model.addAttribute("location", location);
+        model.addAttribute("location", kakaoProperties.getLoginUrl());
 
         return "kakao/login";
     }

@@ -14,7 +14,7 @@ public class KakaoAuthController {
         this.kaKaoAuthService = kaKaoAuthService;
     }
 
-    @GetMapping("/kakao")
+    @GetMapping("/")
     public KaKaoTokenResponseDto kakaoToken(@RequestParam("code") String code) {
         return kaKaoAuthService.requestToken(code);
     }

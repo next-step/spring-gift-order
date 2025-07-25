@@ -1,6 +1,5 @@
 package gift.service.itemService;
 
-import gift.dto.itemDto.ItemCreateDto;
 import gift.entity.Item;
 import gift.exception.itemException.ItemNotFoundException;
 import gift.repository.itemRepository.ItemRepository;
@@ -8,8 +7,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class ItemServiceImpl implements ItemService {

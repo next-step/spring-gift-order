@@ -1,6 +1,5 @@
 package gift.entity;
 
-import gift.exception.itemException.ItemDuplicatedException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

@@ -1,10 +1,8 @@
 package gift.service.wishListService;
 
-import gift.dto.wishListDto.CreateWishItemRequestDto;
 import gift.dto.wishListDto.UpdateWishItemDto;
 import gift.entity.ItemOption;
 import gift.entity.WishItem;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

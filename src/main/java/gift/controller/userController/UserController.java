@@ -40,7 +40,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody @Valid UserLoginDto dto) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", userService.loginUser(dto.email(),dto.password())));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", userService.loginUser(dto.email(), dto.password())));
     }
 
 

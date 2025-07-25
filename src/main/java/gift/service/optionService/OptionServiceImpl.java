@@ -1,10 +1,7 @@
 package gift.service.optionService;
 
-import gift.dto.optionDto.OptionRequestDto;
 import gift.entity.Item;
 import gift.entity.ItemOption;
-import gift.exception.itemException.ItemNotFoundException;
-import gift.exception.itemException.OptionDuplicatedException;
 import gift.exception.itemException.OptionNotFoundException;
 import gift.repository.itemRepository.ItemRepository;
 import gift.repository.optionRepository.OptionRepository;

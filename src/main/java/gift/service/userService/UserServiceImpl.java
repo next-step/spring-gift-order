@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
         User findUser = findUserById(id);
 
-        User updatedUser = findUser.updateFrom(email,password);
+        User updatedUser = findUser.updateFrom(email, password);
 
         return userRepository.save(updatedUser);
     }

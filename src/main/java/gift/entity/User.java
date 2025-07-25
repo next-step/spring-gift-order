@@ -1,6 +1,5 @@
 package gift.entity;
 
-import gift.dto.userDto.UserUpdateDto;
 import gift.exception.userException.UserAuthorizationException;
 import gift.exception.userException.UserEmailException;
 import gift.exception.userException.UserPasswordException;

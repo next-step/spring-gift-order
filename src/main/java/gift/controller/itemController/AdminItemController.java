@@ -50,7 +50,7 @@ public class AdminItemController {
     @PostMapping
     public String saveItem(@ModelAttribute @Valid ItemCreateDto itemDTO) {
 
-        itemService.saveItem(itemDTO.dtoToItem());
+        itemService.saveItem(itemDTO.convertItem());
         return "redirect:/admin/products";
     }
 

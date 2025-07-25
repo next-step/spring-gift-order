@@ -15,7 +15,7 @@ public record ItemCreateDto(String name, @Min(0) Integer price, @NotNull @Size(m
         this(saveditem.getName(), saveditem.getPrice(), saveditem.getImageUrl(), false);
     }
 
-    public Item dtoToItem() {
+    public Item convertItem() {
         return new Item(name, price, imageUrl);
     }
 }

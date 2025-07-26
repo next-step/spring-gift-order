@@ -9,6 +9,7 @@ import gift.entity.Order;
 import gift.entity.User;
 import gift.entity.type.Provider;
 import gift.entity.type.UserRole;
+import gift.external.KakaoMessageClient;
 import gift.repository.order.OrderRepository;
 import gift.service.option.OptionService;
 import gift.service.user.UserService;
@@ -25,15 +26,18 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final OptionService optionService;
+    private final KakaoMessageClient kakaoMessageClient;
 
     public OrderServiceImpl(
             OrderRepository orderRepository,
             UserService userService,
-            OptionService optionService
+            OptionService optionService,
+            KakaoMessageClient kakaoMessageClient
     ) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.optionService = optionService;
+        this.kakaoMessageClient = kakaoMessageClient;
     }
 
     private void changeOptionQuantity(Option option, Long userId, Integer amount) {
@@ -76,6 +80,18 @@ public class OrderServiceImpl implements OrderService {
         changeOptionQuantity(option, userId, -quantity);
         Long totalPrice = option.getProduct().getPrice() * quantity;
         return orderRepository.save(new Order(quantity, totalPrice, message, userRef, option));
+    }
+
+    @Override
+    @Transactional
+    public Order createWithNotification(Integer quantity, String message, Long optionId, CustomAuth auth, String accessToken) {
+        Order order = create(quantity, message, optionId, auth.userId());
+        // 현재는 KakaoProvider 에 대한 알림 처리만을 구현 합니다.
+        if (auth.provider() == Provider.KAKAO) {
+            // 카카오톡 메시지 전송
+            kakaoMessageClient.sendMessage(order, accessToken);
+        }
+        return order;
     }
 
     @Override

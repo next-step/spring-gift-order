@@ -10,8 +10,9 @@ import gift.dto.CustomPageRequest;
 import gift.dto.order.OrderCreateRequest;
 import gift.dto.order.OrderResponse;
 import gift.dto.order.OrderUpdateRequest;
+import gift.entity.Order;
+import gift.entity.type.Provider;
 import gift.entity.type.UserRole;
-import gift.service.auth.AuthService;
 import gift.service.order.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -57,9 +58,16 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
             @Valid @RequestBody OrderCreateRequest request,
+            @RequestAttribute(value = "X-Access-Token", required = false) String accessToken,
             CustomAuth auth
     ) {
-        var order = orderService.create(request.quantity(), request.message(), request.optionId(), auth.userId());
+        Order order;
+        if (auth.provider() == Provider.KAKAO && accessToken != null) {
+            order = orderService.createWithNotification(request.quantity(), request.message(),
+                    request.optionId(), auth, accessToken);
+        } else {
+            order = orderService.create(request.quantity(), request.message(), request.optionId(), auth.userId());
+        }
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.CREATED);
     }
 

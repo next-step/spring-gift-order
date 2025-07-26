@@ -1,6 +1,7 @@
 package gift.controller;
 
-import gift.config.KakaoProperties;
+
+import gift.service.KakaoAuthService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,16 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class KakaoLoginController {
 
-    private final KakaoProperties kakaoProperties;
+    private final KakaoAuthService kakaoAuthService;
 
-    public KakaoLoginController(KakaoProperties kakaoProperties) {
-        this.kakaoProperties = kakaoProperties;
+    public KakaoLoginController(KakaoAuthService kakaoAuthService) {
+        this.kakaoAuthService = kakaoAuthService;
     }
 
 
     @GetMapping("/login")
     public String loginPage(Model model) {
-        String location = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" + kakaoProperties.getClientId() + "&redirect_uri=" + kakaoProperties.getRedirectUri();
+        String location = kakaoAuthService.getAuthorizeUrl();
         model.addAttribute("location", location);
 
         return "login";

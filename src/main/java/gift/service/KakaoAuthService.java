@@ -19,6 +19,12 @@ public class KakaoAuthService {
         this.kakaoProperties = kakaoProperties;
     }
 
+    public String getAuthorizeUrl() {
+        return "https://kauth.kakao.com/oauth/authorize"
+                + "?response_type=code"
+                + "&client_id=" + kakaoProperties.getClientId()
+                + "&redirect_uri=" + kakaoProperties.getRedirectUri();
+    }
     public KaKaoTokenResponseDto requestToken(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");

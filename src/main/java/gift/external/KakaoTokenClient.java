@@ -2,6 +2,7 @@ package gift.external;
 
 import gift.common.exception.KakaoAuthorizationException;
 import gift.dto.external.KakaoErrorResponse;
+import gift.dto.external.KakaoPublicKeyResponse;
 import gift.dto.external.KakaoTokenRequest;
 import gift.dto.external.KakaoTokenResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,14 @@ public class KakaoTokenClient {
         return map;
     }
 
+    public KakaoPublicKeyResponse getPublicKeyResponse() {
+        return restClient
+                .get()
+                .uri("/.well-known/jwks.json")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(KakaoPublicKeyResponse.class);
+    }
 
     public KakaoTokenResponse getTokenResponse(String code) {
         var requestBody = new KakaoTokenRequest(

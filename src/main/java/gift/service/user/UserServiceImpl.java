@@ -108,6 +108,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Boolean existsByClientIdAndProvider(String clientId, Provider provider) {
+        if (clientId == null || provider == null) {
+            throw new IllegalArgumentException("clientId와 provider는 null일 수 없습니다.");
+        }
+        return userRepository.existsByClientIdAndProvider(clientId, provider);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public User getReference(Long userId) {
         if (!existsById(userId)) {

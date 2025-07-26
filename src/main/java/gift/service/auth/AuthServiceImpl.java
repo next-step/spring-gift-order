@@ -2,9 +2,12 @@ package gift.service.auth;
 
 import gift.common.exception.KakaoAuthorizationException;
 import gift.common.exception.UnauthorizedException;
+import gift.common.model.error.TokenInfo;
 import gift.common.util.PasswordEncoder;
 import gift.common.util.TokenProvider;
+import gift.dto.external.KakaoTokenResponse;
 import gift.entity.User;
+import gift.entity.type.Provider;
 import gift.entity.type.UserRole;
 import gift.external.KakaoTokenClient;
 import gift.service.user.UserService;
@@ -77,7 +80,17 @@ public class AuthServiceImpl implements AuthService {
             HttpStatus status = mapErrorCodeToStatus(error);
             throw new KakaoAuthorizationException(status, error, errorDescription);
         }
-        var tokenResponse = kakaoOauth2Client.getTokenResponse(code);
+        KakaoTokenResponse tokenResponse = kakaoOauth2Client.getTokenResponse(code);
+
+        TokenInfo tokenInfo = tokenProvider.getTokenInfo(tokenResponse.idToken());
+
+        if (tokenInfo == null || tokenInfo.id() == null) {
+            throw new UnauthorizedException("유효하지 않은 ID 토큰입니다.");
+        }
+        String encodedId = passwordEncoder.encode(tokenInfo.id());
+        if (!userService.existsByClientIdAndProvider(encodedId, Provider.KAKAO)) {
+            throw new UnauthorizedException("해당 카카오 계정으로 가입된 사용자가 없습니다.");
+        }
         return tokenResponse.accessToken();
     }
 

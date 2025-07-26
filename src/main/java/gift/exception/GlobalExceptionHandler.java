@@ -125,6 +125,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception);
     }
 
+    @ResponseBody
+    @ExceptionHandler(KakaoTokenException.class)
+    public ExceptionResponseDto handleKakaoTokenException(
+        KakaoTokenException e
+    ) {
+        ExceptionResponseDto exception = ExceptionResponseDto.singleIssue(e.getMessage(),
+            LocalDateTime.now());
+        return exception;
+    }
+
     @ExceptionHandler(KakaoApproveException.class)
     public String handleKakaoApproveException(
         KakaoApproveException e,
@@ -133,6 +143,9 @@ public class GlobalExceptionHandler {
             e.getMessage());
         return "redirect:/managerHome";
     }
+
+
+
 }
 
 

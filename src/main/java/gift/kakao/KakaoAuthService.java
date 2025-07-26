@@ -1,5 +1,6 @@
 package gift.kakao;
 
+import gift.exception.KakaoTokenException;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -7,7 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestClient;
-
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 @Service
 public class KakaoAuthService {
@@ -18,12 +20,16 @@ public class KakaoAuthService {
     @Value("${custom.kakao-redirect}")
     private String redirectUri;
 
+    private RestClient kakaoRestClient;
+
+    public KakaoAuthService(RestClient kakaoRestClient) {
+        this.kakaoRestClient = kakaoRestClient;
+    }
+
 
     public ResponseEntity<String> getAuthorization(String authKey) {
         ResponseEntity<String> response = null;
-        RestClient restClient = RestClient.create();
 
-        String url = "https://kauth.kakao.com/oauth/token";
         var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoClientId);
@@ -31,15 +37,18 @@ public class KakaoAuthService {
         body.add("code", authKey);
 
         try {
-            response = restClient.post()
-                .uri(URI.create(url))
+            response = kakaoRestClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(body)
                 .retrieve()
                 .toEntity(String.class);
-        } catch (Exception e) {
-            System.out.println(e);
+        }
+        catch (RestClientResponseException e) {
+            throw new KakaoTokenException(e.getResponseBodyAsString(), e.getStatusCode().value());
+        }
+        catch (Exception e) {
+            throw new KakaoTokenException(e.getMessage());
         }
         return response;
     }

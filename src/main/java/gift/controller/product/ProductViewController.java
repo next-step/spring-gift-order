@@ -119,4 +119,11 @@ public class ProductViewController {
         return "home";
     }
 
+    @GetMapping("/wishlist/select")
+    public String showWishListPage(Model model) {
+        Page<ProductResponseDto> productList = productService.findAll(0, 10);
+        model.addAttribute("productList", productList);
+
+        return "wishlist-add";
+    }
 }

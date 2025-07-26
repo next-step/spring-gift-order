@@ -7,11 +7,12 @@ CREATE TABLE IF NOT EXISTS  users (
     id BIGINT AUTO_INCREMENT,
     email VARCHAR(255) UNIQUE,
     password VARCHAR(255),
-    client_id VARCHAR(255) UNIQUE,
+    client_id VARCHAR(255),
     provider VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE (client_id, provider)
 );
 
 CREATE TABLE IF NOT EXISTS  user_roles (

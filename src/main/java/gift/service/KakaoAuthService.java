@@ -12,11 +12,13 @@ import org.springframework.web.client.RestClient;
 
 @Service
 public class KakaoAuthService {
-    private RestClient restClient = RestClient.create();
     private final KakaoProperties kakaoProperties;
+    private final RestClient restClient;
 
-    public KakaoAuthService(KakaoProperties kakaoProperties) {
+
+    public KakaoAuthService(KakaoProperties kakaoProperties, RestClient restClient) {
         this.kakaoProperties = kakaoProperties;
+        this.restClient = restClient;
     }
 
     public String getAuthorizeUrl() {

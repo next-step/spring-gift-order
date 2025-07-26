@@ -2,7 +2,7 @@ package gift.common.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.common.mapper.ProviderMapper;
-import gift.common.model.error.TokenInfo;
+import gift.common.model.TokenInfo;
 import gift.entity.type.Provider;
 import gift.entity.type.UserRole;
 import io.jsonwebtoken.*;
@@ -110,7 +110,7 @@ public class TokenProvider implements InitializingBean {
        }
     }
 
-    public String generateToken(Long userId, Set<UserRole> authorities) {
+    public String generateToken(Long userId, Set<UserRole> authorities, Provider provider) {
         Instant now = Instant.now(Clock.systemDefaultZone());
         Instant expiryDate = now.plusSeconds(expiration);
 
@@ -122,7 +122,7 @@ public class TokenProvider implements InitializingBean {
                 .subject(userId.toString())
                 .claim(AUTHORITIES_KEY, authoritiesString)
                 .issuedAt(Date.from(now))
-                .issuer(providerMapper.toIssuer(Provider.EMAIL)) // 이 서버에서 발급한 토큰임을 나타냅니다.
+                .issuer(providerMapper.toIssuer(provider)) // 이 서버에서 발급한 토큰임을 나타냅니다.
                 .expiration(Date.from(expiryDate))
                 .signWith(this.secretKey)
                 .compact();
@@ -153,7 +153,7 @@ public class TokenProvider implements InitializingBean {
             default -> UserRole.ROLE_USER; // 외부 인증을 통한 사용자
         };
 
-        return new TokenInfo(IdString, role, provider);
+        return new TokenInfo(token, IdString, role, provider);
     }
 
     public Boolean validateToken(String token) {

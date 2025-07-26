@@ -3,7 +3,7 @@ package gift.common.aop.aspect;
 import gift.common.aop.annotation.PreAuthorize;
 import gift.common.exception.AccessDeniedException;
 import gift.common.exception.UnauthorizedException;
-import gift.common.model.error.TokenInfo;
+import gift.common.model.TokenInfo;
 import gift.common.validation.group.AuthenticationGroups;
 import gift.entity.type.UserRole;
 import jakarta.servlet.http.HttpServletRequest;

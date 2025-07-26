@@ -1,7 +1,7 @@
 package gift.common.interceptor;
 
 import gift.common.exception.UnauthorizedException;
-import gift.common.model.error.TokenInfo;
+import gift.common.model.TokenInfo;
 import gift.common.util.TokenProvider;
 import gift.entity.type.Provider;
 import gift.entity.type.UserRole;
@@ -40,7 +40,9 @@ public class JwtAuthenticateInterceptor implements HandlerInterceptor {
         String token = extractToken(authorizationHeader);
 
         if (token == null) {
-            request.setAttribute("tokenInfo", new TokenInfo(null, UserRole.ROLE_GUEST, Provider.UNKNOWN));
+            request.setAttribute("tokenInfo", new TokenInfo(authorizationHeader,
+                    null, UserRole.ROLE_GUEST, Provider.UNKNOWN));
+
             return true; // 토큰이 없으면 인증을 건너뜁니다.
         }
 

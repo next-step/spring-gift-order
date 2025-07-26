@@ -2,9 +2,10 @@ package gift.service.auth;
 
 import gift.common.exception.KakaoAuthorizationException;
 import gift.common.exception.UnauthorizedException;
-import gift.common.model.error.TokenInfo;
+import gift.common.model.TokenInfo;
 import gift.common.util.PasswordEncoder;
 import gift.common.util.TokenProvider;
+import gift.dto.auth.KakaoResponse;
 import gift.dto.external.KakaoTokenResponse;
 import gift.entity.User;
 import gift.entity.type.Provider;
@@ -71,27 +72,28 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
-        return tokenProvider.generateToken(user.getId(), user.getUserRoles());
+        return tokenProvider.generateToken(user.getId(), user.getUserRoles(), user.getProvider());
     }
 
     @Override
-    public String kakaoLogin(String code, String error, String errorDescription) {
+    public KakaoResponse kakaoLogin(String code, String error, String errorDescription) {
         if (code == null || code.isBlank()) {
             HttpStatus status = mapErrorCodeToStatus(error);
             throw new KakaoAuthorizationException(status, error, errorDescription);
         }
         KakaoTokenResponse tokenResponse = kakaoOauth2Client.getTokenResponse(code);
-
         TokenInfo tokenInfo = tokenProvider.getTokenInfo(tokenResponse.idToken());
+        try {
+            String encodedId = passwordEncoder.encode(tokenInfo.id());
+            User user = userService.findByClientIdAndProvider(encodedId, Provider.KAKAO);
+            return new KakaoResponse(
+                    tokenProvider.generateToken(user.getId(), user.getUserRoles(), user.getProvider()),
+                    tokenResponse.accessToken()
+            );
 
-        if (tokenInfo == null || tokenInfo.id() == null) {
-            throw new UnauthorizedException("유효하지 않은 ID 토큰입니다.");
+        } catch (NoSuchElementException e) {
+            throw new UnauthorizedException("카카오 계정으로 가입된 사용자가 아닙니다.");
         }
-        String encodedId = passwordEncoder.encode(tokenInfo.id());
-        if (!userService.existsByClientIdAndProvider(encodedId, Provider.KAKAO)) {
-            throw new UnauthorizedException("해당 카카오 계정으로 가입된 사용자가 없습니다.");
-        }
-        return tokenResponse.accessToken();
     }
 
     @Override
@@ -103,6 +105,6 @@ public class AuthServiceImpl implements AuthService {
             roles
         );
         User savedUser = userService.create(user);
-        return tokenProvider.generateToken(savedUser.getId(), savedUser.getUserRoles());
+        return tokenProvider.generateToken(savedUser.getId(), savedUser.getUserRoles(), savedUser.getProvider());
     }
 }

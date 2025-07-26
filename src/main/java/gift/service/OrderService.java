@@ -33,9 +33,10 @@ public class OrderService {
                 .orElseThrow(() -> new NoSuchElementException("옵션이 존재하지 않습니다."));
         option.subtractQuantity(dto.getQuantity());
 
+        wishRepository.deleteByMemberIdAndProductId(member.getId(), option.getProduct().getId());
+        Order order =new Order(member,option,dto.getQuantity(), dto.getMessage());
 
-
-        return null;
+        return orderRepository.save(order);
     }
 
 }

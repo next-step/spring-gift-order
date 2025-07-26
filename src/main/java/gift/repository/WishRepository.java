@@ -21,4 +21,5 @@ import java.util.Optional;
 public interface WishRepository extends JpaRepository<Wish, Long> {
     List<Wish> findAllByMemberId(Long memberId);
     Page<Wish> findByMemberId(Long memberId, Pageable pageable);
+    void deleteByMemberIdAndProductId(Long memberId, Long productId);
 }

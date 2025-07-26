@@ -1,5 +1,6 @@
 package gift.kakao;
 
+import gift.dto.response.KakaoAuthTokenResponse;
 import gift.exception.KakaoTokenException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -18,15 +19,15 @@ public class KakaoAuthService {
     @Value("${custom.kakao-redirect}")
     private String redirectUri;
 
-    private RestClient kakaoRestClient;
+    private final RestClient kakaoRestClient;
 
     public KakaoAuthService(RestClient kakaoRestClient) {
         this.kakaoRestClient = kakaoRestClient;
     }
 
 
-    public ResponseEntity<String> getAuthToken(String authKey) {
-        ResponseEntity<String> response = null;
+    public ResponseEntity<KakaoAuthTokenResponse> getAuthToken(String authKey) {
+        ResponseEntity<KakaoAuthTokenResponse> response = null;
 
         var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", "authorization_code");
@@ -40,7 +41,7 @@ public class KakaoAuthService {
                 .accept(MediaType.APPLICATION_JSON)
                 .body(body)
                 .retrieve()
-                .toEntity(String.class);
+                .toEntity(KakaoAuthTokenResponse.class);
         }
         catch (RestClientResponseException e) {
             throw new KakaoTokenException(e.getResponseBodyAsString(), e.getStatusCode().value());

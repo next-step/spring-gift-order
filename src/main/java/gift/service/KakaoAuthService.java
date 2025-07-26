@@ -1,6 +1,7 @@
 package gift.service;
 
 import gift.config.KakaoProperties;
+import gift.dto.KakaoTokenRequestDto;
 import gift.dto.KakaoTokenResponseDto;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -23,16 +24,16 @@ public class KakaoAuthService {
     }
 
     public String getAccessToken(String authorizeCode) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "authorization_code");
-        body.add("client_id", kakaoProperties.getClientId());
-        body.add("redirect_uri", kakaoProperties.getRedirectUri());
-        body.add("code", authorizeCode);
+        KakaoTokenRequestDto body = new KakaoTokenRequestDto(
+                kakaoProperties.getClientId(),
+                kakaoProperties.getRedirectUri(),
+                authorizeCode
+        );
 
         KakaoTokenResponseDto response = restClient.post()
                 .uri("/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(body)
+                .body(body.dtoToFormData())
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });

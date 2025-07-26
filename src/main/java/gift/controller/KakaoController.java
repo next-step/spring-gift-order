@@ -12,19 +12,14 @@ public class KakaoController {
 
     private KakaoAuthService kakaoAuthService;
 
-    private String authKey;
-
     public KakaoController(KakaoAuthService kakaoAuthService) {
         this.kakaoAuthService = kakaoAuthService;
     }
 
-    @GetMapping(value = "/kakao-login")
-    public ResponseEntity<String> getAuthorizationToken() {
-        return kakaoAuthService.getAuthorization(authKey);
-    }
-
-    @GetMapping("/")
-    public void handleAuthKey(@RequestParam Map<String, String> params) {
-        authKey = params.get("code");
+    @GetMapping(value = "/kakao-auth")
+    public ResponseEntity<String> getAuthorizationToken(
+        @RequestParam(value = "code") String authorizationCode
+    ) {
+        return kakaoAuthService.getAuthorization(authorizationCode);
     }
 }

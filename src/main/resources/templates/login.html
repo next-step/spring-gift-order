@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WishHub | 로그인</title>
+
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+<div class="container">
+  <img src="/images/WishHub_logo.png" alt="WishHub 로고" class="logo">
+
+  <div class="login-box">
+    <form th:action="@{/login}" method="post" class="login-form">
+      <input type="text"     name="username" placeholder="아이디"    required>
+      <input type="password" name="password" placeholder="비밀번호" required>
+      <button type="submit">로그인</button>
+    </form>
+
+    <div class="divider">또는</div>
+
+    <a th:href="@{https://kauth.kakao.com/oauth/authorize(
+                     client_id=${kakaoRestApiKey},
+                     redirect_uri=${redirectUri},
+                     response_type='code')}"
+       class="kakao-link">
+      <img src="/images/kakao_login_medium_wide.png" alt="카카오 로그인">
+    </a>
+  </div>
+</div>
+</body>
+</html>

@@ -27,6 +27,10 @@ public class ErrorResponse {
         return new ErrorResponse(errorcode.getErrorCode(), errorcode.getMessage(), errors);
     }
 
+    public static ErrorResponse of(KakaoErrorCode kakaoErrorCode) {
+        return new ErrorResponse(kakaoErrorCode.getErrorCode(), kakaoErrorCode.getMessage());
+    }
+
     public String getCode() {
         return this.code;
     }

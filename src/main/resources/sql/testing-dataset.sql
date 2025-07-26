@@ -58,6 +58,19 @@ CREATE TABLE IF NOT EXISTS options (
     UNIQUE (product_id, name)
 );
 
+CREATE TABLE IF NOT EXISTS  orders (
+    id BIGINT AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    option_id BIGINT NOT NULL,
+    quantity INT NOT NULL,
+    total_price BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (option_id) REFERENCES options(id) ON DELETE CASCADE
+);
+
 INSERT INTO products (name, price, image_url, owner_id) VALUES
     ('Product 01', 1000, 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"', 1),
     ('Product 02', 2000, 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"', 1),

@@ -129,6 +129,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetail, e.getStatus());
     }
 
+    @ExceptionHandler(KakaoApiException.class)
+    public ResponseEntity<ProblemDetail> handleKakaoApiException(
+            KakaoApiException e, HttpServletRequest request
+    ) {
+        var builder = new ErrorMessageResponse.Builder(request, e, e.getStatus());
+        ProblemDetail errorDetail = builder.build().toProblemDetail();
+        errorDetail.setType(URI.create("https://developers.kakao.com/docs/latest/ko/rest-api/reference#error-code"));
+        errorDetail.setTitle("카카오 API 오류 : " + e.getErrorCode());
+        return new ResponseEntity<>(errorDetail, e.getStatus());
+    }
+
     @ExceptionHandler(CriticalServerException.class)
     public ResponseEntity<ProblemDetail> handleCriticalServerException(
             CriticalServerException e, HttpServletRequest request

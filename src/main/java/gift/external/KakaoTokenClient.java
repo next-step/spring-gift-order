@@ -1,7 +1,7 @@
 package gift.external;
 
 import gift.common.exception.KakaoAuthorizationException;
-import gift.dto.external.KakaoErrorResponse;
+import gift.dto.external.KakaoAuthErrorResponse;
 import gift.dto.external.KakaoPublicKeyResponse;
 import gift.dto.external.KakaoTokenRequest;
 import gift.dto.external.KakaoTokenResponse;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+import java.util.Objects;
 
 @Component
 public class KakaoTokenClient {
@@ -64,10 +66,10 @@ public class KakaoTokenClient {
                 .exchange((req, res)-> {
                     if (res.getStatusCode().is4xxClientError() || res.getStatusCode().is5xxServerError()) {
                         int statusCode = res.getStatusCode().value();
-                        KakaoErrorResponse errorResponse = res.bodyTo(KakaoErrorResponse.class);
+                        KakaoAuthErrorResponse errorResponse = res.bodyTo(KakaoAuthErrorResponse.class);
                         throw new KakaoAuthorizationException(
                                 HttpStatus.valueOf(statusCode),
-                                errorResponse.errorCode(),
+                                Objects.requireNonNull(errorResponse).errorCode(),
                                 errorResponse.errorDescription()
                         );
                     }

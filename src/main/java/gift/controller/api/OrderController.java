@@ -24,7 +24,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService, AuthService authService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
@@ -36,7 +36,7 @@ public class OrderController {
                 showAllowedFields = true
             )
             @Valid @ModelAttribute CustomPageRequest request,
-            @RequestAttribute("auth") CustomAuth auth
+            CustomAuth auth
     ) {
         var ordersPage = orderService.findAllBy(auth.userId(), ModelMapper.toPageRequest(request));
         return new ResponseEntity<>(
@@ -47,7 +47,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrder(
             @PathVariable Long id,
-            @RequestAttribute("auth") CustomAuth auth
+            CustomAuth auth
     ) {
         var order = orderService.findBy(id, auth.role(), auth.userId());
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.OK);
@@ -57,7 +57,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
             @Valid @RequestBody OrderCreateRequest request,
-            @RequestAttribute("auth") CustomAuth auth
+            CustomAuth auth
     ) {
         var order = orderService.create(request.quantity(), request.message(), request.optionId(), auth.userId());
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.CREATED);
@@ -68,7 +68,7 @@ public class OrderController {
     public ResponseEntity<OrderResponse> updateOrder(
             @PathVariable Long id,
             @Valid @RequestBody OrderUpdateRequest request,
-            @RequestAttribute("auth") CustomAuth auth
+            CustomAuth auth
     ) {
         var order = orderService.update(
                 id,

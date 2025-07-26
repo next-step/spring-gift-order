@@ -7,6 +7,7 @@ import gift.common.model.CustomPage;
 import gift.entity.Option;
 import gift.entity.Order;
 import gift.entity.User;
+import gift.entity.type.Provider;
 import gift.entity.type.UserRole;
 import gift.repository.order.OrderRepository;
 import gift.service.option.OptionService;
@@ -37,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
     private void changeOptionQuantity(Option option, Long userId, Integer amount) {
         // 임시로 관리자 권한을 부여하여 특정 option의 수량을 변경합니다.
-        CustomAuth temporaryAuth = new CustomAuth(userId, UserRole.ROLE_ADMIN);
+        CustomAuth temporaryAuth = new CustomAuth(userId, UserRole.ROLE_ADMIN, Provider.EMAIL);
         optionService.changeQuantityBy(option.getId(), option.getProduct().getId(), temporaryAuth, (long) amount);
     }
 

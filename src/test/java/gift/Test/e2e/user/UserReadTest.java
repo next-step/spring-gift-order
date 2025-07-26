@@ -89,7 +89,7 @@ public class UserReadTest extends  AbstractUserTest{
                 .header(AUTH_HEADER_KEY, this.testUserTokens.get(UserRole.ROLE_ADMIN)) // 관리자 권한으로 요청
                 .queryParam("page", 0)
                 .queryParam("size", 5)
-                .queryParam("sort", "email,desc") // 이메일 내림차순 정렬
+                .queryParam("sort", "id,desc") // 이메일 내림차순 정렬
                 .when()
                 .get(url)
                 .then()
@@ -97,12 +97,11 @@ public class UserReadTest extends  AbstractUserTest{
                 .extract()
                 .as(new TypeRef<>() {});
 
-        String prevEmail = res.getContents().getFirst().email();
+        Long prevId = Long.MAX_VALUE; // 이전 ID를 최대값으로 초기화
         for (UserAdminResponse user : res.getContents()) {
-            String currentEmail = user.email();
-            // 이메일이 내림차순으로 정렬되어 있는지 확인
-            assertThat(currentEmail, lessThanOrEqualTo(prevEmail));
-            prevEmail = currentEmail;
+            assertThat(user.id(), notNullValue());
+            assertThat(user.id(), lessThanOrEqualTo(prevId));
+            prevId = user.id(); // 현재 ID를 이전 ID로 업데이트
         }
     }
 

@@ -1,7 +1,9 @@
 package gift.common.util;
 
+import gift.common.mapper.ProviderMapper;
+import gift.common.model.error.TokenInfo;
+import gift.entity.type.Provider;
 import gift.entity.type.UserRole;
-import gift.common.model.CustomAuth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,6 +20,7 @@ import io.jsonwebtoken.security.*;
 import javax.crypto.SecretKey;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,15 +31,18 @@ public class TokenProvider implements InitializingBean {
     private static final String AUTHORITIES_KEY = "auth";
     private static final Logger log = LoggerFactory.getLogger(TokenProvider.class);
 
+    private final ProviderMapper providerMapper;
     private final String secret;
     private final Long expiration;
     private SecretKey secretKey;
 
 
     public TokenProvider(
+        ProviderMapper providerMapper,
         @Value("${gift.jwt.secret}") @Valid String secret,
         @Value("${gift.jwt.expiration}") @Valid Long expiration
     ) {
+        this.providerMapper = providerMapper;
         this.secret = secret;
         this.expiration = expiration;
     }
@@ -73,35 +79,36 @@ public class TokenProvider implements InitializingBean {
                 .subject(userId.toString())
                 .claim(AUTHORITIES_KEY, authoritiesString)
                 .issuedAt(Date.from(now))
+                .issuer(providerMapper.toIssuer(Provider.EMAIL)) // 이 서버에서 발급한 토큰임을 나타냅니다.
                 .expiration(Date.from(expiryDate))
                 .signWith(this.secretKey)
                 .compact();
     }
 
-    public CustomAuth getAuthentication(String token) {
+    public TokenInfo getTokenInfo(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(this.secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
 
-        // Extract user ID from claims
-        String userIdString = claims.getSubject();
-        if (userIdString == null || userIdString.isEmpty()) {
+        // Extract  ID from claims
+        String IdString = claims.getSubject();
+        if (IdString == null || IdString.isEmpty()) {
             return null;
         }
-        Long userId = Long.valueOf(userIdString);
 
         // Extract authorities from claims
         String authoritiesString = claims.get(AUTHORITIES_KEY, String.class);
-        Set<UserRole> authorities = Stream.of(authoritiesString.split(","))
+        UserRole highestRole =  Stream.of(authoritiesString.split(","))
                 .map(UserRole::fromString)
-                .collect(Collectors.toSet());
-        if (authorities.isEmpty()) {
-            return null;
-        }
+                .max(Comparator.comparing(UserRole::getPriority))
+                .orElse(UserRole.ROLE_GUEST);
 
-        return new CustomAuth(userId, authorities);
+        // Extract provider from claims
+        String issuer = claims.getIssuer();
+        Provider provider = providerMapper.toProvider(issuer);
+        return new TokenInfo(IdString, highestRole, provider);
     }
 
     public Boolean validateToken(String token) {

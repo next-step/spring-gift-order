@@ -94,7 +94,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getReference(Long userId) {
+        if (!existsById(userId)) {
+            throw new NoSuchElementException("해당 ID의 사용자를 찾을 수 없습니다. : " + userId);
+        }
         return userRepository.getReferenceById(userId);
     }
 }

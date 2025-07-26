@@ -80,20 +80,13 @@ public class EntityToDtoMapper {
     }
 
     public static OrderResponse toDto(Order order) {
-        Option option = order.getOption();
-        Product product = option.getProduct();
-
         return new OrderResponse(
-                order.getId(),
-                option.getId(),
-                product.getId(),
-                order.getQuantity(),
-                order.getTotalPrice(),
-                option.getName(),
-                product.getName(),
-                product.getImageUrl(),
-                order.getCreatedAt(),
-                order.getUpdatedAt()
+            order.getId(),
+            order.getOption().getId(),
+            order.getQuantity(),
+            order.getMessage(),
+            order.getTotalPrice(),
+            order.getCreatedAt()
         );
     }
 }

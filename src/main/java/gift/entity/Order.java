@@ -25,6 +25,8 @@ public class Order extends  BaseEntity {
     @Column(name = "total_price", nullable = false)
     private Long totalPrice;
 
+    private String message;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -42,14 +44,15 @@ public class Order extends  BaseEntity {
         this(null, null, null, user, option);
     }
 
-    public Order(Integer quantity, Long totalPrice, User user, Option option) {
-        this(null, quantity, totalPrice, user, option);
+    public Order(Integer quantity, Long totalPrice, String message, User user, Option option) {
+        this(null, quantity, totalPrice, message,user, option);
     }
 
-    public Order(Long Id, Integer quantity, Long totalPrice, User user, Option option) {
+    public Order(Long Id, Integer quantity, Long totalPrice, String message, User user, Option option) {
         super(Id);
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+        this.message = message;
         this.user = user;
         this.option = option;
     }
@@ -68,6 +71,14 @@ public class Order extends  BaseEntity {
 
     public void setTotalPrice(Long totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public User getUser() {

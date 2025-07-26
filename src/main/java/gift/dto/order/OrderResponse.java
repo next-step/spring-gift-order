@@ -5,14 +5,10 @@ import java.time.Instant;
 public record OrderResponse(
         Long id,
         Long optionId,
-        Long productId,
         Integer quantity,
+        String message,
         Long totalPrice,
-        String optionName,
-        String productName,
-        String ImageUrl,
-        Instant createdAt,
-        Instant updatedAt
+        Instant orderDateTime
 ) {
 
 }

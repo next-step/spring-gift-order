@@ -9,8 +9,8 @@ public interface OrderService {
     CustomPage<Order> findAllBy(Long userId, Pageable pageable);
     Order findById(Long id);
     Order findBy(Long id, UserRole role, Long userId);
-    Order create(Integer quantity, Long optionId, Long userId);
-    Order update(Long id, Integer quantity, Long totalPrice);
+    Order create(Integer quantity, String message, Long optionId, Long userId);
+    Order update(Long id, Integer quantity, Long totalPrice, String message, UserRole role, Long userId);
     void deleteById(Long id);
     Order getReference(Long id);
 }

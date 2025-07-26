@@ -1,5 +1,6 @@
 package gift.service.order;
 
+import gift.common.exception.AccessDeniedException;
 import gift.common.mapper.ModelMapper;
 import gift.common.model.CustomAuth;
 import gift.common.model.CustomPage;
@@ -67,28 +68,46 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order create(Integer quantity, Long optionId, Long userId) {
+    public Order create(Integer quantity, String message, Long optionId, Long userId) {
         Option option = optionService.findById(optionId);
         User userRef = userService.getReference(userId);
 
         changeOptionQuantity(option, userId, -quantity);
         Long totalPrice = option.getProduct().getPrice() * quantity;
-        return orderRepository.save(new Order(quantity, totalPrice, userRef, option));
+        return orderRepository.save(new Order(quantity, totalPrice, message, userRef, option));
     }
 
     @Override
     @Transactional
-    public Order update(Long id, Integer quantity, Long totalPrice) {
+    public Order update(Long id, Integer quantity, Long totalPrice, String message, UserRole role, Long userId) {
+
         Order order = findById(id);
         if (quantity != null) {
+            // 권한 체크: 관리자 권한이 아닌 경우 주문 수량 변경을 허용하지 않음
+            if (role.getPriority() < ADMIN_PRIORITY) {
+                throw new AccessDeniedException("주문 수량을 변경하기 위해서는 관리자 권한이 필요합니다.");
+            }
             int quantityDiff = quantity - order.getQuantity();
             changeOptionQuantity(order.getOption(), order.getUser().getId(), -quantityDiff);
             order.setQuantity(quantity);
             order.setTotalPrice(order.getOption().getProduct().getPrice() * quantity);
         }
         if (totalPrice != null) {
+            // 권한 체크: 관리자 권한이 아닌 경우 총 가격 변경을 허용하지 않음
+            if (role.getPriority() < ADMIN_PRIORITY) {
+                throw new AccessDeniedException("총 가격을 변경하기 위해서는 관리자 권한이 필요합니다.");
+            }
             order.setTotalPrice(totalPrice);
         }
+
+        if (message != null) {
+            // 권한 체크: 관리자 권한이 아닌 경우 메시지 변경을 허용하지 않음
+            if (role.getPriority() < ADMIN_PRIORITY && !order.getUser().getId().equals(userId)) {
+                throw new NoSuchElementException("존재하지 않는 주문입니다. orderId: " + id);
+            }
+            order.setMessage(message);
+        }
+
         return orderRepository.save(order);
     }
 

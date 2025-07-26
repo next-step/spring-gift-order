@@ -11,6 +11,7 @@ import gift.dto.order.OrderCreateRequest;
 import gift.dto.order.OrderResponse;
 import gift.dto.order.OrderUpdateRequest;
 import gift.entity.type.UserRole;
+import gift.service.auth.AuthService;
 import gift.service.order.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, AuthService authService) {
         this.orderService = orderService;
     }
 
@@ -58,17 +59,25 @@ public class OrderController {
             @Valid @RequestBody OrderCreateRequest request,
             @RequestAttribute("auth") CustomAuth auth
     ) {
-        var order = orderService.create(request.quantity(),request.optionId(), auth.userId());
+        var order = orderService.create(request.quantity(), request.message(), request.optionId(), auth.userId());
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.CREATED);
     }
 
-    @PreAuthorize(UserRole.ROLE_ADMIN)
+    @PreAuthorize(UserRole.ROLE_USER)
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponse> updateOrder(
             @PathVariable Long id,
-            @Valid @RequestBody OrderUpdateRequest request
+            @Valid @RequestBody OrderUpdateRequest request,
+            @RequestAttribute("auth") CustomAuth auth
     ) {
-        var order = orderService.update(id, request.quantity(), request.totalPrice());
+        var order = orderService.update(
+                id,
+                request.quantity(),
+                request.totalPrice(),
+                request.message(),
+                auth.role(),
+                auth.userId()
+        );
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.OK);
     }
 

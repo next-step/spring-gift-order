@@ -1,14 +1,12 @@
 package gift.kakao;
 
 import gift.exception.KakaoTokenException;
-import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 @Service
@@ -27,7 +25,7 @@ public class KakaoAuthService {
     }
 
 
-    public ResponseEntity<String> getAuthorization(String authKey) {
+    public ResponseEntity<String> getAuthToken(String authKey) {
         ResponseEntity<String> response = null;
 
         var body = new LinkedMultiValueMap<String, String>();

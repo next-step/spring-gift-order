@@ -20,5 +20,4 @@ public class RestClientConfig {
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .build();
     }
-
 }

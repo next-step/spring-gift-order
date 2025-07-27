@@ -1,5 +1,5 @@
 package gift.domain;
 
-public enum AuthProvider {
+public enum LoginType {
     LOCAL, KAKAO
 }

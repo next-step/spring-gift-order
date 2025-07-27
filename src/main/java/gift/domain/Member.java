@@ -15,12 +15,12 @@ public class Member {
     @Column(nullable = true)
     private String password;
 
-    @Column(name = "provider")
+    @Column(name = "login_type")
     @Enumerated(EnumType.STRING)
-    private AuthProvider authProvider;
+    private LoginType loginType;
 
-    @Column(nullable = true)
-    private String providerId;
+    @Column(name = "social_id", nullable = true)
+    private String socialId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -29,19 +29,19 @@ public class Member {
     public Member(){
     }
 
-    public Member(Long id, String email, String password, AuthProvider authProvider, Role role) {
+    public Member(Long id, String email, String password, LoginType loginType, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;
-        this.authProvider = authProvider;
+        this.loginType = loginType;
         this.role = role;
     }
 
-    public Member(String email, String password, AuthProvider authProvider, String providerId, Role role) {
+    public Member(String email, String password, LoginType loginType, String socialId, Role role) {
         this.email = email;
         this.password = password;
-        this.authProvider = authProvider;
-        this.providerId = providerId;
+        this.loginType = loginType;
+        this.socialId = socialId;
         this.role = role;
     }
 
@@ -66,12 +66,12 @@ public class Member {
         return password;
     }
 
-    public AuthProvider getAuthProvider() {
-        return authProvider;
+    public LoginType getLoginType() {
+        return loginType;
     }
 
-    public String getProviderId() {
-        return providerId;
+    public String getSocialId() {
+        return socialId;
     }
 
     public Role getRole() {
@@ -82,7 +82,7 @@ public class Member {
         Member member = new Member();
         member.email = email;
         member.password = password;
-        member.authProvider = AuthProvider.LOCAL;
+        member.loginType = LoginType.LOCAL;
         member.role = Role.USER;
         return member;
     }
@@ -91,7 +91,7 @@ public class Member {
         return new Member(
                 null,
                 null,
-                AuthProvider.KAKAO,
+                LoginType.KAKAO,
                 kakaoId,
                 Role.USER
         );

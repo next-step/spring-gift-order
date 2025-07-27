@@ -1,6 +1,6 @@
 package gift.service;
 
-import gift.domain.AuthProvider;
+import gift.domain.LoginType;
 import gift.domain.Member;
 import gift.dto.KakaoUserResponse;
 import gift.dto.MemberLoginRequest;
@@ -34,7 +34,7 @@ public class AuthService {
     }
 
     public String login(MemberLoginRequest request) {
-        Member member = memberRepository.findByEmailAndAuthProvider(request.getEmail(), AuthProvider.LOCAL)
+        Member member = memberRepository.findByEmailAndLoginType(request.getEmail(), LoginType.LOCAL)
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 틀렸습니다."));
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 틀렸습니다.");
@@ -45,7 +45,7 @@ public class AuthService {
     public String loginOrRegisterWithKakao(KakaoUserResponse kakaoUser) {
         String kakaoId = String.valueOf(kakaoUser.id());
 
-        Member member = memberRepository.findByProviderIdAndAuthProvider(kakaoId, AuthProvider.KAKAO)
+        Member member = memberRepository.findBySocialIdAndLoginType(kakaoId, LoginType.KAKAO)
                 .orElseGet(() -> {
                     Member newMember = Member.createKakaoMember(kakaoId);
                     return memberRepository.save(newMember);

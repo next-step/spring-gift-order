@@ -36,10 +36,10 @@ class RepositoryTest {
     @Test
     void findMemberByEmail() {
         String email = "test@email.com";
-        Member member = new Member(email, "password", AuthProvider.LOCAL, "providerId", Role.USER);
+        Member member = new Member(email, "password", LoginType.LOCAL, "providerId", Role.USER);
         memberRepository.save(member);
 
-        Optional<Member> found = memberRepository.findByEmailAndAuthProvider(email, AuthProvider.LOCAL);
+        Optional<Member> found = memberRepository.findByEmailAndLoginType(email, LoginType.LOCAL);
 
         assertThat(found).isPresent();
     }

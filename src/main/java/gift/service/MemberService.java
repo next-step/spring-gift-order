@@ -1,6 +1,6 @@
 package gift.service;
 
-import gift.domain.AuthProvider;
+import gift.domain.LoginType;
 import gift.domain.Member;
 import gift.dto.MemberRegisterRequest;
 import gift.repository.MemberRepository;
@@ -19,7 +19,7 @@ public class MemberService {
     }
 
     public Member register(MemberRegisterRequest request) {
-        if (memberRepository.findByEmailAndAuthProvider(request.getEmail(), AuthProvider.LOCAL).isPresent()) {
+        if (memberRepository.findByEmailAndLoginType(request.getEmail(), LoginType.LOCAL).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 

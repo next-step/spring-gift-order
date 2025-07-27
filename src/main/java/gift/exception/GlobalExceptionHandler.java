@@ -56,4 +56,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+    @ExceptionHandler(KakaoAuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleKakaoAuthenticationException(KakaoAuthenticationException ex) {
+        ErrorResponseDto errorResponse = new ErrorResponseDto("KAKAO_AUTH_ERROR", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(KakaoConnectionException.class)
+    public ResponseEntity<ErrorResponseDto> handleKakaoConnectionException(KakaoConnectionException ex) {
+        ErrorResponseDto errorResponse = new ErrorResponseDto("KAKAO_CONNECTION_ERROR", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.GATEWAY_TIMEOUT).body(errorResponse);
+    }
+
 }

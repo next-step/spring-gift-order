@@ -24,6 +24,6 @@ jwt:
     secret-key: Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=
 
 kakao:
-    client-id: asd
-    redirect-uri: http://localhost:8080/oauth2/callback/kakao
-    oauth-token-url-host: https://kauth.kakao.com
+    client-id: ${KAKAO_CLIENT_ID}
+    redirect-uri: ${KAKAO_REDIRECT_URI}
+    oauth-token-url-host: ${KAKAO_OAUTH_TOKEN_URL_HOST}

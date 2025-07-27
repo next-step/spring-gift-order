@@ -1,10 +1,9 @@
 package gift.service;
 
-import gift.common.exception.InvalidUserException;
 import gift.common.exception.UserAlreadyExistsException;
 import gift.common.exception.UserNotFoundException;
 import gift.domain.Role;
-import gift.domain.User;
+import gift.domain.user.User;
 import gift.dto.jwt.JwtTokenResponse;
 import gift.dto.user.ChangePasswordRequest;
 import gift.dto.user.ChangeRoleRequest;
@@ -29,42 +28,38 @@ public class UserService {
     }
 
     public User saveUser(CreateUserRequest request) {
-        Optional<User> getUser = userRepository.findByEmail(request.email());
+        Optional<User> getUser = userRepository.findBasicUserByEmail(request.email());
         if (getUser.isPresent()) {
             throw new UserAlreadyExistsException();
         }
-        User user = new User(request.email(), request.password(), Role.USER);
+        User user = User.createBasicUser(request.email(), request.password(), Role.USER);
         return userRepository.save(user);
     }
 
-    public JwtTokenResponse login(LoginRequest request) {
+    public JwtTokenResponse basicLogin(LoginRequest request) {
         User user = getUserByEmail(request.email());
-        if (!request.password().equals(user.getPassword())) {
-            throw new InvalidUserException();
-        }
+        user.comparePassword(request.password());
         return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
     }
 
     public JwtTokenResponse kakaoLogin(Long kakaoId) {
-        Optional<User> getUser = userRepository.findByKakaoId(kakaoId);
+        Optional<User> getUser = userRepository.findKakaoUserByKakaoId(kakaoId);
         if (getUser.isPresent()) {
             return JwtTokenResponse.from(jwtTokenProvider.createToken(getUser.get()));
         }
         else {
-            User user = userRepository.save(new User(kakaoId, Role.USER));
+            User user = userRepository.save(User.createKakaoUser(kakaoId, Role.USER));
             return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
         }
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        return userRepository.findBasicUserByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
     public void changePassword(ChangePasswordRequest request) {
         User user = getUserByEmail(request.email());
-        if (!request.oldPassword().equals(user.getPassword())) {
-            throw new InvalidUserException();
-        }
+        user.comparePassword(request.oldPassword());
         user.changePassword(request.newPassword());
     }
 

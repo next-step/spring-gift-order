@@ -34,7 +34,7 @@ public class UserManageController {
 
     @PostMapping("/login")
     public String login(@ModelAttribute("request") LoginRequest request, HttpServletResponse response) {
-        JwtTokenResponse jwtTokenResponse = userService.login(request);
+        JwtTokenResponse jwtTokenResponse = userService.basicLogin(request);
 
         Cookie cookie = new Cookie("accessToken", URLEncoder.encode("Bearer " + jwtTokenResponse.accessToken(), StandardCharsets.UTF_8));
         cookie.setHttpOnly(true);

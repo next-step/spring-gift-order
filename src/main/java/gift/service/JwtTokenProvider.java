@@ -2,7 +2,7 @@ package gift.service;
 
 import gift.common.exception.InvalidTokenException;
 import gift.domain.Role;
-import gift.domain.User;
+import gift.domain.user.User;
 import gift.dto.user.UserInfo;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

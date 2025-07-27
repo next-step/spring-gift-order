@@ -3,7 +3,7 @@ package gift.service;
 import gift.common.exception.InvalidUserException;
 import gift.common.exception.WishlistAlreadyExistsException;
 import gift.domain.product.Product;
-import gift.domain.User;
+import gift.domain.user.User;
 import gift.domain.Wishlist;
 import gift.dto.product.CreateProductOptionRequest;
 import gift.dto.product.CreateProductRequest;

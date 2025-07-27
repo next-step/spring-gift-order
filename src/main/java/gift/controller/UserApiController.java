@@ -32,7 +32,7 @@ public class UserApiController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtTokenResponse> login(@RequestBody @Valid LoginRequest request) {
-        JwtTokenResponse tokenResponse = userService.login(request);
+        JwtTokenResponse tokenResponse = userService.basicLogin(request);
         return ResponseEntity.ok(tokenResponse);
     }
 

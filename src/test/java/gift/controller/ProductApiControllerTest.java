@@ -48,7 +48,7 @@ class ProductApiControllerTest {
     @BeforeEach
     void setUp() {
         userService.saveUser(new CreateUserRequest("tkddnr@thanks.com", "1234"));
-        accessToken = "Bearer " + userService.login(new LoginRequest("tkddnr@thanks.com", "1234")).accessToken();
+        accessToken = "Bearer " + userService.basicLogin(new LoginRequest("tkddnr@thanks.com", "1234")).accessToken();
     }
 
     @Test

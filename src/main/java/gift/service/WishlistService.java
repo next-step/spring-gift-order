@@ -2,7 +2,7 @@ package gift.service;
 
 import gift.common.exception.*;
 import gift.domain.product.Product;
-import gift.domain.User;
+import gift.domain.user.User;
 import gift.domain.Wishlist;
 import gift.dto.wishlist.CreateWishlistRequest;
 import gift.dto.wishlist.WishlistResponse;

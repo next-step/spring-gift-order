@@ -1,0 +1,120 @@
+package gift.oauth.service;
+
+import gift.api.member.domain.Member;
+import gift.api.member.domain.MemberRole;
+import gift.api.member.repository.MemberRepository;
+import gift.oauth.dto.KakaoTokenResponseDto;
+import gift.oauth.dto.KakaoUserInfoResponseDto;
+import gift.util.JwtUtil;
+import java.time.Duration;
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import reactor.util.retry.Retry;
+
+@Service
+@Transactional(readOnly = true)
+public class KakaoService {
+
+    private final MemberRepository memberRepository;
+    private final WebClient webClient;
+    private final JwtUtil jwtUtil;
+
+    @Value("${kakao.client-id}")
+    private String clientId;
+
+    @Value("${kakao.client-secret}")
+    private String clientSecret;
+
+    @Value("${kakao.redirect-uri}")
+    private String redirectUri;
+
+    @Value("${kakao.api.token-uri}")
+    private String tokenUri;
+
+    @Value("${kakao.api.user-info-uri}")
+    private String userInfoUri;
+
+    public KakaoService(MemberRepository memberRepository, WebClient webClient, JwtUtil jwtUtil) {
+        this.memberRepository = memberRepository;
+        this.webClient = webClient;
+        this.jwtUtil = jwtUtil;
+    }
+
+    @Transactional
+    public String login(String code) {
+        String accessToken = getAccessToken(code);
+        KakaoUserInfoResponseDto userInfo = getUserInfo(accessToken);
+        Member member = registerOrLoginUser(userInfo);
+
+        return jwtUtil.createToken(member.getEmail(), member.getRole());
+    }
+
+    private String getAccessToken(String code) {
+        KakaoTokenResponseDto kakaoTokenResponseDto = webClient.post()
+                .uri(tokenUri)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .bodyValue("grant_type=authorization_code&client_id=" + clientId +
+                        "&redirect_uri=" + redirectUri + "&code=" + code +
+                        "&client_secret=" + clientSecret)
+                .retrieve()
+                .bodyToMono(KakaoTokenResponseDto.class)
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                        .filter(throwable -> throwable instanceof WebClientRequestException)
+                        .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> {
+                            throw new RuntimeException(
+                                    "카카오 토큰 발급 재시도에 모두 실패했습니다: " + retrySignal.failure()
+                                            .getMessage());
+                        }))
+                .block();
+
+        if (kakaoTokenResponseDto == null) {
+            throw new RuntimeException("카카오 토큰을 발급받는데 실패했습니다.");
+        }
+
+        return kakaoTokenResponseDto.accessToken();
+    }
+
+    private KakaoUserInfoResponseDto getUserInfo(String accessToken) {
+        KakaoUserInfoResponseDto userInfo = webClient.get()
+                .uri(userInfoUri)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .bodyToMono(KakaoUserInfoResponseDto.class)
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                        .filter(throwable -> throwable instanceof WebClientRequestException)
+                        .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> {
+                            throw new RuntimeException("카카오 사용자 정보 조회 재시도에 모두 실패했습니다: " +
+                                    retrySignal.failure().getMessage());
+                        }))
+                .block();
+
+        if (userInfo == null) {
+            throw new RuntimeException("카카오 사용자 정보를 가져오는데 실패했습니다.");
+        }
+
+        return userInfo;
+    }
+
+    private Member registerOrLoginUser(KakaoUserInfoResponseDto userInfo) {
+        String nickname = userInfo.kakaoAccount().profile().nickname();
+        String email = nickname + "@kakao";
+
+        return memberRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    String password = BCrypt.hashpw("password", BCrypt.gensalt());
+
+                    Member newMember = new Member(
+                            email,
+                            password,
+                            MemberRole.USER
+                    );
+
+                    return memberRepository.save(newMember);
+                });
+    }
+}

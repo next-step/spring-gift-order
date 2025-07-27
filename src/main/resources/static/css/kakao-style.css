@@ -235,3 +235,19 @@ form input[type="email"] {
   font-size: 14px;
   color: #800000;
 }
+
+.kakao-login-wrapper {
+  margin-top: 15px; /* 위 버튼과의 간격 */
+  text-align: center; /* 가운데 정렬 */
+}
+
+/* ID 선택자를 이용해 카카오 로그인 이미지에만 별도 스타일 적용 */
+#kakao-login {
+  /* 전역 img 스타일 덮어쓰기 */
+  max-width: none;
+  max-height: none;
+
+  width: 100%;
+  max-width: 235px;
+  height: auto; /* 높이는 비율에 맞게 자동 조정 */
+}

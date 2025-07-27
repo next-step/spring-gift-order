@@ -33,6 +33,12 @@ public class KakaoService {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
+    @Value("${kakao.api.token-uri}")
+    private String tokenUri;
+
+    @Value("${kakao.api.user-info-uri}")
+    private String userInfoUri;
+
     public KakaoService(MemberRepository memberRepository, WebClient webClient, JwtUtil jwtUtil) {
         this.memberRepository = memberRepository;
         this.webClient = webClient;
@@ -49,10 +55,8 @@ public class KakaoService {
     }
 
     private String getAccessToken(String code) {
-        String uri = "https://kauth.kakao.com/oauth/token";
-
         KakaoTokenResponseDto kakaoTokenResponseDto = webClient.post()
-                .uri(uri)
+                .uri(tokenUri)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue("grant_type=authorization_code&client_id=" + clientId +
                         "&redirect_uri=" + redirectUri + "&code=" + code +
@@ -76,10 +80,8 @@ public class KakaoService {
     }
 
     private KakaoUserInfoResponseDto getUserInfo(String accessToken) {
-        String uri = "https://kapi.kakao.com/v2/user/me";
-
         KakaoUserInfoResponseDto userInfo = webClient.get()
-                .uri(uri)
+                .uri(userInfoUri)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .bodyToMono(KakaoUserInfoResponseDto.class)

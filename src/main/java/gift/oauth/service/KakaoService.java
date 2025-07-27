@@ -6,12 +6,15 @@ import gift.api.member.repository.MemberRepository;
 import gift.oauth.dto.KakaoTokenResponseDto;
 import gift.oauth.dto.KakaoUserInfoResponseDto;
 import gift.util.JwtUtil;
+import java.time.Duration;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import reactor.util.retry.Retry;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,10 +33,9 @@ public class KakaoService {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
-    public KakaoService(MemberRepository memberRepository, WebClient.Builder webClientBuilder,
-            JwtUtil jwtUtil) {
+    public KakaoService(MemberRepository memberRepository, WebClient webClient, JwtUtil jwtUtil) {
         this.memberRepository = memberRepository;
-        this.webClient = webClientBuilder.build();
+        this.webClient = webClient;
         this.jwtUtil = jwtUtil;
     }
 
@@ -57,6 +59,13 @@ public class KakaoService {
                         "&client_secret=" + clientSecret)
                 .retrieve()
                 .bodyToMono(KakaoTokenResponseDto.class)
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                        .filter(throwable -> throwable instanceof WebClientRequestException)
+                        .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> {
+                            throw new RuntimeException(
+                                    "카카오 토큰 발급 재시도에 모두 실패했습니다: " + retrySignal.failure()
+                                            .getMessage());
+                        }))
                 .block();
 
         if (kakaoTokenResponseDto == null) {
@@ -74,6 +83,12 @@ public class KakaoService {
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
                 .bodyToMono(KakaoUserInfoResponseDto.class)
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                        .filter(throwable -> throwable instanceof WebClientRequestException)
+                        .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> {
+                            throw new RuntimeException("카카오 사용자 정보 조회 재시도에 모두 실패했습니다: " +
+                                    retrySignal.failure().getMessage());
+                        }))
                 .block();
 
         if (userInfo == null) {

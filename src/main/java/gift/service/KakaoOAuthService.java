@@ -42,6 +42,13 @@ public class KakaoOAuthService {
         return response.getBody();
     }
 
+    public String buildAuthorizeUrl() {
+        return "https://kauth.kakao.com/oauth/authorize"
+                + "?client_id=" + clientId
+                + "&redirect_uri=" + redirectUri
+                + "&response_type=code";
+    }
+
     public KakaoUserResponse getUserInfo(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);

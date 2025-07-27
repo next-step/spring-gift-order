@@ -28,15 +28,9 @@ public class KakaoOAuthController {
     }
 
     @GetMapping("/login/kakao")
-    public void redirectToKakao(HttpServletResponse response,
-                                @Value("${kakao.client-id}") String clientId,
-                                @Value("${kakao.redirect-uri}") String redirectUri) throws IOException {
-        String url = "https://kauth.kakao.com/oauth/authorize"
-                + "?client_id=" + clientId
-                + "&redirect_uri=" + redirectUri
-                + "&response_type=code";
-
-        response.sendRedirect(url);
+    public void redirectToKakao(HttpServletResponse response) throws IOException {
+        String redirectUrl = kakaoOAuthService.buildAuthorizeUrl();
+        response.sendRedirect(redirectUrl);
     }
 
     @GetMapping("/oauth/callback/kakao")

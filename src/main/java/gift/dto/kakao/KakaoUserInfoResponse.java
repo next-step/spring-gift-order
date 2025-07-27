@@ -1,14 +1,12 @@
 package gift.dto.kakao;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record KakaoUserInfoResponse(
         Long id,
-
-        @JsonProperty("connected_at")
         String connectedAt,
-
-        @JsonProperty("kakao_account")
         KakaoAccount kakaoAccount
 ) {
 
@@ -33,13 +31,10 @@ public record KakaoUserInfoResponse(
 
     }
 
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Profile(
             String nickname,
-
-            @JsonProperty("thumbnail_image_url")
             String thumbnailImageUrl,
-
-            @JsonProperty("profile_image_url")
             String profileImageUrl
     ) {
 

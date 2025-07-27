@@ -1,6 +1,7 @@
 package gift.controller;
 
 import gift.config.JwtProvider;
+import gift.config.LoginMember;
 import gift.dto.request.OrderRequestDto;
 import gift.dto.response.OrderResponseDto;
 import gift.entity.Member;
@@ -31,15 +32,13 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponseDto> placeOrder(
+            @LoginMember Member member,
             @RequestHeader("Authorization") String bearerToken,
             @RequestBody OrderRequestDto dto) {
 
         String token = bearerToken.replace("Bearer ", "");
         Long memberId = jwtProvider.getId(token);
 
-
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException("회원이 존재하지 않습니다."));
 
         Order order = orderService.placeOrder(member, dto);
 

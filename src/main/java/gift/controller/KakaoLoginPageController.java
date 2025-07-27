@@ -7,15 +7,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class KakaoLoginPageController {
-    private final KakaoProperties kakaoProperties;
+    private final String loginUrl;
 
     public KakaoLoginPageController(KakaoProperties kakaoProperties) {
-        this.kakaoProperties = kakaoProperties;
+        loginUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
+                + kakaoProperties.getClientId() + "&redirect_uri=" + kakaoProperties.getRedirectUri();
     }
 
     @GetMapping("/kakao/login")
     public String loginPage(Model model) {
-        model.addAttribute("location", kakaoProperties.getLoginUrl());
+        model.addAttribute("location", loginUrl);
 
         return "kakao/login";
     }

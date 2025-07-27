@@ -44,7 +44,7 @@ public class KakaoLoginService {
         ResponseEntity<KakaoLoginResponse> response = restTemplate.postForEntity(url, request, KakaoLoginResponse.class
         );
 
-        return response.getBody().access_token();
+        return response.getBody().accessToken();
 
     }
 

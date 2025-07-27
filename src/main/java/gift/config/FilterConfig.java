@@ -1,5 +1,7 @@
-package gift.jwt;
+package gift.config;
 
+import gift.jwt.JwtAuthenticationFilter;
+import gift.jwt.JwtTokenProvider;
 import gift.repository.MemberRepository;
 import jakarta.servlet.Filter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

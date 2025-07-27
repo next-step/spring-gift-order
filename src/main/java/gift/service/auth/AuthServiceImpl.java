@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
-        return tokenProvider.generateToken(user.getId(), user.getUserRoles(), user.getProvider());
+        return tokenProvider.generateToken(user.getId(), user.getUserRoles(), user.getProvider(), null);
     }
 
     @Override
@@ -87,7 +87,8 @@ public class AuthServiceImpl implements AuthService {
             String encodedId = passwordEncoder.encode(tokenInfo.id());
             User user = userService.findByClientIdAndProvider(encodedId, Provider.KAKAO);
             return new KakaoResponse(
-                    tokenProvider.generateToken(user.getId(), user.getUserRoles(), user.getProvider()),
+                    tokenProvider.generateToken(user.getId(), user.getUserRoles(), user.getProvider(),
+                            tokenResponse.expiresIn()),
                     tokenResponse.accessToken()
             );
 
@@ -105,6 +106,6 @@ public class AuthServiceImpl implements AuthService {
             roles
         );
         User savedUser = userService.create(user);
-        return tokenProvider.generateToken(savedUser.getId(), savedUser.getUserRoles(), savedUser.getProvider());
+        return tokenProvider.generateToken(savedUser.getId(), savedUser.getUserRoles(), savedUser.getProvider(), null);
     }
 }

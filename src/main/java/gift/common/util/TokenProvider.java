@@ -110,8 +110,11 @@ public class TokenProvider implements InitializingBean {
        }
     }
 
-    public String generateToken(Long userId, Set<UserRole> authorities, Provider provider) {
+    public String generateToken(Long userId, Set<UserRole> authorities, Provider provider, Long expiration) {
         Instant now = Instant.now(Clock.systemDefaultZone());
+        if (expiration == null || expiration <= 0) {
+            expiration = this.expiration; // 기본 만료 기간 사용
+        }
         Instant expiryDate = now.plusSeconds(expiration);
 
         String authoritiesString = authorities.stream()

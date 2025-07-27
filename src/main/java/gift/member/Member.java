@@ -2,6 +2,7 @@ package gift.member;
 
 import gift.member.dto.MemberResponseDto;
 import gift.member.dto.MemberUpdateRequestDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,6 +16,7 @@ public class Member{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
+    @Column(nullable = true)
     private String password;
     private String name;
     @Enumerated(EnumType.STRING)

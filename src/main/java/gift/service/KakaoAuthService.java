@@ -4,6 +4,7 @@ import gift.config.KakaoProperties;
 import gift.dto.KakaoTokenRequestDto;
 import gift.dto.KakaoTokenResponseDto;
 import gift.exception.KakaoAuthenticationException;
+import gift.exception.KakaoClientError;
 import gift.exception.KakaoConnectionException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -46,7 +47,9 @@ public class KakaoAuthService {
                     .body(body.dtoToFormData())
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError, (request, res) -> {
-                        throw new KakaoAuthenticationException("사용자의 카카오 인증에 실패했습니다. 응답 코드: " + res.getStatusCode());
+                        KakaoClientError error = KakaoClientError.from(res.getStatusCode());
+                        String errorMessage = error.getMessage();
+                        throw new KakaoAuthenticationException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .onStatus(HttpStatusCode::is5xxServerError, (request, res) -> {
                         throw new KakaoConnectionException("카카오 서버에 오류가 발생했습니다. 응답 코드: " + res.getStatusCode());
@@ -55,7 +58,7 @@ public class KakaoAuthService {
 
             return response.accessToken();
         } catch (ResourceAccessException e) {
-            throw new KakaoConnectionException("카카오 서버와 연결/응답 시간이 초과했습니다.", e);
+            throw new KakaoConnectionException("카카오 서버와 통신이 원활하지 않습니다.", e);
         }
     }
 }

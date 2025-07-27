@@ -9,13 +9,6 @@ import org.springframework.stereotype.Component;
 public class KakaoProperties {
     private String clientId;
     private String redirectUri;
-    private String loginUrl;
-
-    @PostConstruct
-    public void init() {
-        this.loginUrl = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
-                + clientId + "&redirect_uri=" + redirectUri;
-    }
 
     public String getClientId() {
         return clientId;
@@ -23,10 +16,6 @@ public class KakaoProperties {
 
     public String getRedirectUri() {
         return redirectUri;
-    }
-
-    public String getLoginUrl() {
-        return loginUrl;
     }
 
     public void setClientId(String clientId) {

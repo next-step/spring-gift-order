@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -33,7 +34,8 @@ public class Item {
     private String imageUrl;
 
     @OneToMany(mappedBy = "item")
-    private List<ItemOption> options = new ArrayList<>();
+    private List<ItemOption> options = Collections.synchronizedList(new ArrayList<>());
+
 
     protected Item() {
 
@@ -109,13 +111,13 @@ public class Item {
         return this;
     }
 
-    public void addOption(ItemOption option) {
+    public synchronized void addOption(ItemOption option) {
         options.add(option);
         option.setItem(this);
     }
 
-    public List<ItemOption> getOptions() {
-        return this.options;
+    public synchronized List<ItemOption> getOptions() {
+        return List.copyOf(this.options);
     }
 
     public void checkDuplicatedItem(String optionName) {

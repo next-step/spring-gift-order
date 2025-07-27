@@ -16,7 +16,7 @@ public class WishItem {
     @JoinColumn(name = "member_id")
     private User user;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Item item;
 

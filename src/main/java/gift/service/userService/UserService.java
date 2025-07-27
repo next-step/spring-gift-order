@@ -16,4 +16,6 @@ public interface UserService {
     String loginUser(String email, String password);
 
     User findUserByEmail(String userEmail);
+
+    User saveSocialUser(String email);
 }

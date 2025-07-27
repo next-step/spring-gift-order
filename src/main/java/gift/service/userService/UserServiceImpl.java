@@ -2,6 +2,7 @@ package gift.service.userService;
 
 import gift.Jwt.JwtUtil;
 import gift.entity.User;
+import gift.entity.UserRole;
 import gift.exception.userException.UserDuplicatedException;
 import gift.exception.userException.UserNotFoundException;
 import gift.repository.userRepository.UserRepository;
@@ -54,6 +55,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserByEmail(userEmail)
                 .orElseThrow(() -> new UserNotFoundException(userEmail));
     }
+
+    @Override
+    public User saveSocialUser(String email) {
+        User user = new User(email, "1234", UserRole.USER);
+        return userRepository.save(user);
+    }
+
 
     @Override
     public Page<User> getUserList(String email, Long loginId, Pageable pageable) {

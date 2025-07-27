@@ -1,5 +1,6 @@
 package gift.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import gift.dto.request.MessageRequestDto;
 import gift.service.KakaoMessageService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class KakaoMessageController {
     public ResponseEntity<String> sendMessage(
             @RequestHeader("Authorization") String bearerToken,
             @RequestBody MessageRequestDto request
-    ) {
+    ) throws JsonProcessingException {
         String accessToken = bearerToken.replace("Bearer ", "");
         kakaoMessageService.sendMessageToMe(accessToken, request.getMessage());
         return ResponseEntity.ok("메시지 전송 완료");

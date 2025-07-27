@@ -1,28 +1,43 @@
 package gift.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gift.dto.request.KakaoLink;
+import gift.dto.request.KakaoMessageTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+
 
 @Service
 public class KakaoMessageService {
 
     private final RestClient restClient = RestClient.create();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void sendMessageToMe(String accessToken, String messageText) {
-        String templateJson = """
-        {
-            "object_type": "text",
-            "text": "%s",
-            "link": {
-                "web_url": "https://developers.kakao.com",
-                "mobile_web_url": "https://developers.kakao.com"
-            },
-            "button_title": "확인"
+        KakaoLink link = new KakaoLink(
+                "https://developers.kakao.com",
+                "https://developers.kakao.com"
+        );
+
+        KakaoMessageTemplate template = new KakaoMessageTemplate(
+                "text",
+                messageText,
+                link,
+                "확인"
+        );
+
+        String templateJson;
+        try {
+            templateJson = objectMapper.writeValueAsString(template);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-        """.formatted(messageText);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("template_object", templateJson);

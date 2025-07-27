@@ -15,8 +15,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@Transactional
 public class WishListServiceImpl implements WishListService {
 
     private final WishListRepository wishListRepository;
@@ -32,6 +35,7 @@ public class WishListServiceImpl implements WishListService {
     }
 
     @Override
+    @Transactional
     public WishListResponseDto create(Long productId, Long memberId) {
         Product product = productRepository.getReferenceById(productId);
         Member member = memberRepository.getReferenceById(memberId);
@@ -75,19 +79,15 @@ public class WishListServiceImpl implements WishListService {
     }
 
     @Override
+    @Transactional
     public void delete(Long productId, Long memberId) {
         Product product = productRepository.getReferenceById(productId);
         Member member = memberRepository.getReferenceById(memberId);
 
-        Wish wish = wishListRepository.findByProductIdAndMemberId(productId, memberId);
+        Wish wish = wishListRepository.findByProductIdAndMemberId(productId, memberId)
+            .orElseThrow(() -> new ResourceNotFoundException());
 
         product.removeWish(wish);
         member.removeWish(wish);
-
-        int deleteRow = wishListRepository.deleteByProductIdAndMemberId(productId, memberId);
-
-        if (deleteRow <= 0) {
-            throw new ResourceNotFoundException();
-        }
     }
 }

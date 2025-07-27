@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="page-header">
-  <h1 class="page-title">상품 <b>목록</b></h1>
+  <h1 class="page-title">상품 <b>주문</b></h1>
 </div>
 
 <table class="product-table">
@@ -18,7 +18,6 @@
     <th>상품명</th>
     <th>가격</th>
     <th>이미지 URL</th>
-    <th>수량</th>
     <th>위시리스트 등록</th>
   </tr>
   </thead>
@@ -37,26 +36,14 @@
     <td>
       <a th:href="${product.imageUrl}" target="_blank" th:text="${product.imageUrl}"></a>
     </td>
-    <td th:text="${product.quantity}"></td>
     <td>
-      <button th:if="${wishedProductIds.contains(product.id)}"
-              type="button"
-              class="wish-button delete"
-              th:onclick="'deleteWish(' + ${product.id} + ')'">
-        위시리스트 삭제
-      </button>
-
-      <button th:unless="${wishedProductIds.contains(product.id)}"
-              type="button"
-              class="wish-button add"
-              th:onclick="'addWish(' + ${product.id} + ')'">
-        위시리스트 추가
-      </button>
+      <form th:action="@{/view/wishes/{productId}(productId=${product.id})}" method="post">
+        <button type="submit" class="wish-button">상품 주문하기</button>
+      </form>
     </td>
   </tr>
   </tbody>
 </table>
 
-<script th:src="@{/js/wishlist-add.js}"></script>
 </body>
 </html>

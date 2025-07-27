@@ -8,8 +8,10 @@ import gift.entity.Member;
 import gift.repository.member.MemberRepository;
 import gift.util.JwtUtil;
 import gift.util.Sha256Util;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -28,12 +30,30 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberResponseDto create(MemberRequestDto requestDto) {
-        if (memberRepository.existsByEmail(requestDto.email())) {
+        if (memberRepository.existsByEmailAndLoginType(requestDto.email(),
+            requestDto.loginType())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
         Member member = memberRepository.save(
-            new Member(null, requestDto.email(), sha256Util.encrypt(requestDto.password())));
+            new Member(null, requestDto.email(), sha256Util.encrypt(requestDto.password()),
+                requestDto.loginType()));
+
+        String accessToken = jwtUtil.createToken(member.getId(), member.getEmail());
+
+        return new MemberResponseDto(accessToken);
+    }
+
+    @Override
+    public MemberResponseDto createOrLoginForKakao(MemberRequestDto requestDto) {
+
+        Optional<Member> existingMember = memberRepository.findByEmailAndLoginType(
+            requestDto.email(), requestDto.loginType());
+
+        Member member = existingMember.orElseGet(() ->
+            memberRepository.save(
+                new Member(null, requestDto.email(), null, requestDto.loginType()))
+        );
 
         String accessToken = jwtUtil.createToken(member.getId(), member.getEmail());
 
@@ -43,7 +63,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberResponseDto login(MemberRequestDto requestDto) {
         // TODO: 이후에 '이메일:생성 가능 아이디'가 1:N인지, 1:1인지 따로 조건이 없으므로 변경 필요할 수 있음. (현재는 1:1이라고 가정)
-        Member member = memberRepository.findByEmail(requestDto.email())
+        Member member = memberRepository.findByEmailAndLoginType(requestDto.email(),
+                requestDto.loginType())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
 
         if (!sha256Util.encrypt(requestDto.password()).equals(member.getPassword())) {
@@ -57,7 +78,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void changePassword(MemberPasswordChangeDto requestDto) {
-        Member member = memberRepository.findByEmail(requestDto.email())
+        Member member = memberRepository.findByEmailAndLoginType(requestDto.email(),
+                requestDto.loginType())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
 
         boolean matchesCheck = member.matchesPassword(
@@ -71,7 +93,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void resetPassword(MemberRequestDto requestDto) {
-        Member member = memberRepository.findByEmail(requestDto.email())
+        Member member = memberRepository.findByEmailAndLoginType(requestDto.email(),
+                requestDto.loginType())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
         String newPassword = sha256Util.encrypt(requestDto.password());
 

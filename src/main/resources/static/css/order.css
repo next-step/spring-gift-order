@@ -45,9 +45,9 @@
     background-color: #B9E5E8;
 }
 
-/* 위시리스트 추가 버튼 (초록색 계열) */
-.wish-button.add {
-    background-color: #37be6b;
+/* 위시리스트 추가 버튼 */
+.wish-button {
+    background-color: #4fa6d5;
     color: white;
     font-size: 14px;
     font-weight: 500;
@@ -56,41 +56,16 @@
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
 }
 
-.wish-button.add:hover {
-    background-color: #249d51;
+.wish-button:hover {
+    background-color: #3a90c4;
     transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(46, 204, 113, 0.15);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
-.wish-button.add:active {
+.wish-button:active {
     transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(46, 204, 113, 0.08);
-}
-
-/* 위시리스트 삭제 버튼 (붉은색 계열) */
-.wish-button.delete {
-    background-color: #e65b5b;
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 10px 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
-}
-
-.wish-button.delete:hover {
-    background-color: #c94444;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(255, 0, 0, 0.15);
-}
-
-.wish-button.delete:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 5px rgba(255, 0, 0, 0.08);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }

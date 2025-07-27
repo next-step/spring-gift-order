@@ -9,6 +9,8 @@ public interface MemberService {
 
     public MemberResponseDto create(MemberRequestDto requestDto);
 
+    public MemberResponseDto createOrLoginForKakao(MemberRequestDto requestDto);
+
     public MemberResponseDto login(MemberRequestDto requestDto);
 
     void changePassword(MemberPasswordChangeDto requestDto);

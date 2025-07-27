@@ -1,4 +1,6 @@
 package gift.dto.member;
 
-public record MemberRequestDto(String email, String password) {
+import gift.entity.LoginType;
+
+public record MemberRequestDto(String email, String password, LoginType loginType) {
 }

@@ -30,7 +30,7 @@ public class OrderService {
     @Transactional
     public Order placeOrder(Member member, OrderRequestDto dto) {
         ProductOption option = optionRepository.findById(dto.getOptionId())
-                .orElseThrow(() -> new NoSuchElementException("옵션이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("옵션 ID " + dto.getOptionId() + "가 존재하지 않습니다."));
         option.subtractQuantity(dto.getQuantity());
 
         wishRepository.deleteByMemberIdAndProductId(member.getId(), option.getProduct().getId());

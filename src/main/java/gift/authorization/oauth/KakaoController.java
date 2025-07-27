@@ -9,22 +9,22 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/kakao")
-public class KakaoOAuthController {
+public class KakaoController {
 
-    private final KakaoOAuthService kakaoOAuthService;
+    private final KakaoService kakaoService;
 
-    public KakaoOAuthController(KakaoOAuthService kakaoOAuthService) {
-        this.kakaoOAuthService = kakaoOAuthService;
+    public KakaoController(KakaoService kakaoService) {
+        this.kakaoService = kakaoService;
     }
 
     @GetMapping("/login")
     public void redirectToKakao(HttpServletResponse response) throws IOException {
-        response.sendRedirect(kakaoOAuthService.getKakaoLoginUrl());
+        response.sendRedirect(kakaoService.getKakaoLoginUrl());
     }
 
     @GetMapping("/callback")
     public ResponseEntity<KakaoTokenResponseDto> kakaoCallback(@RequestParam String code) {
-        KakaoTokenResponseDto token = kakaoOAuthService.requestAccessToken(code);
+        KakaoTokenResponseDto token = kakaoService.requestAccessToken(code);
         return ResponseEntity.ok(token);
     }
 }

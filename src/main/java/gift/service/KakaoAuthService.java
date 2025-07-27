@@ -14,16 +14,16 @@ import org.springframework.web.client.RestClient;
 
 @Service
 public class KakaoAuthService {
-    private static final int CONNECTION_TIMEOUT_SECONDS = 3000;
-    private static final int READ_TIMEOUT_SECONDS = 3000;
+    private static final int CONNECTION_TIMEOUT_MILLISECONDS = 3000;
+    private static final int READ_TIMEOUT_MILLISECONDS = 3000;
     private static final String KAKAO_AUTH_URL = "https://kauth.kakao.com";
     private final RestClient restClient;
     private final KakaoProperties kakaoProperties;
 
     public KakaoAuthService(KakaoProperties kakaoProperties) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(CONNECTION_TIMEOUT_SECONDS);
-        requestFactory.setReadTimeout(READ_TIMEOUT_SECONDS);
+        requestFactory.setConnectTimeout(CONNECTION_TIMEOUT_MILLISECONDS);
+        requestFactory.setReadTimeout(READ_TIMEOUT_MILLISECONDS);
 
         this.restClient = RestClient.builder()
                 .requestFactory(requestFactory)

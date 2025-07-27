@@ -18,6 +18,33 @@
     grid-column: 2;
 }
 
+/* 헤더 버튼 (페이지 이동 등) */
+.header-button {
+    text-decoration: none;
+    background-color: #f0f0f0;
+    color: #444;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* 버튼을 오른쪽 끝으로 보내는 스타일 */
+.header-button.align-right {
+    justify-self: end;
+}
+
+/* 버튼을 왼쪽 끝으로 보내는 스타일 */
+.header-button.align-left {
+    justify-self: start;
+}
+
+.header-button:hover {
+    background-color: #ddd;
+    color: #000;
+}
+
 /* 테이블 공통 스타일 */
 .product-table {
     width: 100%;
@@ -93,4 +120,31 @@
 .wish-button.delete:active {
     transform: translateY(0);
     box-shadow: 0 2px 5px rgba(255, 0, 0, 0.08);
+}
+
+/* 상품 주문하기 버튼 (파란색 계열) */
+.wish-order-button {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #3498db;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.wish-order-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(52, 152, 219, 0.2);
+}
+
+.wish-order-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.15);
 }

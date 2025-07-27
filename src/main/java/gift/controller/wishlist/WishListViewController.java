@@ -1,6 +1,10 @@
 package gift.controller.wishlist;
 
+import gift.dto.product.ProductResponseDto;
+import gift.entity.LoginMember;
+import gift.entity.Member;
 import gift.service.wishlist.WishListService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +20,14 @@ public class WishListViewController {
     }
 
     @GetMapping("/wishlist/order")
-    public String showWishListPage(Model model) {
+    public String showWishListPage(
+        Model model,
+        @LoginMember Member member
+    ) {
 
-        // TODO: 카카오 로그인 -> JWT 토큰 발급 과정 필요
+        Page<ProductResponseDto> productList = wishListService.findAll(member.getId(),0, 10);
+        model.addAttribute("productList", productList);
 
-        return "";
+        return "wishlist-order";
     }
 }

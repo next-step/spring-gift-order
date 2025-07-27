@@ -9,6 +9,8 @@
 <body>
 <div class="page-header">
   <h1 class="page-title">상품 <b>목록</b></h1>
+
+  <a th:href="@{/view/wishlist/order}" class="header-button align-right">내 위시리스트 →</a>
 </div>
 
 <table class="product-table">
@@ -25,7 +27,7 @@
 
   <tbody th:if="${productList == null or productList.isEmpty()}">
   <tr>
-    <td colspan="5">등록된 상품이 없습니다.</td>
+    <td colspan="6">등록된 상품이 없습니다.</td>
   </tr>
   </tbody>
 

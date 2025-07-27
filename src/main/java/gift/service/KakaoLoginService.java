@@ -10,6 +10,8 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -40,11 +42,17 @@ public class KakaoLoginService {
         body.add("code", code);
 
         var request = new RequestEntity<>(body, headers, HttpMethod.POST, URI.create(url));
+        try {
+            ResponseEntity<KakaoLoginResponse> response = restTemplate.postForEntity(url, request,
+                    KakaoLoginResponse.class
+            );
 
-        ResponseEntity<KakaoLoginResponse> response = restTemplate.postForEntity(url, request, KakaoLoginResponse.class
-        );
-
-        return response.getBody().accessToken();
+            return response.getBody().accessToken();
+        } catch(HttpClientErrorException e) {
+            throw new IllegalArgumentException("잘못된 요청입니다." + e.getResponseBodyAsString());
+        } catch(HttpServerErrorException e) {
+            throw new RuntimeException("카카오 서버에 문제가 발생하였습니다." + e.getResponseBodyAsString());
+        }
 
     }
 

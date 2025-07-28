@@ -3,11 +3,9 @@ package gift.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @EnableConfigurationProperties
-@PropertySource("classpath:secrets.properties") // resources 디렉토리 내 확인
 @ConfigurationProperties(prefix = "kakao")
 public class KakaoProperties {
 

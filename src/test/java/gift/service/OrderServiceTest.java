@@ -82,4 +82,16 @@ public class OrderServiceTest {
 
         assertThatThrownBy(() -> fakeOrderService.order(new UserInfo(user.getId(), user.getRole()), kakaoOrderRequest)).isInstanceOf(ProductOptionException.class);
     }
+
+    @Test
+    @DisplayName("상품을 주문하면 그 상품 옵션의 수량이 줄어든다.")
+    void test4() {
+        User user = userRepository.save(User.createKakaoUser(123123L, "카카오액세스토큰", Role.USER));
+
+        KakaoOrderRequest kakaoOrderRequest = new KakaoOrderRequest(productOption.getId(), 2, "샤프 사줬으니 공부 열심히 해야한단다");
+
+        fakeOrderService.order(new UserInfo(user.getId(), user.getRole()), kakaoOrderRequest);
+
+        assertThat(productOption.getQuantity()).isEqualTo(8);
+    }
 }

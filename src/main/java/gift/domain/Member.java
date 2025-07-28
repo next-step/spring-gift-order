@@ -9,22 +9,39 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, updatable = true, length = 320)
+    @Column(nullable = true, length = 320)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
+    @Column(name = "login_type")
+    @Enumerated(EnumType.STRING)
+    private LoginType loginType;
+
+    @Column(name = "social_id", nullable = true)
+    private String socialId;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
     public Member(){
     }
 
-    public Member(Long id, String email, String password, gift.domain.Role role){
+    public Member(Long id, String email, String password, LoginType loginType, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.loginType = loginType;
+        this.role = role;
+    }
+
+    public Member(String email, String password, LoginType loginType, String socialId, Role role) {
+        this.email = email;
+        this.password = password;
+        this.loginType = loginType;
+        this.socialId = socialId;
         this.role = role;
     }
 
@@ -32,8 +49,9 @@ public class Member {
         this.id = id;
     }
 
-    public Member(String email, String password){
-        this(null, email, password, Role.USER);
+    public Member(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 
     public Long getId() {
@@ -48,7 +66,34 @@ public class Member {
         return password;
     }
 
+    public LoginType getLoginType() {
+        return loginType;
+    }
+
+    public String getSocialId() {
+        return socialId;
+    }
+
     public Role getRole() {
         return role;
+    }
+
+    public static Member createLocalMember(String email, String password) {
+        Member member = new Member();
+        member.email = email;
+        member.password = password;
+        member.loginType = LoginType.LOCAL;
+        member.role = Role.USER;
+        return member;
+    }
+
+    public static Member createKakaoMember(String kakaoId) {
+        return new Member(
+                null,
+                null,
+                LoginType.KAKAO,
+                kakaoId,
+                Role.USER
+        );
     }
 }

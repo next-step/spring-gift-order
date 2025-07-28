@@ -30,7 +30,7 @@ public final class JwtUtil {
     public String createToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getId().toString())
-                .claim("email", member.getEmail())
+                .claim("loginType", member.getLoginType())
                 .claim("role", member.getRole())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getExpiration()))

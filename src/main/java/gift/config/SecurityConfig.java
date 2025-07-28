@@ -35,11 +35,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/oauth/callback/kakao/**",
+                                "/login/kakao",
+                                "/me",
                                 "/api/members/register",
                                 "/api/members/login",
                                 "/h2-console/**",
                                 "/admin/**",
-                                "/css/**"
+                                "/css/**",
+                                "/error/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()

@@ -1,6 +1,7 @@
 package gift.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gift.domain.LoginType;
 import gift.domain.Member;
 import gift.domain.Role;
 import gift.dto.WishRequest;
@@ -44,7 +45,7 @@ class WishControllerTest {
 
     private final Long memberId = 1L;
     private final Long productId = 4L;
-    private final Member fakeMember = new Member(memberId, "user@email.com", "pw", Role.USER);
+    private final Member fakeMember = new Member(memberId, "test@example.com", "password", LoginType.LOCAL, Role.USER);
 
     @BeforeEach
     void setup() {

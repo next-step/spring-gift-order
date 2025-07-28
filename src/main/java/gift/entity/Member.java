@@ -16,10 +16,10 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @Column(unique = true)

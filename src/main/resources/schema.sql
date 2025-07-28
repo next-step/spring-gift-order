@@ -13,8 +13,9 @@ CREATE TABLE product
 
 CREATE TABLE IF NOT EXISTS member (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255),
+    kakao_id  BIGINT UNIQUE
 );
 
 CREATE TABLE wish (

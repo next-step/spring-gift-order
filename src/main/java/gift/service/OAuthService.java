@@ -50,10 +50,10 @@ public class OAuthService {
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", kakaoOauthProperties.getClientId());
-        body.add("redirect_uri", kakaoOauthProperties.getRedirectUri());
+        body.add("client_id", kakaoOauthProperties.clientId());
+        body.add("redirect_uri", kakaoOauthProperties.redirectUri());
         body.add("code", code);
-        body.add("client_secret", kakaoOauthProperties.getClientSecret());
+        body.add("client_secret", kakaoOauthProperties.clientSecret());
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 

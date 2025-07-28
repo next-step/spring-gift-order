@@ -84,10 +84,7 @@ public class MemberService {
     public Member findOrCreateMemberByKakaoId(Long kakaoId) {
         return memberRepository.findByKakaoId(kakaoId)
                 .orElseGet(() -> {
-                    String email = kakaoId + "@kakao.user";
-                    String temporaryPassword = java.util.UUID.randomUUID().toString();
-                    Member newMember = new Member(email, passwordEncoder.encode(temporaryPassword),
-                            kakaoId);
+                    Member newMember = new Member(null, null, kakaoId);
                     return memberRepository.save(newMember);
                 });
     }

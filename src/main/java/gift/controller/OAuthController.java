@@ -26,8 +26,8 @@ public class OAuthController {
     @GetMapping("/kakao")
     public void kakaoLogin(HttpServletResponse response) throws IOException {
         String url = "https://kauth.kakao.com/oauth/authorize?"
-                + "client_id=" + kakaoOauthProperties.getClientId()
-                + "&redirect_uri=" + kakaoOauthProperties.getRedirectUri()
+                + "client_id=" + kakaoOauthProperties.clientId()
+                + "&redirect_uri=" + kakaoOauthProperties.redirectUri()
                 + "&response_type=code"
                 + "&scope=talk_message";
 

@@ -2,7 +2,6 @@ package gift.auth.jwt;
 
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.CustomException;
-import gift.entity.Member;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,8 +42,8 @@ public class JwtFilter implements Filter {
                 return;
             }
 
-            Member member = extractMemberFromToken(httpRequest);
-            httpRequest.setAttribute("member", member);
+            Long memberId = extractMemberIdFromToken(httpRequest);
+            httpRequest.setAttribute("memberId", memberId);
 
             chain.doFilter(request, response);
 
@@ -58,17 +57,11 @@ public class JwtFilter implements Filter {
         return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 
-    private Member extractMemberFromToken(HttpServletRequest request) {
+    private Long extractMemberIdFromToken(HttpServletRequest request) {
         String token = jwtProvider.extractToken(request);
         Map<String, Object> claims = jwtProvider.getClaimsFromToken(token);
 
-        Long providerId = Long.valueOf((String) claims.get("sub"));
-        Long memberId = ((Number) claims.get("memberId")).longValue();
-        String email = (String) claims.get("email");
-        String nickname = (String) claims.get("nickname");
-        String profileImage = (String) claims.get("profileImage");
-
-        return new Member(memberId, providerId, email, nickname, profileImage);
+        return ((Number) claims.get("memberId")).longValue();
     }
 
     private void sendErrorResponse(HttpServletResponse response, CustomResponseCode code)

@@ -3,7 +3,7 @@ package gift.auth.resolver;
 import gift.common.annotation.CurrentUser;
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.CustomException;
-import gift.entity.Member;
+import gift.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -15,6 +15,12 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
 
+    private final MemberRepository memberRepository;
+
+    public CurrentUserArgumentResolver(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(CurrentUser.class);
@@ -25,12 +31,9 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        Member member = (Member) request.getAttribute("member");
+        Long memberId = ((Number) request.getAttribute("memberId")).longValue();
 
-        if (member == null) {
-            throw new CustomException(CustomResponseCode.UNAUTHORIZED);
-        }
-
-        return member;
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new CustomException(CustomResponseCode.UNAUTHORIZED));
     }
 }

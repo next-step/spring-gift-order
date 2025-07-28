@@ -2,6 +2,7 @@ package gift.service.auth;
 
 import gift.config.KakaoProperties;
 import gift.dto.kakao.KakaoTokenResponse;
+import gift.global.util.KakaoAuthClient;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -10,31 +11,14 @@ import org.springframework.web.client.RestClient;
 
 @Service
 public class KakaoAuthService {
+    private final KakaoAuthClient kakaoAuthClient;
 
-    private final KakaoProperties kakaoProperties;
-    private final RestClient restClient;
-
-    public KakaoAuthService(KakaoProperties kakaoProperties, RestClient restClient) {
-        this.kakaoProperties = kakaoProperties;
-        this.restClient = restClient;
+    public KakaoAuthService(KakaoAuthClient kakaoAuthClient) {
+        this.kakaoAuthClient = kakaoAuthClient;
     }
 
     public String getAccessToken(String authorizationCode) {
-        String tokenUrl = "https://kauth.kakao.com/oauth/token";
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "authorization_code");
-        body.add("client_id", kakaoProperties.getClientId());
-        body.add("redirect_uri", kakaoProperties.getRedirectUri());
-        body.add("code", authorizationCode);
-
-        var responseBody = restClient.post()
-            .uri(tokenUrl)
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(body)
-            .retrieve()
-            .body(KakaoTokenResponse.class);
-
+        var responseBody = kakaoAuthClient.requestAccessToken(authorizationCode);
         return responseBody.accessToken();
     }
 }

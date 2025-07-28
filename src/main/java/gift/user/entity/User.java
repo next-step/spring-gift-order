@@ -5,8 +5,8 @@ import gift.shared.domain.UserRole;
 import gift.user.dto.request.UserModifyRequest;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 @Entity
@@ -29,6 +29,18 @@ public class User {
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public User(String email) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = md.digest(email.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashBytes) {
+            sb.append(String.format("%02x", b));
+        }
+
+        this.email = email;
+        this.password = sb.toString();
     }
 
     protected User() {}

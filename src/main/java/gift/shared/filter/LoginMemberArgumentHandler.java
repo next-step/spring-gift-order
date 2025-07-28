@@ -58,6 +58,6 @@ public class LoginMemberArgumentHandler implements HandlerMethodArgumentResolver
             Long userId = tokenService.extractId(token);
             return userService.getUserInfo(userId);
         }
-        return new NoTokenException(NO_TOKEN.getErrorMessage());
+        return new NoTokenException(NO_TOKEN.getMessage());
     }
 }

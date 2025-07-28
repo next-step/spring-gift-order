@@ -2,20 +2,22 @@ package gift.service;
 
 import gift.auth.jwt.JwtUtil;
 import gift.common.code.CustomResponseCode;
-import gift.common.exception.CustomException;
+import gift.common.exception.ForbiddenException;
+import gift.common.exception.ServerErrorException;
+import gift.common.exception.UnauthorizedException;
+import gift.common.exception.ValidationException;
 import gift.dto.AuthUser;
 import gift.dto.KaKaoTokenInfo;
 import gift.dto.KaKaoUserInfo;
 import gift.dto.TokenResponse;
 import gift.entity.Member;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -81,38 +83,55 @@ public class KaKaoAuthServiceImpl implements AuthService {
         formData.add("code", code);
         formData.add("client_secret", clientSecret);
 
-        try {
-            ResponseEntity<KaKaoTokenInfo> tokenInfo = restClient.post()
-                .uri(tokenUrl)
-                .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .body(formData)
-                .retrieve()
-                .toEntity(KaKaoTokenInfo.class);
+        KaKaoTokenInfo tokenInfo = restClient.post()
+            .uri(tokenUrl)
+            .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
+            .body(formData)
+            .retrieve()
+            .onStatus(status -> status.value() == 400,
+                (req, res) -> {
+                    throw new ValidationException();
+                })
+            .onStatus(status -> status.value() == 401,
+                (req, res) -> {
+                    throw new UnauthorizedException();
+                })
+            .onStatus(status -> status.value() == 403,
+                (req, res) -> {
+                    throw new ForbiddenException();
+                })
+            .onStatus(HttpStatusCode::is5xxServerError,
+                (req, res) -> {
+                    throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
+                })
+            .body(KaKaoTokenInfo.class);
 
-            return tokenInfo.getBody().accessToken();
-
-        } catch (HttpClientErrorException e) {
-            throw new CustomException(CustomResponseCode.VALIDATION_FAILED);
-        } catch (HttpServerErrorException e) {
-            throw new CustomException(CustomResponseCode.SERVER_ERROR);
-        }
-
+        return tokenInfo.accessToken();
     }
 
     private AuthUser requestUserInfo(String accessToken) {
-        try {
-            ResponseEntity<KaKaoUserInfo> userInfo = restClient.get()
-                .uri(userInfoUrl)
-                .header("Authorization", "Bearer " + accessToken)
-                .retrieve()
-                .toEntity(KaKaoUserInfo.class);
+        ResponseEntity<KaKaoUserInfo> userInfo = restClient.get()
+            .uri(userInfoUrl)
+            .header("Authorization", "Bearer " + accessToken)
+            .retrieve()
+            .onStatus(status -> status.value() == 400,
+                (req, res) -> {
+                    throw new ValidationException();
+                })
+            .onStatus(status -> status.value() == 401,
+                (req, res) -> {
+                    throw new UnauthorizedException();
+                })
+            .onStatus(status -> status.value() == 403,
+                (req, res) -> {
+                    throw new ForbiddenException();
+                })
+            .onStatus(HttpStatusCode::is5xxServerError,
+                (req, res) -> {
+                    throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
+                })
+            .toEntity(KaKaoUserInfo.class);
 
-            return AuthUser.fromKakao(userInfo.getBody());
-
-        } catch (HttpClientErrorException e) {
-            throw new CustomException(CustomResponseCode.VALIDATION_FAILED);
-        } catch (HttpServerErrorException e) {
-            throw new CustomException(CustomResponseCode.SERVER_ERROR);
-        }
+        return AuthUser.fromKakao(userInfo.getBody());
     }
 }

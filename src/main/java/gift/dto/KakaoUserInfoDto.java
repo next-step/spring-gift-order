@@ -1,12 +1,14 @@
 package gift.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record KakaoUserInfoDto(String sub,
                                String name,
                                String nickname,
                                String picture,
                                String email,
-                               Boolean email_verified,
+                               @JsonProperty("email_verified") Boolean emailVerified,
                                String gender,
                                String birthdate,
-                               String phone_number,
-                               Boolean phone_number_verified) { }
+                               @JsonProperty("phone_number") String phoneNumber,
+                               @JsonProperty("phone_number_verified") Boolean phoneNumberVerified) { }

@@ -68,10 +68,20 @@ public class Product {
         options.remove(option);
     }
 
+    private ProductOption getOption(Long optionId) {
+        return options.stream().filter(o -> o.getId().equals(optionId)).findFirst().orElseThrow(() -> new ProductOptionException("옵션 id를 확인해주세요."));
+    }
+
     private boolean existOptionName(String name) { // N+1문제
         return options.stream().anyMatch(op -> op.getName().equals(name));
     }
 
     protected Product() {
+    }
+
+    public ProductOption order(Long optionId, Integer quantity) {
+        ProductOption option = getOption(optionId);
+        option.subtractQuantity(quantity);
+        return option;
     }
 }

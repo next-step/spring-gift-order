@@ -157,18 +157,19 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("KakaoUser Test - 유저 생성")
     void test7() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         KakaoUser save = (KakaoUser) userRepository.save(user);
 
         assertThat(save.getId()).isNotNull();
         assertThat(save.getKakaoId()).isEqualTo(12345678L);
+        assertThat(save.getAccessToken()).isEqualTo("액세스토큰입니다");
         assertThat(save.getRole()).isEqualTo(Role.USER);
     }
 
     @Test
     @DisplayName("KakaoUser Test - 카카오 유저가 비밀번호 변경 시도할 시 InvalidUserException 반환")
     void test8_1() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         User save = userRepository.save(user);
 
         em.flush();
@@ -181,7 +182,7 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("KakaoUser Test - 카카오 유저가 비밀번호 비교 시도할 시 InvalidUserException 반환")
     void test8_2() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         User save = userRepository.save(user);
 
         em.flush();
@@ -194,7 +195,7 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("KakaoUser Test - 역할 변경")
     void test9() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         User save = userRepository.save(user);
 
         em.flush();
@@ -213,7 +214,7 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("KakaoUser Test - 유저 조회")
     void test10() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         User save = userRepository.save(user);
 
         em.flush();
@@ -223,13 +224,14 @@ public class UserRepositoryTest {
 
         assertThat(getUser.getId()).isNotNull();
         assertThat(getUser.getKakaoId()).isEqualTo(12345678L);
+        assertThat(getUser.getAccessToken()).isEqualTo("액세스토큰입니다");
         assertThat(getUser.getRole()).isEqualTo(Role.USER);
     }
 
     @Test
     @DisplayName("KakaoUser Test - 유저 삭제")
     void test11() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         userRepository.save(user);
 
         em.flush();
@@ -256,7 +258,7 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("KakaoUser Test - loginType 가져오기")
     void test13() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         userRepository.save(user);
 
         LoginType loginType = user.getLoginType();
@@ -266,7 +268,7 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("findKakaoUserByKakaoId 테스트")
     void test14() {
-        User user = User.createKakaoUser(12345678L, Role.USER);
+        User user = User.createKakaoUser(12345678L, "액세스토큰입니다", Role.USER);
         userRepository.save(user);
 
         em.flush();
@@ -276,6 +278,7 @@ public class UserRepositoryTest {
 
         assertThat(getUser.getId()).isNotNull();
         assertThat(getUser.getKakaoId()).isEqualTo(12345678L);
+        assertThat(getUser.getAccessToken()).isEqualTo("액세스토큰입니다");
         assertThat(getUser.getRole()).isEqualTo(Role.USER);
     }
 }

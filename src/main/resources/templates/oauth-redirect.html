@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인 처리 중...</title>
+</head>
+<body>
+<p>로그인 처리 중입니다. 잠시만 기다려주세요...</p>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  // 1. 서버에서 전달받은 토큰을 변수에 저장합니다.
+  const token = /*[[${token}]]*/ null;
+
+  if (token) {
+    localStorage.setItem('auth_token', token);
+    // 3. 저장이 완료되면 메인 페이지('/')로 이동시킵니다.
+    window.location.href = '/';
+  } else {
+    // 토큰이 없는 경우 로그인 페이지로 돌려보냅니다.
+    alert('로그인에 실패했습니다.');
+    window.location.href = '/login';
+  }
+  /*]]>*/
+</script>
+</body>
+</html>

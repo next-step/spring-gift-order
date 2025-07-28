@@ -79,4 +79,13 @@ public class MemberService {
         Member member = new Member(request.email(), encodedPassword);
         memberRepository.save(member);
     }
+
+    @Transactional
+    public Member findOrCreateMemberByKakaoId(Long kakaoId) {
+        return memberRepository.findByKakaoId(kakaoId)
+                .orElseGet(() -> {
+                    Member newMember = new Member(null, null, kakaoId);
+                    return memberRepository.save(newMember);
+                });
+    }
 }

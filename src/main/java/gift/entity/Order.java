@@ -25,6 +25,12 @@ public class Order {
     @JoinColumn(name = "option_id", nullable = false)
     private ProductOption option;
 
+    @Column(nullable = false)
+    private String optionNameSnapshot;
+
+    @Column(nullable = false)
+    private int optionQuantitySnapshot;
+
     protected Order() {
     }
 
@@ -34,6 +40,8 @@ public class Order {
         this.quantity = quantity;
         this.message = message;
         this.orderDateTime = LocalDateTime.now();
+        this.optionNameSnapshot = option.getName();
+        this.optionQuantitySnapshot = option.getQuantity();
     }
 
     public Long getId() {

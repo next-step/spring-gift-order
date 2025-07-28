@@ -49,7 +49,7 @@ public class ProductOption {
         return new ProductOption(product, name, price, quantity);
     }
 
-    public void subtractQuantity(int quantity) {
+    void subtractQuantity(int quantity) {
         Integer q = this.quantity;
         if (q - quantity < 0) {
             throw new NotEnoughQuantityException(this.quantity);

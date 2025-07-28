@@ -9,20 +9,16 @@ public class KakaoService {
 
     private final KakaoOAuthProperties kakaoProps;
     private final KakaoClient kakaoClient;
+    private final KakaoOAuthProperties kakaoOAuthProperties;
 
-    public KakaoService(KakaoOAuthProperties kakaoProps, KakaoClient kakaoClient) {
+    public KakaoService(KakaoOAuthProperties kakaoProps, KakaoClient kakaoClient, KakaoOAuthProperties kakaoOAuthProperties) {
         this.kakaoProps = kakaoProps;
         this.kakaoClient = kakaoClient;
+        this.kakaoOAuthProperties = kakaoOAuthProperties;
     }
 
     public String getKakaoLoginUrl() {
-        return UriComponentsBuilder
-                .fromUriString("https://kauth.kakao.com/oauth/authorize")
-                .queryParam("response_type", "code")
-                .queryParam("client_id", kakaoProps.getClientId())
-                .queryParam("redirect_uri", kakaoProps.getRedirectUri())
-                .build()
-                .toUriString();
+        return kakaoOAuthProperties.getKakaoLoginUrl();
     }
 
     public KakaoTokenResponseDto requestAccessToken(String code) {

@@ -2,7 +2,7 @@
 
 ## 2단계
 - 피드백 반영
-[] kakaoOAuthProperties에서 login url 제공하기
+[✅] kakaoOAuthProperties에서 login url 제공하기
 [] 토큰 발급 실패케이스 만들기
 - 주문하기 구현
 [] 카카오 회원과 이메일 회원 통합하는 데이터베이스 만들기

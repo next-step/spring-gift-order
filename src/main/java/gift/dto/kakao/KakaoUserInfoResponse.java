@@ -2,6 +2,7 @@ package gift.dto.kakao;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import java.util.Optional;
 
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record KakaoUserInfoResponse(
@@ -10,18 +11,15 @@ public record KakaoUserInfoResponse(
         KakaoAccount kakaoAccount
 ) {
 
-    public String getEmail() {
-        if (this.kakaoAccount == null) {
-            return null;
-        }
-        return this.kakaoAccount.email();
+    public Optional<String> getEmail() {
+        return Optional.ofNullable(kakaoAccount)
+                .map(KakaoAccount::email);
     }
 
-    public String getNickname() {
-        if (this.kakaoAccount == null || this.kakaoAccount.profile() == null) {
-            return null;
-        }
-        return this.kakaoAccount.profile().nickname();
+    public Optional<String> getNickname() {
+        return Optional.ofNullable(kakaoAccount)
+                .map(KakaoAccount::profile)
+                .map(Profile::nickname);
     }
 
     public record KakaoAccount(

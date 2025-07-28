@@ -50,6 +50,11 @@ public class OptionServiceImpl implements OptionService {
         return optionRepository.save(changedOption);
     }
 
+    @Override
+    public ItemOption findById(Long optionId) {
+        return optionRepository.findById(optionId).orElseThrow(OptionNotFoundException::new);
+    }
+
     private ItemOption getByItem(Item item) {
         return optionRepository.findByItem(item).orElseThrow(OptionNotFoundException::new);
     }

@@ -1,6 +1,7 @@
 package gift.repository.orderRepository;
 
-import jakarta.persistence.criteria.Order;
+
+import gift.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -20,6 +20,7 @@ import gift.dto.WishRequest;
 import gift.dto.WishResponse;
 import gift.entity.Member;
 import gift.service.WishService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @Import({JwtFilter.class, JwtProvider.class, WishE2ETest.JwtTestConfig.class})
 class WishE2ETest {
 
-    private final Member testMember = new Member(
-        1L,
-        123456L,
-        "test@domain.com",
-        "테스트 사용자",
-        "https://example.com/profile.jpg"
-    );
-
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -53,6 +46,18 @@ class WishE2ETest {
     private JwtUtil jwtUtil;
     @MockBean
     private WishService wishService;
+    private Member testMember;
+
+    @BeforeEach
+    void setup() {
+        testMember = new Member(
+            1L,
+            123456L,
+            "test@domain.com",
+            "테스트 사용자",
+            "https://example.com/profile.jpg"
+        );
+    }
 
     @Test
     @DisplayName("위시 등록 성공")

@@ -19,12 +19,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OptionRepository optionRepository;
     private final WishRepository wishRepository;
+    private final KakaoMessageService kakaoMessageService;
 
     public OrderService(OrderRepository orderRepository, OptionRepository optionRepository,
-            WishRepository wishRepository) {
+            WishRepository wishRepository, KakaoMessageService kakaoMessageService) {
         this.orderRepository = orderRepository;
         this.optionRepository = optionRepository;
         this.wishRepository = wishRepository;
+        this.kakaoMessageService = kakaoMessageService;
     }
 
     @Transactional
@@ -40,6 +42,7 @@ public class OrderService {
         Optional<Wish> findWish = wishRepository.findByMemberAndProduct(member, option.getProduct());
         findWish.ifPresent(wishRepository::delete);
 
+        kakaoMessageService.sendOrderMessage(member.getKakaoAccessToken(), savedOrder);
         return OrderResponseDto.from(savedOrder);
     }
 }

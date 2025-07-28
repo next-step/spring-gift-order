@@ -1,11 +1,11 @@
 package gift.controller.kakao;
 
 import gift.dto.KakaoUserInfoResponse;
+import gift.dto.MemberResponseDto;
 import gift.entity.Member;
 import gift.security.JwtTokenProvider;
 import gift.service.KakaoAuthService;
 import gift.service.MemberService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,11 +27,10 @@ public class KakaoAuthController {
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<Member> kakaoCallback(@RequestParam("code") String authorizeCode) {
+    public MemberResponseDto kakaoCallback(@RequestParam("code") String authorizeCode) {
         String accessToken = kakaoAuthService.getAccessToken(authorizeCode);
         KakaoUserInfoResponse kakaoUserInfoResponse = kakaoAuthService.getUserInfo(accessToken);
         Member member = memberService.processKakaoLogin(kakaoUserInfoResponse, accessToken);
-        
-        return ResponseEntity.ok(member);
+        return new MemberResponseDto(jwtTokenProvider.generateToken(member));
     }
 }

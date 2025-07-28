@@ -28,23 +28,47 @@ public class Member {
     @Column(name = "profile_image")
     private String profileImage;
 
+    @Column(name = "access_token", length = 1000)
+    private String accessToken;
+
+    @Column(name = "refresh_token", length = 1000)
+    private String refreshToken;
+
     protected Member() {
     }
 
-    public Member(Long id, Long providerId, String email, String nickname, String profileImage) {
+    public Member(Long id, Long providerId, String email, String nickname, String profileImage,
+        String accessToken, String refreshToken) {
         this.id = id;
         this.providerId = providerId;
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
+    public Member(Long id, Long providerId, String email, String nickname, String profileImage) {
+        this(id, providerId, email, nickname, profileImage, null, null);
     }
 
     public Member(Long providerId, String email, String nickname, String profileImage) {
         this(null, providerId, email, nickname, profileImage);
     }
 
+    public Member(Long providerId, String email, String nickname, String profileImage,
+        String accessToken, String refreshToken) {
+        this(null, providerId, email, nickname, profileImage, accessToken, refreshToken);
+    }
+
     public static Member from(AuthUser user) {
-        return new Member(user.providerId(), user.email(), user.nickname(), user.profileImage());
+        return new Member(user.providerId(), user.email(), user.nickname(), user.profileImage(),
+            user.accessToken(), user.refreshToken());
+    }
+
+    public void updateTokens(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
     public Long getId() {
@@ -65,5 +89,13 @@ public class Member {
 
     public String getProfileImage() {
         return profileImage;
+    }
+
+    public String getaccessToken() {
+        return accessToken;
+    }
+
+    public String getrefreshToken() {
+        return refreshToken;
     }
 }

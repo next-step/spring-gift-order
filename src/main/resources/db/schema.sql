@@ -10,7 +10,9 @@ CREATE TABLE member (
     provider_id BIGINT NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     nickname VARCHAR(255) NOT NULL,
-    profile_image VARCHAR(500)
+    profile_image VARCHAR(500),
+    access_token VARCHAR(1000),
+    refresh_token VARCHAR(1000)
 );
 
 CREATE TABLE wish (

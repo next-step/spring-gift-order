@@ -1,28 +1,39 @@
 <!DOCTYPE html>
 <html th:replace="~{layout/layout :: layout('상품 상세정보', ~{::#content}, null)}">
+
 <div id="content">
   <div class="product-detail">
-    <img th:src="${product.imageUrl}" alt="상품 이미지" width="200"/>
+    <img th:src="${product.imageUrl}" alt="상품 이미지" width="300"/>
     <p><strong>상품명:</strong> <span th:text="${product.name}"></span></p>
     <p><strong>가격:</strong> <span th:text="${product.price}"></span>원</p>
+  </div>
+  <hr style="margin: 20px 0;"/>
 
-    <div class="options-display" style="margin-top: 20px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;">
-      <h4>선택 가능한 옵션</h4>
-      <ul style="list-style: none; padding: 0;">
-        <li th:each="option : ${options}" style="padding: 8px 0; border-bottom: 1px solid #eee;">
-          <span th:text="${option.name}"></span>
-          <span th:if="${option.quantity > 0}" th:text="'(' + ${option.quantity} + '개 남음)'" style="color: #666; font-size: 0.9em; margin-left: 10px;"></span>
-          <span th:if="${option.quantity <= 0}" style="color: red; font-size: 0.9em; margin-left: 10px;">(품절)</span>
-        </li>
-        <li th:if="${#lists.isEmpty(options)}" style="padding: 8px 0;">
-          선택 가능한 옵션이 없습니다.
-        </li>
-      </ul>
+  <div id="product-order-form" class="form-container">
+    <div class="form-group">
+      <label for="option-select">옵션 선택</label>
+      <select id="option-select">
+        <option value="">-- 옵션을 선택해주세요 --</option>
+        <th:block th:each="option : ${options}">
+          <option th:if="${option.quantity > 0}" th:value="${option.id}" th:text="${option.name} + ' (' + ${option.quantity} + '개 남음)'"></option>
+          <option th:if="${option.quantity <= 0}" th:value="${option.id}" th:text="${option.name} + ' (품절)'" disabled></option>
+        </th:block>
+        <option th:if="${#lists.isEmpty(options)}" disabled>선택 가능한 옵션이 없습니다.</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="quantity-input">수량</label>
+      <input type="number" id="quantity-input" value="1" min="1">
+    </div>
+    <div class="form-group">
+      <label for="message-input">선물 메시지 (선택)</label>
+      <textarea id="message-input" placeholder="받는 분에게 보낼 메시지를 입력하세요."></textarea>
+    </div>
+    <div class="buttons">
+      <button id="order-button">선물하기</button>
+      <button onclick="history.back()" class="button-secondary">목록으로</button>
     </div>
   </div>
-
-  <div class="buttons">
-    <button onclick="history.back()" class="button">목록으로</button>
-  </div>
 </div>
+
 </html>

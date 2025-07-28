@@ -1,9 +1,11 @@
 package gift.api.member.domain;
 
+import gift.api.order.domain.Order;
 import gift.api.product.domain.Product;
 import gift.api.wish.domain.Wish;
 import gift.exception.conflict.WishDuplicateException;
 import gift.exception.notfound.WishNotFoundException;
+import gift.oauth.domain.Token;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +40,12 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wish> wishList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Token> tokens = new ArrayList<>();
 
     protected Member() {
     }

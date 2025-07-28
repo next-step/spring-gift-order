@@ -3,8 +3,10 @@ package gift.oauth.service;
 import gift.api.member.domain.Member;
 import gift.api.member.domain.MemberRole;
 import gift.api.member.repository.MemberRepository;
+import gift.oauth.domain.Token;
 import gift.oauth.dto.KakaoTokenResponseDto;
 import gift.oauth.dto.KakaoUserInfoResponseDto;
+import gift.oauth.repository.TokenRepository;
 import gift.util.JwtUtil;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestClient;
 public class KakaoService {
 
     private final MemberRepository memberRepository;
+    private final TokenRepository tokenRepository;
     private final RestClient restClient;
     private final JwtUtil jwtUtil;
 
@@ -36,8 +39,10 @@ public class KakaoService {
     @Value("${kakao.api.user-info-uri}")
     private String userInfoUri;
 
-    public KakaoService(MemberRepository memberRepository, JwtUtil jwtUtil) {
+    public KakaoService(MemberRepository memberRepository, TokenRepository tokenRepository,
+            JwtUtil jwtUtil) {
         this.memberRepository = memberRepository;
+        this.tokenRepository = tokenRepository;
         this.restClient = RestClient.create();
         this.jwtUtil = jwtUtil;
     }
@@ -47,6 +52,12 @@ public class KakaoService {
         String accessToken = getAccessToken(code);
         KakaoUserInfoResponseDto userInfo = getUserInfo(accessToken);
         Member member = registerOrLoginUser(userInfo);
+
+        tokenRepository.findByMemberAndProvider(member, "KAKAO")
+                .ifPresentOrElse(
+                        token -> token.updateAccessToken(accessToken),
+                        () -> tokenRepository.save(new Token(member, "KAKAO", accessToken))
+                );
 
         return jwtUtil.createToken(member.getEmail(), member.getRole());
     }

@@ -251,3 +251,92 @@ form input[type="email"] {
   max-width: 235px;
   height: auto; /* 높이는 비율에 맞게 자동 조정 */
 }
+
+/* ================================================= */
+/* ✨ 상품 상세 페이지 주문 폼 전용 스타일 (ID 기반) ✨ */
+/* ================================================= */
+
+/* 폼 그룹을 Flexbox로 정렬하여 라벨과 입력 필드를 한 줄에 배치합니다. */
+#product-order-form .form-group {
+  display: flex;
+  align-items: center; /* 세로 중앙 정렬 */
+  gap: 15px; /* 라벨과 입력 필드 사이 간격 */
+  margin-bottom: 1rem;
+}
+
+/* 라벨 스타일: 고정 너비와 정렬 */
+#product-order-form .form-group label {
+  flex: 0 0 120px; /* 라벨 너비를 120px로 고정 */
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 0; /* flex 정렬을 위해 기존 마진 제거 */
+}
+
+/* 입력 필드들이 남은 공간을 모두 차지하도록 설정 */
+#product-order-form .form-group select,
+#product-order-form .form-group input,
+#product-order-form .form-group textarea {
+  flex-grow: 1;
+}
+
+/* 입력 요소(select, input, textarea) 스타일 통일 */
+#product-order-form select,
+#product-order-form input[type="number"],
+#product-order-form textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ced4da; /* 테두리 색상 조정 */
+  border-radius: 8px;
+  font-size: 16px;
+  color: #333;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* 포커스 시 시각적 효과 */
+#product-order-form select:focus,
+#product-order-form input[type="number"]:focus,
+#product-order-form textarea:focus {
+  outline: none;
+  border-color: #fee500;
+  box-shadow: 0 0 0 3px rgba(254, 229, 0, 0.4);
+}
+
+#product-order-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* 버튼 영역 스타일 */
+#product-order-form .buttons {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f0f0;
+  flex-direction: column; /* 버튼 세로 정렬 */
+  gap: 7px;
+}
+
+/* '선물하기' 버튼 (ID로 정확히 지정) */
+#product-order-form #order-button {
+  background-color: #fee500; /* 기존 카카오 스타일과 통일 */
+  color: #3c1e1e;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 10px;
+  border: 1px solid #d9c300;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+#product-order-form #order-button:hover {
+  background-color: #fadb00;
+}
+
+#product-order-form .button-secondary {
+  background-color: #f1f3f5;
+  color: #495057;
+  font-weight: normal;
+  border: 1px solid #dee2e6;
+}
+#product-order-form .button-secondary:hover {
+  background-color: #e9ecef;
+}

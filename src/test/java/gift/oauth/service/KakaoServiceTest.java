@@ -13,6 +13,7 @@ import gift.api.member.domain.MemberRole;
 import gift.api.member.repository.MemberRepository;
 import gift.oauth.dto.KakaoTokenResponseDto;
 import gift.oauth.dto.KakaoUserInfoResponseDto;
+import gift.oauth.repository.TokenRepository;
 import gift.util.JwtUtil;
 import java.io.IOException;
 import java.util.Optional;
@@ -35,6 +36,7 @@ class KakaoServiceTest {
 
     private MockWebServer mockWebServer;
     private KakaoService kakaoService;
+    private TokenRepository tokenRepository;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
@@ -52,7 +54,7 @@ class KakaoServiceTest {
                 .baseUrl(mockWebServer.url("/").toString())
                 .build();
 
-        kakaoService = new KakaoService(memberRepository, jwtUtil);
+        kakaoService = new KakaoService(memberRepository, tokenRepository, jwtUtil);
         ReflectionTestUtils.setField(kakaoService, "restClient", restClient);
 
         // @Value 필드 값 주입

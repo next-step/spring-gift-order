@@ -20,6 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns(
                         "/api/products/**",
                         "/api/wishes/**",
+                        "/api/orders/**",
                         "/admin/**",
                         "/members/products/**",
                         "/members/wishes/**"

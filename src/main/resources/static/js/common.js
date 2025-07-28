@@ -197,3 +197,61 @@ async function deleteOption(productId, optionId) {
     alert('요청 중 오류가 발생했습니다.');
   }
 }
+
+async function handleOrderSubmit() {
+  // 폼 요소 가져오기
+  const optionSelect = document.getElementById('option-select');
+  const quantityInput = document.getElementById('quantity-input');
+  const messageInput = document.getElementById('message-input');
+
+  // 입력값 가져오기
+  const selectedOptionId = optionSelect.value;
+  const quantity = quantityInput.value;
+  const message = messageInput.value;
+
+  // 입력값 유효성 검사
+  if (!selectedOptionId) {
+    alert('주문할 상품의 옵션을 선택해주세요.');
+    return;
+  }
+  if (parseInt(quantity, 10) < 1) {
+    alert('수량은 1 이상이어야 합니다.');
+    return;
+  }
+
+  // 서버로 전송할 데이터 객체 생성
+  const orderData = {
+    optionId: parseInt(selectedOptionId, 10),
+    quantity: parseInt(quantity, 10),
+    message: message
+  };
+
+  // fetch API를 사용하여 비동기적으로 주문 요청
+  try {
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+
+    if (response.status === 201) { // 201 Created (주문 성공)
+      alert('선물하기가 완료되었습니다!\n카카오톡 메시지를 확인해주세요.');
+      window.location.href = '/members/products'; // 성공 시 상품 목록 페이지로 이동
+    } else {
+      // 실패 시 서버에서 보낸 에러 메시지를 JSON 형태로 파싱하여 표시
+      const errorResponse = await response.json();
+      throw new Error(errorResponse.message || '주문에 실패했습니다. 재고를 확인해주세요.');
+    }
+  } catch (error) {
+    console.error('Order failed:', error);
+    alert(`오류: ${error.message}`);
+  }
+}
+
+// 페이지 로드 시, 'order-button'이 존재하는 경우에만 이벤트 리스너를 연결합니다.
+document.addEventListener('DOMContentLoaded', () => {
+  const orderButton = document.getElementById('order-button');
+  if (orderButton) {
+    orderButton.addEventListener('click', handleOrderSubmit);
+  }
+});

@@ -32,3 +32,13 @@ CREATE TABLE product_option (
     CONSTRAINT fk_option_product FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT uc_product_option UNIQUE (product_id, name)
 );
+
+CREATE TABLE orders (
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+     member_id BIGINT NOT NULL,
+     product_option_id BIGINT NOT NULL,
+     quantity INT NOT NULL,
+     message VARCHAR(1000),
+     FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+     FOREIGN KEY (product_option_id) REFERENCES product_option(id)
+);

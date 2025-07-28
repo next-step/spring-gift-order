@@ -1,4 +1,4 @@
-package gift.controller;
+package gift.controller.kakao;
 
 import gift.service.KakaoAuthService;
 import org.springframework.http.ResponseEntity;

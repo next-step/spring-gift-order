@@ -93,11 +93,7 @@ public class ProductE2ETest {
     @Test
     @DisplayName("상품 조회 테스트")
     void testGetProduct() {
-        String name = "테스트 조회 상품";
-        int price = 4500;
-        String imageUrl = "https://test.jpg";
-
-        Long id = createSampleProduct(name, price, imageUrl);
+        Long id = createSampleProduct("테스트 조회 상품", 4500, "https://test.jpg");
 
         CustomResponseBody<ProductResponse> response = client.get()
             .uri("/{id}", id)
@@ -111,9 +107,11 @@ public class ProductE2ETest {
 
         assertAll("응답 데이터 필드 검증",
             () -> assertThat(data.id()).isEqualTo(id),
-            () -> assertThat(data.name()).isEqualTo(name),
-            () -> assertThat(data.price()).isEqualTo(price),
-            () -> assertThat(data.imageUrl()).isEqualTo(imageUrl)
+            () -> assertThat(data.name()).isEqualTo("테스트 조회 상품"),
+            () -> assertThat(data.price()).isEqualTo(4500),
+            () -> assertThat(data.imageUrl()).isEqualTo("https://test.jpg"),
+            () -> assertThat(data.options().get(0).name()).isEqualTo("기본 옵션"),
+            () -> assertThat(data.options().get(0).quantity()).isEqualTo(10)
         );
     }
 
@@ -122,8 +120,12 @@ public class ProductE2ETest {
     void testUpdateProduct() {
         Long id = createSampleProduct("테스트 기존 상품", 1000, "https://old.jpg");
 
+        List<ProductOptionRequest> updateOption = List.of(
+            new ProductOptionRequest("수정 옵션1", 10L),
+            new ProductOptionRequest("수정 옵션2", 20L)
+        );
         ProductRequest update = new ProductRequest("테스트 수정 상품", 1500, "https://new.jpg",
-            createDummyOptions());
+            updateOption);
 
         CustomResponseBody<ProductResponse> response = client.put()
             .uri("/{id}", id)
@@ -141,7 +143,11 @@ public class ProductE2ETest {
             () -> assertThat(data.id()).isEqualTo(id),
             () -> assertThat(data.name()).isEqualTo("테스트 수정 상품"),
             () -> assertThat(data.price()).isEqualTo(1500),
-            () -> assertThat(data.imageUrl()).isEqualTo("https://new.jpg")
+            () -> assertThat(data.imageUrl()).isEqualTo("https://new.jpg"),
+            () -> assertThat(data.options().get(0).name()).isEqualTo("수정 옵션1"),
+            () -> assertThat(data.options().get(0).quantity()).isEqualTo(10),
+            () -> assertThat(data.options().get(1).name()).isEqualTo("수정 옵션2"),
+            () -> assertThat(data.options().get(1).quantity()).isEqualTo(20)
         );
     }
 

@@ -13,9 +13,16 @@ public class KakaoUser extends User {
     @Column(nullable = false)
     private Long kakaoId;
 
-    protected KakaoUser(Long kakaoId, Role role) {
+    private String accessToken;
+
+    protected KakaoUser(Long kakaoId, String accessToken, Role role) {
         super(role);
+        this.accessToken = accessToken;
         this.kakaoId = kakaoId;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
     }
 
     public Long getKakaoId() {

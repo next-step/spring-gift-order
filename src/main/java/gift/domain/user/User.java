@@ -25,8 +25,8 @@ public abstract class User {
 
     public abstract void comparePassword(String password);
 
-    public static User createKakaoUser(Long kakaoId, Role role) {
-        return new KakaoUser(kakaoId, role);
+    public static User createKakaoUser(Long kakaoId, String accessToken, Role role) {
+        return new KakaoUser(kakaoId, accessToken, role);
     }
 
     public static User createBasicUser(String email, String password, Role role) {

@@ -42,13 +42,13 @@ public class UserService {
         return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
     }
 
-    public JwtTokenResponse kakaoLogin(Long kakaoId) {
+    public JwtTokenResponse kakaoLogin(Long kakaoId, String accessToken) {
         Optional<User> getUser = userRepository.findKakaoUserByKakaoId(kakaoId);
         if (getUser.isPresent()) {
             return JwtTokenResponse.from(jwtTokenProvider.createToken(getUser.get()));
         }
         else {
-            User user = userRepository.save(User.createKakaoUser(kakaoId, Role.USER));
+            User user = userRepository.save(User.createKakaoUser(kakaoId, accessToken, Role.USER));
             return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
         }
     }

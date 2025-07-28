@@ -25,16 +25,17 @@ import java.util.Objects;
 @Component
 public class KakaoMessageClient {
     private final static Integer TEMPLATE_ID = 122784;
-    private final RestClient restClient;
     private final ObjectMapper objectMapper;
+    private final RestClient restClient;
+    private final String url;
 
     public KakaoMessageClient(
             @Value("${gift.service.kakao.message.url}")
-            String url
+            String url,
+            RestClient restClient
     ) {
-        this.restClient = RestClient.builder()
-                .baseUrl(url)
-                .build();
+        this.restClient = restClient;
+        this.url = url;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -75,6 +76,7 @@ public class KakaoMessageClient {
 
     public void sendMessage(Order order, String accessToken) {
         restClient.post()
+                .uri(url)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .header("Authorization", "Bearer " + accessToken)
                 .body(createRequestBody(order))

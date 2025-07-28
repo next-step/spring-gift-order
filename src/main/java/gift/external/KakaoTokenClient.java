@@ -19,18 +19,19 @@ import java.util.Objects;
 public class KakaoTokenClient {
     private final String redirectUri;
     private final String restApiKey;
+    private final String baseUrl;
     private final RestClient restClient;
 
     public KakaoTokenClient(
             @Value("${gift.oauth.redirect-uri}") String baseRedirectUri,
             @Value("${gift.oauth.provider.kakao.baseurl}") String baseUrl,
-            @Value("${gift.oauth.provider.kakao.rest-api-key}") String restApiKey
+            @Value("${gift.oauth.provider.kakao.rest-api-key}") String restApiKey,
+            RestClient restClient
     ) {
         this.redirectUri = baseRedirectUri + "/kakao";
         this.restApiKey = restApiKey;
-        this.restClient = RestClient.builder()
-                .baseUrl(baseUrl)
-                .build();
+        this.baseUrl = baseUrl;
+        this.restClient = restClient;
     }
 
     private MultiValueMap<String, String> convertToMultiValueMap(KakaoTokenRequest request) {
@@ -45,7 +46,7 @@ public class KakaoTokenClient {
     public KakaoPublicKeyResponse getPublicKeyResponse() {
         return restClient
                 .get()
-                .uri("/.well-known/jwks.json")
+                .uri(baseUrl + "/.well-known/jwks.json")
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(KakaoPublicKeyResponse.class);
@@ -60,7 +61,7 @@ public class KakaoTokenClient {
         );
         return restClient
                 .post()
-                .uri("/oauth/token")
+                .uri(baseUrl + "/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(convertToMultiValueMap(requestBody))
                 .exchange((req, res)-> {

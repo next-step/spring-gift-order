@@ -55,6 +55,10 @@ public class Member {
         return provider;
     }
 
+    public String getKakaoAccessToken() {
+        return kakaoAccessToken;
+    }
+
     public void setKakaoAccessToken(String kakaoAccessToken) {
         this.kakaoAccessToken = kakaoAccessToken;
     }

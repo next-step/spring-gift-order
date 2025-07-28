@@ -48,11 +48,12 @@ class KakaoServiceTest {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
 
-        RestClient webClient = RestClient.builder()
+        RestClient restClient = RestClient.builder()
                 .baseUrl(mockWebServer.url("/").toString())
                 .build();
 
         kakaoService = new KakaoService(memberRepository, jwtUtil);
+        ReflectionTestUtils.setField(kakaoService, "restClient", restClient);
 
         // @Value 필드 값 주입
         ReflectionTestUtils.setField(kakaoService, "clientId", "test-client-id");

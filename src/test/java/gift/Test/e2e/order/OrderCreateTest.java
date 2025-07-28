@@ -1,5 +1,6 @@
 package gift.Test.e2e.order;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import gift.dto.order.OrderCreateRequest;
 import gift.entity.type.UserRole;
 import io.restassured.RestAssured;
@@ -11,10 +12,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 public class OrderCreateTest extends AbstractOrderTest {
     private final FieldDescriptor[] ORDER_CREATE_REQUEST = {
@@ -58,9 +60,16 @@ public class OrderCreateTest extends AbstractOrderTest {
 
         RestAssured.given(this.spec)
                 .filter(document("주문 생성 성공",
-                        requestFields(ORDER_CREATE_REQUEST),
-                        requestHeaders(AUTHENTICATE_HEADERS),
-                        responseFields(ORDER_CREATE_RESPONSE)))
+                    resource(
+                        ResourceSnippetParameters.builder()
+                        .tag("Order")
+                        .summary("주문 생성 API")
+                        .description("주문을 생성합니다. 옵션 ID와 수량, 메시지를 포함합니다.")
+                        .requestFields(ORDER_CREATE_REQUEST)
+                        .requestHeaders(AUTHENTICATE_HEADERS)
+                        .responseFields(ORDER_CREATE_RESPONSE)
+                        .build()
+                )))
                 .contentType("application/json")
                 .header(AUTH_HEADER_KEY, testToken)
                 .body(request)

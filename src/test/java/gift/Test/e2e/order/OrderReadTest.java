@@ -1,5 +1,6 @@
 package gift.Test.e2e.order;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import gift.dto.order.OrderCreateRequest;
 import gift.dto.order.OrderResponse;
 import gift.entity.type.UserRole;
@@ -15,12 +16,12 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 
 public class OrderReadTest extends AbstractOrderTest {
     static final FieldDescriptor[] ORDER_READ_RESPONSE = {
@@ -82,9 +83,16 @@ public class OrderReadTest extends AbstractOrderTest {
     public void Order_Read_All_Success() {
         RestAssured.given(this.spec)
                 .filter(document("주문 전체 조회 성공",
-                        requestHeaders(AUTHENTICATE_HEADERS),
-                        queryParameters(PAGE_PARAMETERS),
-                        responseFields(ORDER_READ_PAGE_RESPONSE)))
+                        resource(
+                            ResourceSnippetParameters.builder()
+                                .tag("Order")
+                                .summary("주문 전체 조회 API")
+                                .description("사용자의 모든 주문을 페이지네이션하여 조회합니다.")
+                                .pathParameters(PAGE_PARAMETERS)
+                                .requestHeaders(AUTHENTICATE_HEADERS)
+                                .responseFields(ORDER_READ_PAGE_RESPONSE)
+                                .build()
+                )))
                 .header(AUTH_HEADER_KEY, this.testUserTokens.get(UserRole.ROLE_USER))
                 .when()
                 .get(getRequestUrl())
@@ -118,9 +126,18 @@ public class OrderReadTest extends AbstractOrderTest {
 
         RestAssured.given(this.spec)
                 .filter(document("주문 단건 조회 성공",
-                        responseFields(ORDER_READ_RESPONSE),
-                        pathParameters(parameterWithName("orderId").description("조회할 주문 ID")))
-                )
+                    resource(
+                        ResourceSnippetParameters.builder()
+                            .tag("Order")
+                            .summary("주문 단건 조회 API")
+                            .description("주문 ID로 특정 주문을 조회합니다.")
+                            .requestHeaders(AUTHENTICATE_HEADERS)
+                            .responseFields(ORDER_READ_RESPONSE)
+                            .pathParameters(
+                                    parameterWithName("orderId").description("조회할 주문 ID")
+                            )
+                            .build()
+                )))
                 .header(AUTH_HEADER_KEY, this.testUserTokens.get(UserRole.ROLE_USER))
                 .when()
                 .get(getRequestUrl() + "/{orderId}", testOrder.id())

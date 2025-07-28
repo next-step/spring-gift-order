@@ -1,5 +1,6 @@
 package gift.Test.e2e.order;
 
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import gift.dto.order.OrderCreateRequest;
 import gift.dto.order.OrderResponse;
 import gift.dto.order.OrderUpdateRequest;
@@ -17,13 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 public class OrderUpdateTest extends AbstractOrderTest {
     private static final FieldDescriptor[] ORDER_UPDATE_REQUEST = {
@@ -91,10 +91,19 @@ public class OrderUpdateTest extends AbstractOrderTest {
 
         RestAssured.given(this.spec)
                 .filter(document("주문 수정 성공",
-                        requestFields(ORDER_UPDATE_REQUEST),
-                        requestHeaders(AUTHENTICATE_HEADERS),
-                        pathParameters(parameterWithName("id").description("수정할 주문 ID")),
-                        responseFields(ORDER_UPDATE_RESPONSE)))
+                        resource(
+                            ResourceSnippetParameters.builder()
+                            .tag("Order")
+                            .summary("주문 수정 API")
+                            .description("주문을 수정합니다. 주문 ID와 수정할 필드를 포함합니다.")
+                            .pathParameters(
+                                    parameterWithName("id").description("수정할 주문 ID")
+                            )
+                            .requestHeaders(AUTHENTICATE_HEADERS)
+                            .requestFields(ORDER_UPDATE_REQUEST)
+                            .responseFields(ORDER_UPDATE_RESPONSE)
+                            .build()
+                )))
                 .contentType("application/json")
                 .header(AUTH_HEADER_KEY, this.testUserTokens.get(UserRole.ROLE_ADMIN))
                 .body(request)

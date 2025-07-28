@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class LoginController {
+public class KakaoLoginController {
 
     private final String clientId;
     private final String redirectUri;
 
     private final KakaoService kakaoService;
 
-    public LoginController(
+    public KakaoLoginController(
         @Value("${kakao.app.key}") String clientId,
         @Value("${kakao.redirect_uri}") String redirectUri, KakaoService kakaoService
     ) {

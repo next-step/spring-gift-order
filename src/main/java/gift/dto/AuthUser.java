@@ -4,15 +4,19 @@ public record AuthUser(
     Long providerId,
     String email,
     String nickname,
-    String profileImage
+    String profileImage,
+    String accessToken,
+    String refreshToken
 ) {
 
-    public static AuthUser fromKakao(KaKaoUserInfo kaKaoUserInfo) {
-        Long providerId = kaKaoUserInfo.id();
-        String email = kaKaoUserInfo.kakaoAccount().email();
-        String nickname = kaKaoUserInfo.kakaoAccount().profile().nickname();
-        String profileImage = kaKaoUserInfo.kakaoAccount().profile().profileImageUrl();
-
-        return new AuthUser(providerId, email, nickname, profileImage);
+    public static AuthUser fromKakao(KaKaoUserInfo userInfo, KaKaoTokenInfo tokenInfo) {
+        return new AuthUser(
+            userInfo.id(),
+            userInfo.kakaoAccount().email(),
+            userInfo.kakaoAccount().profile().nickname(),
+            userInfo.kakaoAccount().profile().profileImageUrl(),
+            tokenInfo.accessToken(),
+            tokenInfo.refreshToken()
+        );
     }
 }

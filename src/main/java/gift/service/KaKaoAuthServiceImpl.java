@@ -14,8 +14,8 @@ import gift.entity.Member;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
@@ -64,18 +64,22 @@ public class KaKaoAuthServiceImpl implements AuthService {
 
     @Override
     public AuthUser authenticate(String code) {
-        String accessToken = requestAccessToken(code);
-        return requestUserInfo(accessToken);
+        KaKaoTokenInfo tokenInfo = requestAccessToken(code);
+        KaKaoUserInfo userInfo = requestUserInfo(tokenInfo.accessToken());
+
+        return AuthUser.fromKakao(userInfo, tokenInfo);
     }
 
     @Override
+    @Transactional
     public TokenResponse registerOrLogin(AuthUser authUser) {
         Member member = memberService.getOrCreate(authUser);
+        member.updateTokens(authUser.accessToken(), authUser.refreshToken());
         String token = jwtUtil.generateToken(member);
         return TokenResponse.from(token);
     }
 
-    private String requestAccessToken(String code) {
+    private KaKaoTokenInfo requestAccessToken(String code) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "authorization_code");
         formData.add("client_id", clientId);
@@ -106,11 +110,11 @@ public class KaKaoAuthServiceImpl implements AuthService {
                 })
             .body(KaKaoTokenInfo.class);
 
-        return tokenInfo.accessToken();
+        return tokenInfo;
     }
 
-    private AuthUser requestUserInfo(String accessToken) {
-        ResponseEntity<KaKaoUserInfo> userInfo = restClient.get()
+    private KaKaoUserInfo requestUserInfo(String accessToken) {
+        KaKaoUserInfo userInfo = restClient.get()
             .uri(userInfoUrl)
             .header("Authorization", "Bearer " + accessToken)
             .retrieve()
@@ -130,8 +134,8 @@ public class KaKaoAuthServiceImpl implements AuthService {
                 (req, res) -> {
                     throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
                 })
-            .toEntity(KaKaoUserInfo.class);
+            .body(KaKaoUserInfo.class);
 
-        return AuthUser.fromKakao(userInfo.getBody());
+        return userInfo;
     }
 }

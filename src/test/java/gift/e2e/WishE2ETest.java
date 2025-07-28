@@ -20,6 +20,7 @@ import gift.dto.WishRequest;
 import gift.dto.WishResponse;
 import gift.entity.Member;
 import gift.service.WishService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,25 +40,23 @@ class WishE2ETest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private JwtUtil jwtUtil;
-
     @MockBean
     private WishService wishService;
+    private Member testMember;
 
-    private final Member mockMember = new Member(1L, "test@domain.com", "pw");
-
-    @TestConfiguration
-    static class JwtTestConfig {
-
-        @Bean
-        public JwtUtil jwtUtil() {
-            return new JwtUtil("testtesttesttesttesttesttesttest");
-        }
+    @BeforeEach
+    void setup() {
+        testMember = new Member(
+            1L,
+            123456L,
+            "test@domain.com",
+            "테스트 사용자",
+            "https://example.com/profile.jpg"
+        );
     }
 
     @Test
@@ -66,10 +65,10 @@ class WishE2ETest {
         WishRequest request = new WishRequest(10L, 2);
         WishResponse response = new WishResponse(1L, 10L, 2, "상품명", 1000, "https://img");
 
-        given(wishService.addWish(eq(mockMember.getId()), any(WishRequest.class))).willReturn(
+        given(wishService.addWish(eq(testMember.getId()), any(WishRequest.class))).willReturn(
             response);
 
-        String token = createToken(mockMember.getId(), mockMember.getEmail());
+        String token = jwtUtil.generateToken(testMember);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/wishes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,10 +99,10 @@ class WishE2ETest {
     void testAddWishDuplicateFail() throws Exception {
         WishRequest request = new WishRequest(10L, 1);
 
-        given(wishService.addWish(eq(mockMember.getId()), any(WishRequest.class)))
+        given(wishService.addWish(eq(testMember.getId()), any(WishRequest.class)))
             .willThrow(new CustomException(CustomResponseCode.ALREADY_EXISTS));
 
-        String token = createToken(mockMember.getId(), mockMember.getEmail());
+        String token = jwtUtil.generateToken(testMember);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/wishes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -121,7 +120,7 @@ class WishE2ETest {
     void testAddWishValidationFail() throws Exception {
         WishRequest invalidRequest = new WishRequest(null, -1);
 
-        String token = createToken(mockMember.getId(), mockMember.getEmail());
+        String token = jwtUtil.generateToken(testMember);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/wishes")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +143,7 @@ class WishE2ETest {
     @Test
     @DisplayName("위시 삭제 성공")
     void testDeleteWishSuccess() throws Exception {
-        String token = createToken(mockMember.getId(), mockMember.getEmail());
+        String token = jwtUtil.generateToken(testMember);
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.delete("/api/wishes/{productId}", 10L)
@@ -160,9 +159,9 @@ class WishE2ETest {
     @DisplayName("위시 삭제 실패 - 존재하지 않는 wish")
     void testDeleteWishNotFoundFail() throws Exception {
         doThrow(new CustomException(CustomResponseCode.NOT_FOUND))
-            .when(wishService).deleteWish(eq(mockMember.getId()), eq(999L));
+            .when(wishService).deleteWish(eq(testMember.getId()), eq(999L));
 
-        String token = createToken(mockMember.getId(), mockMember.getEmail());
+        String token = jwtUtil.generateToken(testMember);
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.delete("/api/wishes/{productId}", 999L)
@@ -191,7 +190,12 @@ class WishE2ETest {
         );
     }
 
-    private String createToken(Long userId, String email) {
-        return jwtUtil.generateToken(email, userId);
+    @TestConfiguration
+    static class JwtTestConfig {
+
+        @Bean
+        public JwtUtil jwtUtil() {
+            return new JwtUtil("testtesttesttesttesttesttesttest");
+        }
     }
 }

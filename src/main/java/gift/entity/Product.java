@@ -61,6 +61,16 @@ public class Product {
         return option;
     }
 
+    public void update(String name, Integer price, String imageUrl) {
+        this.name = name;
+        this.price = price;
+        this.imageUrl = imageUrl;
+    }
+
+    public void clearOptions() {
+        this.options.clear();
+    }
+
     private void validateDuplicateOptionName(String name) {
         boolean isOptionNameDuplicated = options.stream()
             .anyMatch(opt -> opt.getName().equals(name));
@@ -88,4 +98,5 @@ public class Product {
     public String getImageUrl() {
         return imageUrl;
     }
+
 }

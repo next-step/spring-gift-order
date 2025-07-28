@@ -24,7 +24,12 @@ class MemberRepositoryTest {
     @BeforeEach
     void setUp() {
         testEmail = "test@domain.com";
-        testMember = new Member(testEmail, "pw");
+        testMember = memberRepository.save(new Member(
+            123456L,
+            "test@domain.com",
+            "테스트 사용자",
+            "https://example.com/profile.jpg"
+        ));
         testMember = memberRepository.save(testMember);
     }
 

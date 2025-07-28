@@ -1,5 +1,6 @@
 package gift.auth.jwt;
 
+import gift.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -11,20 +12,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    private final SecretKey secretKey;
     private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+    private final SecretKey secretKey;
 
     public JwtUtil(@Value("${jwt.secret}") String secretKeyString) {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
     }
 
-    public String generateToken(String email, Long memberId) {
+    public String generateToken(Member member) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
 
         return Jwts.builder()
-            .subject(email)
-            .claim("memberId", memberId)
+            .subject(String.valueOf(member.getProviderId()))
+            .claim("memberId", member.getId())
+            .claim("email", member.getEmail())
+            .claim("nickname", member.getNickname())
+            .claim("profileImage", member.getProfileImage())
             .issuedAt(now)
             .expiration(expiryDate)
             .signWith(secretKey)

@@ -36,7 +36,12 @@ class WishRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        testMember = memberRepository.save(new Member("test@domain.com", "pw"));
+        testMember = memberRepository.save(new Member(
+            123456L,
+            "test@domain.com",
+            "테스트 사용자",
+            "https://example.com/profile.jpg"
+        ));
         testProduct = productRepository.save(new Product("테스트 상품", 4500, "https://test.jpg"));
         testProduct2 = productRepository.save(
             new Product("또다른 상품", 3000, "https://another.jpg"));

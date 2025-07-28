@@ -1,11 +1,13 @@
 package gift.service;
 
-import gift.dto.AuthRequest;
-import gift.dto.AuthResponse;
+import gift.dto.AuthUser;
+import gift.dto.TokenResponse;
 
 public interface AuthService {
 
-    void register(AuthRequest request);
+    String getRedirectUrl();
 
-    AuthResponse login(AuthRequest request);
+    AuthUser authenticate(String code);
+
+    TokenResponse registerOrLogin(AuthUser authUser);
 }

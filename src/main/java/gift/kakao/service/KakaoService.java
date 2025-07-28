@@ -1,7 +1,7 @@
-package gift.login.service;
+package gift.kakao.service;
 
-import gift.login.dto.KakaoTokenResponseDto;
-import gift.login.exception.KakaoServerException;
+import gift.kakao.dto.KakaoTokenResponseDto;
+import gift.kakao.exception.KakaoServerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;

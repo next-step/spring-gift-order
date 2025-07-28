@@ -1,6 +1,6 @@
-package gift.login.controller;
+package gift.kakao.controller;
 
-import gift.login.service.KakaoService;
+import gift.kakao.service.KakaoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

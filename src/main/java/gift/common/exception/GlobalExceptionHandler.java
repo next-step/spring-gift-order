@@ -4,7 +4,7 @@ import gift.common.security.exception.InvalidTokenException;
 import gift.common.security.exception.MissingTokenException;
 import gift.item.exception.ItemNotFoundException;
 import gift.item.exception.LastOptionCannotBeDeletedException;
-import gift.login.exception.KakaoServerException;
+import gift.kakao.exception.KakaoServerException;
 import gift.member.exception.DuplicateEmailException;
 import gift.member.exception.InvalidLoginException;
 import gift.member.exception.MemberNotFoundException;

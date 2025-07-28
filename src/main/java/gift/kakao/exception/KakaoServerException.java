@@ -1,4 +1,4 @@
-package gift.login.exception;
+package gift.kakao.exception;
 
 public class KakaoServerException extends RuntimeException {
 

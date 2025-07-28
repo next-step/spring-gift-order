@@ -28,7 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 @ExtendWith(MockitoExtension.class)
 class KakaoServiceTest {
@@ -48,11 +48,11 @@ class KakaoServiceTest {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
 
-        WebClient webClient = WebClient.builder()
+        RestClient webClient = RestClient.builder()
                 .baseUrl(mockWebServer.url("/").toString())
                 .build();
 
-        kakaoService = new KakaoService(memberRepository, webClient, jwtUtil);
+        kakaoService = new KakaoService(memberRepository, jwtUtil);
 
         // @Value 필드 값 주입
         ReflectionTestUtils.setField(kakaoService, "clientId", "test-client-id");

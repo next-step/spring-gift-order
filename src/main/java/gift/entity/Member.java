@@ -35,10 +35,6 @@ public class Member {
         this.provider = provider;
     }
 
-    public Member(MemberRequestDto memberRequestDto) {
-        this(null, memberRequestDto.email(), memberRequestDto.password(), memberRequestDto.provider());
-    }
-
     public Member(String email, String password, String provider) {
         this(null, email, password,  provider);
     }
@@ -53,6 +49,10 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getProvider() {
+        return provider;
     }
 
     public void setKakaoAccessToken(String kakaoAccessToken) {

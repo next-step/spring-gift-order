@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.dto.KakaoUserInfoResponse;
 import gift.dto.MemberRequestDto;
 import gift.dto.MemberResponseDto;
 import gift.entity.Member;
@@ -9,6 +10,7 @@ import gift.exception.ResourceNotFoundException;
 import gift.repository.MemberRepository;
 import gift.security.JwtTokenProvider;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,7 @@ public class MemberService {
             throw new EmailAlreadyExistsException("이미 등록된 이메일입니다.");
         }
 
-        Member member = new Member(memberRequestDto);
+        Member member = new Member(memberRequestDto.email(), memberRequestDto.password(), "LOCAL");
         memberRepository.save(member);
 
         return new MemberResponseDto(jwtTokenProvider.generateToken(member));
@@ -41,10 +43,30 @@ public class MemberService {
         Member member = memberRepository.findByEmail(memberRequestDto.email())
                 .orElseThrow(() -> new ResourceNotFoundException("등록된 사용자가 아닙니다."));
 
+        if (!"LOCAL".equals(member.getProvider())) {
+            throw new InvalidCredentialsException("카카오로 가입된 계정입니다. 카카오 로그인을 이용해주세요.");
+        }
+
         if (!member.getPassword().equals(memberRequestDto.password())) {
             throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다.");
         }
 
         return new MemberResponseDto(jwtTokenProvider.generateToken(member));
+    }
+
+    @Transactional
+    public Member processKakaoLogin(KakaoUserInfoResponse kakaoUserInfoResponse, String kakaoAccessToken) {
+        String email = kakaoUserInfoResponse.getEmail();
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    String randomPassword = UUID.randomUUID().toString();
+                    Member newMember = new Member(email, randomPassword, "KAKAO");
+                    return memberRepository.save(newMember);
+                });
+
+        member.setKakaoAccessToken(kakaoAccessToken);
+
+        return member;
     }
 }

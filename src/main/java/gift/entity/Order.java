@@ -1,6 +1,7 @@
 package gift.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,7 +25,8 @@ public class Order {
     @JoinColumn(name = "option_id", nullable = false)
     private ProductOption option;
 
-    protected Order() {}
+    protected Order() {
+    }
 
     public Order(Member member, ProductOption option, int quantity, String message) {
         this.member = member;
@@ -34,11 +36,28 @@ public class Order {
         this.orderDateTime = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public int getQuantity() { return quantity; }
-    public String getMessage() { return message; }
-    public LocalDateTime getOrderDateTime() { return orderDateTime; }
-    public Member getMember() { return member; }
-    public ProductOption getOption() { return option; }
+    public Long getId() {
+        return id;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public LocalDateTime getOrderDateTime() {
+        return orderDateTime;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public ProductOption getOption() {
+        return option;
+    }
 }
 

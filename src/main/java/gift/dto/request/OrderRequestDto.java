@@ -9,9 +9,6 @@ public class OrderRequestDto {
         return optionId;
     }
 
-    public void setOptionId(Long optionId) {
-        this.optionId = optionId;
-    }
 
     public int getQuantity() {
         return quantity;
@@ -25,7 +22,4 @@ public class OrderRequestDto {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

@@ -44,8 +44,8 @@ public class Product {
     @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+    @Column(name = "quantity", nullable = true)
+    private Integer quantity;
 
     @NotBlank(message = "이미지 URL은 필수입니다.")
     @Column(name = "imageUrl", nullable = false)
@@ -81,6 +81,7 @@ public class Product {
         this.options = new ArrayList<>();
 
         options.forEach(this::addOption);
+        recalculateQuantity();
     }
 
     public Product(String name, int price, String imageUrl, List<ProductOption> options) {
@@ -100,6 +101,9 @@ public class Product {
     }
 
     public int getQuantity() {
+        if (this.quantity == null) {
+            return 0;
+        }
         return this.quantity;
     }
 

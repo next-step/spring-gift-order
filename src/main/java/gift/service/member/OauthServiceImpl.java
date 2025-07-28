@@ -24,14 +24,14 @@ public class OauthServiceImpl implements OauthService {
     }
 
     @Override
-    public String fetchKakaoToken(String code) {
-        KakaoTokenDto tokenDto = kakaoClient.fetchToken(code);
+    public KakaoTokenDto fetchKakaoToken(String code) {
+        KakaoTokenDto kakaoTokenDto = kakaoClient.fetchToken(code);
 
-        if (tokenDto == null || tokenDto.accessToken() == null) {
+        if (kakaoTokenDto == null || kakaoTokenDto.accessToken() == null) {
             throw new KakaoTokenFetchException("카카오 토큰 발급에 문제가 발생했습니다.");
         }
 
-        return tokenDto.accessToken();
+        return kakaoTokenDto;
     }
 
     @Override

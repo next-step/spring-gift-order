@@ -1,10 +1,15 @@
 package gift.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.config.KakaoProperties;
 import gift.dto.login.KakaoErrorDto;
 import gift.dto.login.KakaoProfileDto;
 import gift.dto.login.KakaoTokenDto;
+import gift.dto.order.KakaoOrderResponseDto;
+import gift.dto.order.KakaoOrderTemplateMessageDto;
+import gift.dto.order.KakaoOrderTemplateMessageDto.KakaoOrderTemplateMessageContentDto;
+import gift.dto.order.KakaoOrderTemplateMessageDto.KakaoOrderTemplateMessageLinkDto;
 import gift.exception.KakaoTokenFetchException;
 import java.io.IOException;
 import org.springframework.http.HttpHeaders;
@@ -72,6 +77,41 @@ public class KakaoClient {
             .headers(h -> h.addAll(headers))
             .retrieve()
             .toEntity(KakaoProfileDto.class);
+
+        return response.getBody();
+    }
+
+    public KakaoOrderResponseDto sendKakaoMessage(String accessToken, String message,
+        String imageUrl) {
+        String bearerToken = "Bearer " + accessToken;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, bearerToken);
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
+
+        KakaoOrderTemplateMessageLinkDto linkDto = new KakaoOrderTemplateMessageLinkDto(
+            "www.example.com", "www.example.com");
+        KakaoOrderTemplateMessageContentDto contentDto = new KakaoOrderTemplateMessageContentDto(
+            "상품 주문이 완료되었습니다.", "배송 메시지: " + message, imageUrl, linkDto);
+        KakaoOrderTemplateMessageDto messageDto = new KakaoOrderTemplateMessageDto("feed",
+            contentDto);
+        
+        String templateJson = null;
+        try {
+            templateJson = objectMapper.writeValueAsString(messageDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Kakao message DTO을 JSON으로 변환하는데 실패하였습니다.");
+        }
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("template_object", templateJson);
+
+        ResponseEntity<KakaoOrderResponseDto> response = restClient.post()
+            .uri(kakaoProperties.sendMessageUri())
+            .headers(h -> h.addAll(headers))
+            .body(body)
+            .retrieve()
+            .toEntity(KakaoOrderResponseDto.class);
 
         return response.getBody();
     }

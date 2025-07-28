@@ -30,7 +30,8 @@ public enum KakaoErrorCode {
     INVALID_USER_PROPERTY_KEY(HttpStatus.BAD_REQUEST, "-201",
         "앱에 추가하지 않은 사용자 프로퍼티 키를 요청·저장하려고 했습니다."),
     SCOPE_NOT_GRANTED(HttpStatus.FORBIDDEN, "-402", "해당 리소스에 대한 사용자 동의가 필요합니다."),
-    UNDER_14_RESTRICTED(HttpStatus.UNAUTHORIZED, "-406", "14세 미만 사용자는 호출할 수 없는 API입니다.");
+    UNDER_14_RESTRICTED(HttpStatus.UNAUTHORIZED, "-406", "14세 미만 사용자는 호출할 수 없는 API입니다."),
+    KAKAO_MESSAGE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "-10000", "주문 후, 카카오 메시지 전송이 되지 않았습니다.");
 
     private final HttpStatus status;
     private final String errorCode;

@@ -1,5 +1,6 @@
 package gift.entity;
 
+import gift.exception.InvalidQuantityException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -81,6 +82,13 @@ public class ProductOption {
         if (product != null) {
             this.product.recalculateQuantity();
         }
+    }
+
+    public void decreaseQuantity(int quantity) {
+        if (quantity > this.quantity) {
+            throw new InvalidQuantityException("요청한 상품의 수량이 잘못되었습니다.");
+        }
+        this.quantity -= quantity;
     }
 
     public ProductOption withProduct(Product product) {

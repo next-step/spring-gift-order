@@ -11,5 +11,6 @@ public record KakaoProperties (
     @NotNull String restApiKey,
     @URL String redirectUri,
     @URL String tokenUri,
-    @URL String profileUri
+    @URL String profileUri,
+    @URL String sendMessageUri
 ) {}

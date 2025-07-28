@@ -1,11 +1,14 @@
 package gift.controller.login;
 
 import gift.config.KakaoProperties;
+import gift.dto.login.KakaoTokenDto;
+import gift.dto.member.KakaoMemberRequestDto;
 import gift.dto.member.MemberRequestDto;
 import gift.dto.member.MemberResponseDto;
 import gift.entity.LoginType;
 import gift.service.member.MemberService;
 import gift.service.member.OauthService;
+import gift.util.Sha256Util;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
@@ -21,12 +24,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginViewController {
 
     private final KakaoProperties kakaoProperties;
+    private final Sha256Util sha256Util;
     private final OauthService oauthService;
     private final MemberService memberService;
 
-    public LoginViewController(KakaoProperties kakaoProperties, OauthService oauthService,
+    public LoginViewController(KakaoProperties kakaoProperties, Sha256Util sha256Util, OauthService oauthService,
         MemberService memberService) {
         this.kakaoProperties = kakaoProperties;
+        this.sha256Util = sha256Util;
         this.oauthService = oauthService;
         this.memberService = memberService;
     }
@@ -49,11 +54,14 @@ public class LoginViewController {
         @RequestParam String code,
         HttpServletResponse response
     ) throws IOException {
-        String kakaoAccessToken = oauthService.fetchKakaoToken(code);
+        KakaoTokenDto kakaoTokenDto = oauthService.fetchKakaoToken(code);
+        String kakaoAccessToken = kakaoTokenDto.accessToken();
+        String kakaoRefreshToken = sha256Util.encrypt(kakaoTokenDto.refreshToken());
+
         String email = oauthService.extractEmailFromKakao(kakaoAccessToken);
 
         String jwtToken = memberService.createOrLoginForKakao(
-            new MemberRequestDto(email, null, LoginType.KAKAO)).token();
+            new KakaoMemberRequestDto(email, null, LoginType.KAKAO, kakaoAccessToken, kakaoRefreshToken)).token();
 
         ResponseCookie cookie = ResponseCookie.from("token", jwtToken)
             .httpOnly(true)

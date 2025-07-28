@@ -35,6 +35,12 @@ public class Member {
     @Column(name = "loginType", nullable = false)
     LoginType loginType;
 
+    @Column(name = "access_token", nullable = true)
+    String accessToken;
+
+    @Column(name = "refresh_token", nullable = true)
+    String refreshToken;
+
     @OneToMany(
         mappedBy = "member",
         cascade = CascadeType.REMOVE,
@@ -46,14 +52,20 @@ public class Member {
     }
 
     public Member(String email, String password, LoginType loginType) {
-        this(null, email, password, loginType);
+        this(null, email, password, loginType, null, null);
     }
 
     public Member(Long id, String email, String password, LoginType loginType) {
+        this(id, email, password, loginType, null, null);
+    }
+
+    public Member(Long id, String email, String password, LoginType loginType, String accessToken, String refreshToken) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.loginType = loginType;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
     public Long getId() {
@@ -73,6 +85,10 @@ public class Member {
     }
 
     public LoginType getLoginType() { return loginType; }
+
+    public String getAccessToken() { return accessToken; }
+
+    public String getRefreshToken() { return refreshToken; }
 
     public boolean matchesPassword(String password) {
         if (!this.password.equals(password)) {

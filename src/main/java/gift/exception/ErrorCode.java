@@ -56,6 +56,12 @@ public enum ErrorCode {
         HttpStatus.NOT_FOUND,
         "C001",
         "요청한 리소스를 찾을 수 없습니다."
+    ),
+    
+    INVALID_QUANTITY_ERROR(
+        HttpStatus.BAD_REQUEST,
+        "P002",
+        "주문한 상품의 수량이 잘못되었습니다."
     );
 
     private HttpStatus status;

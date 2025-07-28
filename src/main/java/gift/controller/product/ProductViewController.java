@@ -2,7 +2,6 @@ package gift.controller.product;
 
 import gift.dto.product.ProductRequestDto;
 import gift.dto.product.ProductResponseDto;
-import gift.dto.wishlist.WishListResponseDto;
 import gift.service.product.ProductService;
 import gift.service.wishlist.WishListService;
 import gift.util.JwtUtil;
@@ -147,5 +146,17 @@ public class ProductViewController {
         model.addAttribute("wishedProductIds", wishedProductIds);
 
         return "wishlist-add";
+    }
+
+    @GetMapping("/wishlist/order/{id}")
+    public String showWishListOrderPage(
+        @CookieValue("token") String jwtToken,
+        @PathVariable Long id,
+        Model model
+    ) {
+        ProductResponseDto productResponseDto = productService.findById(id);
+        model.addAttribute("productResponseDto", productResponseDto);
+
+        return "product-order";
     }
 }

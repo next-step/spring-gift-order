@@ -4,15 +4,16 @@ import gift.authorization.oauth.KakaoClient;
 import gift.authorization.oauth.KakaoOAuthProperties;
 import gift.authorization.oauth.KakaoService;
 import gift.authorization.oauth.dto.KakaoTokenResponseDto;
+import gift.authorization.oauth.exception.KakaoLoginRequestException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 class KakaoServiceTest {
@@ -48,7 +49,27 @@ class KakaoServiceTest {
 
         KakaoTokenResponseDto result = kakaoService.requestAccessToken(code);
 
-        assertEquals("mock-access-token", result.accessToken());
-        verify(kakaoClient).requestToken(tokenUri, clientId, redirectUri, code);
+        assertThat(result.accessToken()).isEqualTo("mock-access-token");
+        assertThat(result.refreshToken()).isNotBlank();
+        assertThat(result.expiresIn()).isGreaterThan(0);
+    }
+
+    @Test
+    void 토큰_발급_실패시_커스텀예외_발생() {
+        String code = "bad_code";
+        String tokenUri = "https://mock.token.uri";
+        String clientId = "mock_client_id";
+        String redirectUri = "http://mock.redirect";
+
+        given(kakaoProps.getTokenUri()).willReturn(tokenUri);
+        given(kakaoProps.getClientId()).willReturn(clientId);
+        given(kakaoProps.getRedirectUri()).willReturn(redirectUri);
+        given(kakaoClient.requestToken(tokenUri, clientId, redirectUri, code))
+                .willThrow(new KakaoLoginRequestException("카카오 토큰 요청 중 오류 발생"));
+
+
+        assertThatThrownBy(() -> kakaoService.requestAccessToken(code))
+                .isInstanceOf(KakaoLoginRequestException.class)
+                .hasMessageContaining("카카오 토큰 요청 중 오류 발생");
     }
 }

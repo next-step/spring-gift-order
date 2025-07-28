@@ -11,6 +11,8 @@ import gift.dto.ProductResponse;
 import gift.dto.ProductSortField;
 import gift.entity.Product;
 import gift.repository.ProductRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
@@ -76,17 +81,21 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductResponse update(Long id, ProductRequest request) {
-        boolean updated = productRepository.updateProduct(id, request.name(),
-            request.price(), request.imageUrl()) > 0;
-
-        if (!updated) {
-            throw new CustomException(CustomResponseCode.NOT_FOUND);
-        }
-
-        Product updatedProduct = productRepository.findById(id)
+        Product product = productRepository.findById(id)
             .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
 
-        return ProductResponse.from(updatedProduct);
+        product.update(request.name(), request.price(), request.imageUrl());
+
+        product.clearOptions();
+        entityManager.flush();
+
+        for (ProductOptionRequest optionRequest : request.options()) {
+            product.addUniqueOption(optionRequest.name(), optionRequest.quantity());
+        }
+
+        Product savedProduct = productRepository.save(product);
+
+        return ProductResponse.from(savedProduct);
     }
 
     @Override

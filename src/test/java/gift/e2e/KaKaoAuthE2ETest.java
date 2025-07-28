@@ -48,7 +48,14 @@ public class KaKaoAuthE2ETest {
     void callbackSuccessReturnAccessToken() throws Exception {
         String code = "testCode";
 
-        AuthUser mockUser = new AuthUser(123456L, "nickname", "email@test.com", "https://img.url");
+        AuthUser mockUser = new AuthUser(
+            123456L,
+            "nickname",
+            "email@test.com",
+            "https://img.url",
+            "mock-access-token",
+            "mock-refresh-token"
+        );
         TokenResponse mockToken = new TokenResponse("mock-access-token");
 
         given(authService.authenticate(code)).willReturn(mockUser);

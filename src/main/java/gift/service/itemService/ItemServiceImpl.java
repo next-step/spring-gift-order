@@ -1,14 +1,12 @@
 package gift.service.itemService;
 
-import gift.dto.itemDto.ItemCreateDto;
 import gift.entity.Item;
+import gift.exception.itemException.ItemNotFoundException;
 import gift.repository.itemRepository.ItemRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -20,8 +18,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public Item saveItem(ItemCreateDto itemCreateDto) {
-        Item item = itemCreateDto.dtoToItem();
+    public Item saveItem(Item item) {
 
         return itemRepository.save(item);
     }
@@ -44,32 +41,41 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public void delete(String name) {
-        Item targetItem = itemRepository.findByName(name);
+        Item targetItem = findItemByName(name);
         itemRepository.delete(targetItem);
     }
 
     @Override
     @Transactional
     public Item updateItem(Long id, Item item) {
-        Optional<Item> findItem = findItemById(id);
+        Item findItem = findItemById(id);
 
-        Item targetItem = findItem.get();
+        Item targetItem = findItem;
 
-        Item updatedItem = targetItem.update(item);
+        Item updatedItem = findItem.update(item);
 
         return save(updatedItem);
 
     }
 
     @Override
-    public Optional<Item> findById(Long id) {
-        return itemRepository.findById(id);
+    public Item findById(Long id) {
+        return itemRepository.findById(id).orElseThrow(ItemNotFoundException::new);
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
-        itemRepository.deleteById(id);
+        Item targetItem = findItemById(id);
+        itemRepository.deleteById(targetItem.getId());
+    }
+
+    @Override
+    @Transactional
+    public void deleteByItem(Item item) {
+        Item targetItem = findItemById(item.getId());
+        itemRepository.deleteById(targetItem.getId());
+
     }
 
     @Override
@@ -78,13 +84,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Optional<Item> findItemByName(String name) {
-        return Optional.ofNullable(itemRepository.findByName(name));
+    public Item findItemByName(String name) {
+        return itemRepository.findByName(name).orElseThrow(ItemNotFoundException::new);
     }
 
     @Override
-    public Optional<Item> findItemById(Long itemId) {
-        return itemRepository.findById(itemId);
+    public Item findItemById(Long itemId) {
+        return itemRepository.findById(itemId).orElseThrow(ItemNotFoundException::new);
     }
 
     @Override

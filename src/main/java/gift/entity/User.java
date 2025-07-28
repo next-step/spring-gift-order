@@ -1,6 +1,5 @@
 package gift.entity;
 
-import gift.dto.userDto.UserUpdateDto;
 import gift.exception.userException.UserAuthorizationException;
 import gift.exception.userException.UserEmailException;
 import gift.exception.userException.UserPasswordException;
@@ -79,8 +78,8 @@ public class User {
         this.password = newPassword;
     }
 
-    public User updateFrom(UserUpdateDto dto) {
-        return new User(this.getId(), dto.email(), dto.password(), this.role);
+    public User updateFrom(String email, String password) {
+        return new User(this.id, email, password, this.role);
     }
 
     public void checkAuthorization() {

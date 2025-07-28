@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/api/products")
 public class ItemController {
@@ -24,9 +23,8 @@ public class ItemController {
 
     @PostMapping
     public ResponseEntity<ResponseItem> addItem(@RequestBody @Valid ItemCreateDto dto) {
-        Item item = itemService.saveItem(dto);
+        Item item = itemService.saveItem(dto.convertItem());
         ItemResponseDto responseDto = ItemResponseDto.from(item);
-
         return new ResponseEntity<>(new ResponseItem(responseDto), HttpStatus.CREATED);
     }
 

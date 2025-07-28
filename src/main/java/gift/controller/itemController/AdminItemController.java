@@ -13,8 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/admin/products")
 public class AdminItemController {
@@ -52,7 +50,7 @@ public class AdminItemController {
     @PostMapping
     public String saveItem(@ModelAttribute @Valid ItemCreateDto itemDTO) {
 
-        itemService.saveItem(itemDTO);
+        itemService.saveItem(itemDTO.convertItem());
         return "redirect:/admin/products";
     }
 
@@ -64,10 +62,7 @@ public class AdminItemController {
 
     @PostMapping("/delete")
     public String deleteItem(@RequestParam Long id) {
-        Optional<Item> item = itemService.findById(id);
-        if (item != null) {
-            itemService.deleteById(id);
-        }
+        itemService.deleteById(id);
         return "redirect:/admin/products";
     }
 
@@ -80,10 +75,9 @@ public class AdminItemController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Optional<Item> item = itemService.findById(id);
+        Item item = itemService.findById(id);
         model.addAttribute("itemDTO", item);
         return "admin/editForm";
     }
-
 
 }

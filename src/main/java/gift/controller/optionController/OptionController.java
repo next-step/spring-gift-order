@@ -23,9 +23,9 @@ public class OptionController {
 
     @PostMapping
     public ResponseEntity<OptionResponseDto> addItemOption(@RequestBody OptionRequestDto optionRequestDto, @RequestParam Long itemId) {
-
-        ItemOption itemOption = optionService.save(optionRequestDto, itemId);
-        OptionResponseDto optionResponseDto = OptionResponseDto.from(itemOption);
+        ItemOption itemOption = optionRequestDto.dtoToEntity();
+        ItemOption savedOption = optionService.save(itemOption, itemId);
+        OptionResponseDto optionResponseDto = OptionResponseDto.from(savedOption);
 
         return new ResponseEntity<>(optionResponseDto, HttpStatus.CREATED);
     }
@@ -39,7 +39,8 @@ public class OptionController {
 
     @PutMapping
     public ResponseEntity<OptionResponseDto> quantityControl(@RequestBody OptionRequestDto optionRequestDto, @RequestParam Long itemId) {
-        ItemOption itemOption = optionService.quantityControl(optionRequestDto, itemId);
+        ItemOption targetOption = optionRequestDto.dtoToEntity();
+        ItemOption itemOption = optionService.quantityControl(targetOption, itemId);
         OptionResponseDto optionResponseDto = OptionResponseDto.from(itemOption);
 
         return new ResponseEntity<>(optionResponseDto, HttpStatus.CREATED);

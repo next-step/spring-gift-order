@@ -1,14 +1,10 @@
 package gift.service.userService;
 
 import gift.Jwt.JwtUtil;
-import gift.dto.userDto.UserLoginDto;
-import gift.dto.userDto.UserRegisterDto;
-import gift.dto.userDto.UserUpdateDto;
 import gift.entity.User;
-import gift.exception.userException.UserAuthorizationException;
+import gift.entity.UserRole;
 import gift.exception.userException.UserDuplicatedException;
 import gift.exception.userException.UserNotFoundException;
-import gift.exception.userException.UserPasswordInputException;
 import gift.repository.userRepository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -28,28 +24,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String registerUser(UserRegisterDto userRegisterDto) {
-        User user = userRegisterDto.dtoToUser();
+    public String registerUser(User user) {
+        isEmailExist(user.getEmail());
 
-        if (isEmailExist(user.getEmail())) {
-            throw new UserDuplicatedException();
-        }
         User savedUser = userRepository.save(user);
         String token = jwtUtil.generateToken(savedUser);
 
         return token;
     }
 
-    private boolean isEmailExist(String email) {
-        return userRepository.existsByEmail(email);
+    private void isEmailExist(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new UserDuplicatedException();
+        }
     }
 
 
     @Override
-    public String loginUser(UserLoginDto userLoginDto) {
-        User findUser = findUserByEmail(userLoginDto.email());
+    public String loginUser(String email, String password) {
+        User findUser = findUserByEmail(email);
 
-        findUser.checkPassword(userLoginDto.password());
+        findUser.checkPassword(password);
 
         return jwtUtil.generateToken(findUser);
 
@@ -57,14 +52,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByEmail(String userEmail) {
-        User user = userRepository.findUserByEmail(userEmail);
-
-        if (user == null) {
-            throw new UserNotFoundException(userEmail);
-        }
-
-        return user;
+        return userRepository.findUserByEmail(userEmail)
+                .orElseThrow(() -> new UserNotFoundException(userEmail));
     }
+
+    @Override
+    public User saveSocialUser(String email) {
+        User user = new User(email, "1234", UserRole.USER);
+        return userRepository.save(user);
+    }
+
 
     @Override
     public Page<User> getUserList(String email, Long loginId, Pageable pageable) {
@@ -92,31 +89,19 @@ public class UserServiceImpl implements UserService {
         return users;
     }
 
-    @Override
-    public User finUserById(Long id) {
-        User user = findUserById(id);
-        if (user == null) {
-            throw new UserNotFoundException();
-        }
-        return user;
-    }
-
     private User findUserById(Long id) {
-        return userRepository.findUserById(id);
+        return userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     @Transactional
-    public User updateUser(Long id, UserUpdateDto userUpdateDto, Long loginId) {
+    public User updateUser(Long id, String email, String password, Long loginId) {
         findUserById(loginId).checkAuthorization();
 
-        User findUser = userRepository.findById(id).orElse(null);
+        User findUser = findUserById(id);
 
-        if (findUser == null) {
-            throw new UserNotFoundException();
-        }
-
-        User updatedUser = findUser.updateFrom(userUpdateDto);
+        User updatedUser = findUser.updateFrom(email, password);
 
         return userRepository.save(updatedUser);
     }

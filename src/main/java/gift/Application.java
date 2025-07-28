@@ -3,11 +3,13 @@ package gift;
 import gift.entity.Item;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class Application {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class, args);

@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-public class KakaoUserApiControllerTest {
+public class KakaoApiControllerTest {
 
     @Autowired
     MockMvc mvc;

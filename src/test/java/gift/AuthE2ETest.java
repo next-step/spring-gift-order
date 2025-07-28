@@ -56,8 +56,12 @@ public class AuthE2ETest {
 
     @AfterEach
     void tearDown() {
-        jdbcClient.sql("delete from member").update();
+        jdbcClient.sql("delete from orders").update();
+        jdbcClient.sql("delete from wish").update();
+        jdbcClient.sql("delete from token").update();
+        jdbcClient.sql("delete from option").update();
         jdbcClient.sql("delete from product").update();
+        jdbcClient.sql("delete from member").update();
     }
 
     @Test

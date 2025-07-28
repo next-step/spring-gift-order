@@ -36,11 +36,14 @@ class KakaoServiceTest {
 
     private MockWebServer mockWebServer;
     private KakaoService kakaoService;
-    private TokenRepository tokenRepository;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private TokenRepository tokenRepository;
 
     @Mock
     private JwtUtil jwtUtil;

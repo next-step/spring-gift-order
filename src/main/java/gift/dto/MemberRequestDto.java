@@ -8,6 +8,8 @@ public record MemberRequestDto (
     @Email
     String email,
     @NotBlank
-    String password
+    String password,
+    @NotBlank
+    String provider
 ) {
 }

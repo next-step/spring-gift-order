@@ -1,5 +1,6 @@
 package gift.controller.kakao;
 
+import gift.dto.KakaoUserInfoResponse;
 import gift.service.KakaoAuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ public class KakaoAuthController {
     @GetMapping("/callback")
     public ResponseEntity<String> getAccessToken(@RequestParam("code") String authorizeCode) {
         String accessToken = kakaoAuthService.getAccessToken(authorizeCode);
-        return ResponseEntity.ok(accessToken);
+        KakaoUserInfoResponse kakaoUserInfoResponse = kakaoAuthService.getUserInfo(accessToken);
+        return ResponseEntity.ok(authorizeCode);
     }
 }

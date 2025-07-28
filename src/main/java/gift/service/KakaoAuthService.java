@@ -3,6 +3,7 @@ package gift.service;
 import gift.config.KakaoProperties;
 import gift.dto.KakaoTokenRequestDto;
 import gift.dto.KakaoTokenResponseDto;
+import gift.dto.KakaoUserInfoResponse;
 import gift.exception.KakaoAuthenticationException;
 import gift.exception.KakaoApiError;
 import gift.exception.KakaoConnectionException;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 
@@ -18,7 +21,9 @@ public class KakaoAuthService {
     private static final int CONNECTION_TIMEOUT_MILLISECONDS = 3000;
     private static final int READ_TIMEOUT_MILLISECONDS = 3000;
     private static final String KAKAO_AUTH_URL = "https://kauth.kakao.com";
-    private final RestClient restClient;
+    private static final String KAKAO_API_URL = "https://kapi.kakao.com";
+    private final RestClient authClient;
+    private final RestClient apiClient;
     private final KakaoProperties kakaoProperties;
 
     public KakaoAuthService(KakaoProperties kakaoProperties) {
@@ -26,10 +31,16 @@ public class KakaoAuthService {
         requestFactory.setConnectTimeout(CONNECTION_TIMEOUT_MILLISECONDS);
         requestFactory.setReadTimeout(READ_TIMEOUT_MILLISECONDS);
 
-        this.restClient = RestClient.builder()
+        this.authClient = RestClient.builder()
                 .requestFactory(requestFactory)
                 .baseUrl(KAKAO_AUTH_URL)
                 .build();
+
+        this.apiClient = RestClient.builder()
+                .requestFactory(requestFactory)
+                .baseUrl(KAKAO_API_URL)
+                .build();
+
         this.kakaoProperties = kakaoProperties;
     }
 
@@ -41,7 +52,7 @@ public class KakaoAuthService {
         );
 
         try {
-            KakaoTokenResponseDto response = restClient.post()
+            KakaoTokenResponseDto response = authClient.post()
                     .uri("/oauth/token")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .body(body.dtoToFormData())
@@ -59,6 +70,28 @@ public class KakaoAuthService {
                     .body(KakaoTokenResponseDto.class);
 
             return response.accessToken();
+        } catch (ResourceAccessException e) {
+            throw new KakaoConnectionException("카카오 서버와 통신이 원활하지 않습니다.", e);
+        }
+    }
+
+    public KakaoUserInfoResponse getUserInfo(String accessToken) {
+        try {
+            return apiClient.get()
+                    .uri("/v2/user/me")
+                    .header("Authorization", "Bearer " + accessToken)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, (request, res) -> {
+                        KakaoApiError error = KakaoApiError.from(res.getStatusCode());
+                        String errorMessage = error.getMessage();
+                        throw new KakaoAuthenticationException(errorMessage + "응답 코드: " + res.getStatusCode());
+                    })
+                    .onStatus(HttpStatusCode::is5xxServerError, (request, res) -> {
+                        KakaoApiError error = KakaoApiError.from(res.getStatusCode());
+                        String errorMessage = error.getMessage();
+                        throw new KakaoConnectionException(errorMessage + "응답 코드: " + res.getStatusCode());
+                    })
+                    .body(KakaoUserInfoResponse.class);
         } catch (ResourceAccessException e) {
             throw new KakaoConnectionException("카카오 서버와 통신이 원활하지 않습니다.", e);
         }

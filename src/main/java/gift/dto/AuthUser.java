@@ -1,7 +1,5 @@
 package gift.dto;
 
-import java.util.Map;
-
 public record AuthUser(
     Long providerId,
     String email,
@@ -9,14 +7,11 @@ public record AuthUser(
     String profileImage
 ) {
 
-    public static AuthUser fromKakao(Map<String, Object> kakaoResponse) {
-        Map<String, Object> kakaoAccount = (Map<String, Object>) kakaoResponse.get("kakao_account");
-        Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-
-        Long providerId = ((Number) kakaoResponse.get("id")).longValue();
-        String email = (String) kakaoAccount.get("email");
-        String nickname = (String) profile.get("nickname");
-        String profileImage = (String) profile.get("profile_image_url");
+    public static AuthUser fromKakao(KaKaoUserInfo kaKaoUserInfo) {
+        Long providerId = kaKaoUserInfo.id();
+        String email = kaKaoUserInfo.kakaoAccount().email();
+        String nickname = kaKaoUserInfo.kakaoAccount().profile().nickname();
+        String profileImage = kaKaoUserInfo.kakaoAccount().profile().profileImageUrl();
 
         return new AuthUser(providerId, email, nickname, profileImage);
     }

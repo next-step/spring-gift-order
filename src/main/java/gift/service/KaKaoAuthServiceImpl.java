@@ -4,9 +4,10 @@ import gift.auth.jwt.JwtUtil;
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.CustomException;
 import gift.dto.AuthUser;
+import gift.dto.KaKaoTokenInfo;
+import gift.dto.KaKaoUserInfo;
 import gift.dto.TokenResponse;
 import gift.entity.Member;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -81,14 +82,14 @@ public class KaKaoAuthServiceImpl implements AuthService {
         formData.add("client_secret", clientSecret);
 
         try {
-            ResponseEntity<Map> response = restClient.post()
+            ResponseEntity<KaKaoTokenInfo> tokenInfo = restClient.post()
                 .uri(tokenUrl)
                 .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .body(formData)
                 .retrieve()
-                .toEntity(Map.class);
+                .toEntity(KaKaoTokenInfo.class);
 
-            return (String) response.getBody().get("access_token");
+            return tokenInfo.getBody().accessToken();
 
         } catch (HttpClientErrorException e) {
             throw new CustomException(CustomResponseCode.VALIDATION_FAILED);
@@ -100,13 +101,13 @@ public class KaKaoAuthServiceImpl implements AuthService {
 
     private AuthUser requestUserInfo(String accessToken) {
         try {
-            ResponseEntity<Map> response = restClient.get()
+            ResponseEntity<KaKaoUserInfo> userInfo = restClient.get()
                 .uri(userInfoUrl)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
-                .toEntity(Map.class);
+                .toEntity(KaKaoUserInfo.class);
 
-            return AuthUser.fromKakao(response.getBody());
+            return AuthUser.fromKakao(userInfo.getBody());
 
         } catch (HttpClientErrorException e) {
             throw new CustomException(CustomResponseCode.VALIDATION_FAILED);

@@ -6,7 +6,8 @@ public enum TokenStatus {
     TOKEN_EXPIRED("TE001", "토큰이 만료되었습니다.", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN_TYPE("TE002", "토큰 타입이 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
     NO_TOKEN("TE003", "토큰이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
-    NOT_AGREE("TE004", "개인정보 제공 동의를 하지 않았습니다.", HttpStatus.FORBIDDEN);
+    NOT_AGREE("TE004", "개인정보 제공 동의를 하지 않았습니다.", HttpStatus.FORBIDDEN),
+    NO_KAKAO_TOKEN("TE005", "카카오 정보가 존재하지 않습니다.", HttpStatus.UNAUTHORIZED);
 
     private final String code;
     private final String message;

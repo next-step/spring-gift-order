@@ -29,19 +29,6 @@ public class KakaoJoinController {
         this.kakaoAuthService = kakaoAuthService;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<TokenResponse> signup(@RequestBody KakaoSignupRequest request) {
-        if (memberRepository.findByEmail(request.email()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
-        Member member = new Member(request.email(), request.password());
-        memberRepository.save(member);
-
-        String jwt = jwtProvider.createToken(member, request.accessToken());
-
-        return ResponseEntity.ok(new TokenResponse(jwt));
-    }
 
     @PostMapping("/signup/email")
     public ResponseEntity<TokenResponse> kakaoSignup(@RequestBody KakaoSignupRequest2 request) {

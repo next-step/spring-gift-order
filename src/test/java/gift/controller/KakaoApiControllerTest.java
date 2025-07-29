@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static gift.controller.ProductApiControllerTest.ProductApiControllerFixture.PRODUCT_EX1;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -54,9 +55,11 @@ public class KakaoApiControllerTest {
         String content = result.getResponse().getContentAsString();
         KakaoLoginResponse kakaoLoginResponse = mapper.readValue(content, KakaoLoginResponse.class);
 
-        assertThat(kakaoLoginResponse).isNotNull();
-        assertThat(kakaoLoginResponse.kakaoAccessToken()).isEqualTo(kakaoAccessToken);
-        assertThat(kakaoLoginResponse.jwtAccessToken()).isNotNull();
+        assertAll(
+                () -> assertThat(kakaoLoginResponse).isNotNull(),
+                () -> assertThat(kakaoLoginResponse.kakaoAccessToken()).isEqualTo(kakaoAccessToken),
+                () -> assertThat(kakaoLoginResponse.jwtAccessToken()).isNotNull()
+        );
     }
 
     @Test

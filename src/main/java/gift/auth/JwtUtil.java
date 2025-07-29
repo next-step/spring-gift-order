@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -43,6 +44,19 @@ public class JwtUtil {
             .compact();
     }
 
+    public String createToken(String email, Map<String, Object> claims) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationMs);
+
+        return Jwts.builder()
+            .subject(email)
+            .claims(claims)
+            .issuedAt(now)
+            .expiration(expiryDate)
+            .signWith(key)
+            .compact();
+    }
+
     private Claims getClaims(String token) {
         return Jwts.parser()
             .verifyWith(key)
@@ -53,6 +67,18 @@ public class JwtUtil {
 
     public String getEmail(String token) {
         return getClaims(token).getSubject();
+    }
+
+    public String getKakaoAccessToken(String token) {
+        return getClaims(token).get("kakaoAccessToken", String.class);
+    }
+
+    public String getKakaoRefreshToken(String token) {
+        return getClaims(token).get("kakaoRefreshToken", String.class);
+    }
+
+    public Integer getKakaoExpiresIn(String token) {
+        return getClaims(token).get("kakaoExpiresIn", Integer.class);
     }
 
     public boolean validateToken(String token) {

@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class KakaoService {
     private final String CLIENT_ID;
@@ -80,7 +83,18 @@ public class KakaoService {
         }
         Member member = memberRepository.findByLoginTypeAndTypeId(LoginType.KAKAO, kakaoAccessTokenDTO.id().toString())
             .orElseThrow(() -> new IllegalArgumentException("카카오 사용자 정보를 찾을 수 없습니다."));
-        String jwtToken = jwtUtil.createToken(member.getEmail());
+
+        Map<String, Object> tokenInfo = new HashMap<>();
+        tokenInfo.put("kakaoAccessToken", kakaoToken.accessToken());
+        tokenInfo.put("kakaoRefreshToken", kakaoToken.refreshToken());
+        tokenInfo.put("kakaoExpiresIn", kakaoToken.expiresIn());
+        tokenInfo.put("kakaoTokenType", kakaoToken.tokenType());
+        tokenInfo.put("kakaoScope", kakaoToken.scope());
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("token", tokenInfo);
+
+        String jwtToken = jwtUtil.createToken(member.getEmail(), claims);
         return new TokenResponseDTO(jwtToken);
     }
 }

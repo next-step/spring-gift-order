@@ -67,4 +67,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDuplicateOptionNameException(DuplicateOptionNameException e) {
         return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(LoginStrategyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleLoginStrategyNotFoundException(LoginStrategyNotFoundException e) {
+        return ResponseEntity.internalServerError().body(ErrorResponse.of(e.getMessage()));
+    }
 }

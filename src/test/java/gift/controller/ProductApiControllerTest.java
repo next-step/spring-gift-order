@@ -5,7 +5,7 @@ import gift.domain.product.Product;
 import gift.dto.product.CreateProductOptionRequest;
 import gift.dto.product.CreateProductRequest;
 import gift.dto.user.CreateUserRequest;
-import gift.dto.user.LoginRequest;
+import gift.dto.login.BasicLoginRequest;
 import gift.service.ProductService;
 import gift.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ class ProductApiControllerTest {
     @BeforeEach
     void setUp() {
         userService.saveUser(new CreateUserRequest("tkddnr@thanks.com", "1234"));
-        accessToken = "Bearer " + userService.basicLogin(new LoginRequest("tkddnr@thanks.com", "1234")).accessToken();
+        accessToken = "Bearer " + userService.login(new BasicLoginRequest("tkddnr@thanks.com", "1234")).accessToken();
     }
 
     @Test

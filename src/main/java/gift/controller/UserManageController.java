@@ -2,7 +2,7 @@ package gift.controller;
 
 import gift.common.interceptor.AdminOnly;
 import gift.dto.jwt.JwtTokenResponse;
-import gift.dto.user.LoginRequest;
+import gift.dto.login.BasicLoginRequest;
 import gift.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,13 +28,13 @@ public class UserManageController {
 
     @GetMapping("/login")
     public String loginForm(Model model) {
-        model.addAttribute("request", LoginRequest.empty());
+        model.addAttribute("request", BasicLoginRequest.empty());
         return "/admin/user/userLogin";
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute("request") LoginRequest request, HttpServletResponse response) {
-        JwtTokenResponse jwtTokenResponse = userService.basicLogin(request);
+    public String login(@ModelAttribute("request") BasicLoginRequest request, HttpServletResponse response) {
+        JwtTokenResponse jwtTokenResponse = userService.login(request);
 
         Cookie cookie = new Cookie("accessToken", URLEncoder.encode("Bearer " + jwtTokenResponse.accessToken(), StandardCharsets.UTF_8));
         cookie.setHttpOnly(true);

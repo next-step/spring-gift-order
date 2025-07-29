@@ -16,7 +16,7 @@ import gift.repository.OrderRepository;
 import gift.repository.ProductRepository;
 import gift.repository.UserRepository;
 import gift.repository.WishlistRepository;
-import gift.service.api.KakaoMessageService;
+import gift.service.api.KakaoMessageApi;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +28,14 @@ import java.util.Optional;
 @Primary
 public class OrderServiceImpl implements OrderService {
 
-    private final KakaoMessageService kakaoMessageService;
+    private final KakaoMessageApi kakaoMessageApi;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final WishlistRepository wishlistRepository;
 
-    public OrderServiceImpl(KakaoMessageService kakaoMessageService, ProductRepository productRepository, OrderRepository orderRepository, UserRepository userRepository, WishlistRepository wishlistRepository) {
-        this.kakaoMessageService = kakaoMessageService;
+    public OrderServiceImpl(KakaoMessageApi kakaoMessageApi, ProductRepository productRepository, OrderRepository orderRepository, UserRepository userRepository, WishlistRepository wishlistRepository) {
+        this.kakaoMessageApi = kakaoMessageApi;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
         ProductOption option = product.order(orderRequest.optionId(), orderRequest.quantity());
         Order order = new Order(user, orderRequest.optionId(), option.getPrice(), orderRequest.quantity());
         order = orderRepository.save(order);
-        kakaoMessageService.sendOrderCompleteMessage(kakaoUser.getAccessToken(), orderRequest.message());
+        kakaoMessageApi.sendOrderCompleteMessage(kakaoUser.getAccessToken(), orderRequest.message());
         return KakaoOrderResponse.of(order, orderRequest.message());
     }
 

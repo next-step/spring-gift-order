@@ -2,9 +2,8 @@ package gift.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.kakao.KakaoLoginResponse;
-import gift.dto.kakao.KakaoTokenResponse;
 import gift.dto.kakao.KakaoUserIdResponse;
-import gift.service.api.KakaoLoginService;
+import gift.service.api.KakaoLoginApi;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class KakaoApiControllerTest {
     MockMvc mvc;
 
     @MockitoBean
-    KakaoLoginService kakaoLoginService;
+    KakaoLoginApi kakaoLoginApi;
 
     @Autowired
     ObjectMapper mapper;
@@ -45,8 +44,8 @@ public class KakaoApiControllerTest {
         String code = "sample_code";
         String kakaoAccessToken = "저는카카오엑세스토큰입니다";
 
-        given(kakaoLoginService.getAccessToken(eq(code))).willReturn(new KakaoTokenResponse(kakaoAccessToken));
-        given(kakaoLoginService.getUserInfo(kakaoAccessToken)).willReturn(new KakaoUserIdResponse(12345678L));
+        given(kakaoLoginApi.getAccessToken(eq(code))).willReturn(kakaoAccessToken);
+        given(kakaoLoginApi.getUserInfo(kakaoAccessToken)).willReturn(new KakaoUserIdResponse(12345678L));
 
         MvcResult result = mvc.perform(get("/kakao/callback")
                 .param("code", code)
@@ -66,8 +65,8 @@ public class KakaoApiControllerTest {
         String code = "sample_code";
         String kakaoAccessToken = "저는카카오엑세스토큰입니다";
 
-        given(kakaoLoginService.getAccessToken(eq(code))).willReturn(new KakaoTokenResponse(kakaoAccessToken));
-        given(kakaoLoginService.getUserInfo(kakaoAccessToken)).willReturn(new KakaoUserIdResponse(12345678L));
+        given(kakaoLoginApi.getAccessToken(eq(code))).willReturn(kakaoAccessToken);
+        given(kakaoLoginApi.getUserInfo(kakaoAccessToken)).willReturn(new KakaoUserIdResponse(12345678L));
 
         MvcResult result = mvc.perform(get("/kakao/callback")
                 .param("code", code)

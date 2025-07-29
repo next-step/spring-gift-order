@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,5 +48,17 @@ public class OptionController {
         return ResponseEntity
             .status(CustomResponseCode.RETRIEVED.getHttpStatus())
             .body(CustomResponseBody.of(CustomResponseCode.RETRIEVED, responses));
+    }
+
+    @PutMapping("/options/{optionId}")
+    public ResponseEntity<CustomResponseBody<ProductOptionResponse>> updateOption(
+        @PathVariable Long optionId,
+        @Valid @RequestBody ProductOptionRequest request
+    ) {
+        ProductOptionResponse response = optionService.update(optionId, request);
+
+        return ResponseEntity
+            .status(CustomResponseCode.UPDATED.getHttpStatus())
+            .body(CustomResponseBody.of(CustomResponseCode.UPDATED, response));
     }
 }

@@ -52,6 +52,14 @@ public class ProductOption {
         return new ProductOption(name, quantity, product);
     }
 
+    public void update(String name, Long quantity) {
+        validateName(name);
+        validateQuantity(quantity);
+
+        this.name = name;
+        this.quantity = quantity;
+    }
+
     private void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new CustomException(CustomResponseCode.OPTION_NAME_REQUIRED);

@@ -43,4 +43,15 @@ public class OptionServiceImpl implements OptionService {
             .map(ProductOptionResponse::from)
             .toList();
     }
+
+    @Override
+    @Transactional
+    public ProductOptionResponse update(Long optionId, ProductOptionRequest request) {
+        ProductOption option = optionRepository.findById(optionId)
+            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+
+        option.update(request.name(), request.quantity());
+
+        return ProductOptionResponse.from(option);
+    }
 }

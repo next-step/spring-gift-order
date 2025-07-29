@@ -9,4 +9,6 @@ public interface OptionService {
     ProductOptionResponse add(Long productId, ProductOptionRequest request);
 
     List<ProductOptionResponse> getOptionsByProductId(Long productId);
+
+    ProductOptionResponse update(Long optionId, ProductOptionRequest request);
 }

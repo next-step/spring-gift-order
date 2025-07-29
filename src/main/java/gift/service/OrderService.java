@@ -17,11 +17,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductOptionRepository productOptionRepository;
     private final WishRepository wishRepository;
+    private final KakaoMessageService kakaoMessageService;
 
-    public OrderService(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, WishRepository wishRepository) {
+    public OrderService(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, WishRepository wishRepository, KakaoMessageService kakaoMessageService) {
         this.orderRepository = orderRepository;
         this.productOptionRepository = productOptionRepository;
         this.wishRepository = wishRepository;
+        this.kakaoMessageService = kakaoMessageService;
     }
 
     @Transactional
@@ -36,6 +38,15 @@ public class OrderService {
 
         Order order = new Order(member, option.getId(), request.getQuantity(), request.getMessage());
         Order saved = orderRepository.save(order);
+
+        String message = """
+            ✅ 주문이 완료되었어요!
+            - 옵션: %s
+            - 수량: %d개
+            - 메시지: %s
+            """.formatted(option.getName(), request.getQuantity(), request.getMessage());
+
+        kakaoMessageService.sendOrderMessageToMe(member.getAccessToken(), message);
 
         return new OrderResponse(
                 saved.getId(),

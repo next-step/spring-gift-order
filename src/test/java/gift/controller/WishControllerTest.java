@@ -44,7 +44,7 @@ class WishControllerTest {
     private LoginMemberArgumentResolver loginMemberArgumentResolver;
 
     private final Long memberId = 1L;
-    private final Long productId = 4L;
+    private final Long optionId = 4L;
     private final Member fakeMember = new Member(memberId, "test@example.com", "password", LoginType.LOCAL, Role.USER);
 
     @BeforeEach
@@ -59,9 +59,9 @@ class WishControllerTest {
     }
 
     @Test
-    @DisplayName("장바구니 상품 추가")
+    @DisplayName("장바구니 옵션 추가")
     void addWish() throws Exception {
-        WishRequest request = new WishRequest(productId, 2);
+        WishRequest request = new WishRequest(optionId, 2);
 
         mockMvc.perform(post("/api/wishes")
                         .header("Authorization", "Bearer test-token")
@@ -69,13 +69,13 @@ class WishControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(wishService).addWish(eq(memberId), eq(productId), eq(2));
+        verify(wishService).addWish(eq(memberId), eq(optionId), eq(2));
     }
 
     @Test
-    @DisplayName("장바구니 수량 변경")
+    @DisplayName("장바구니 옵션 수량 변경")
     void updateWish() throws Exception {
-        WishRequest request = new WishRequest(productId, 5);
+        WishRequest request = new WishRequest(optionId, 5);
 
         mockMvc.perform(patch("/api/wishes")
                         .header("Authorization", "Bearer test-token")
@@ -83,13 +83,13 @@ class WishControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(wishService).updateWish(eq(memberId), eq(productId), eq(5));
+        verify(wishService).updateWish(eq(memberId), eq(optionId), eq(5));
     }
 
     @Test
-    @DisplayName("장바구니 상품 삭제")
+    @DisplayName("장바구니 옵션 삭제")
     void deleteWish() throws Exception {
-        WishRequest request = new WishRequest(productId, 0);
+        WishRequest request = new WishRequest(optionId, 0);
 
         mockMvc.perform(delete("/api/wishes")
                         .header("Authorization", "Bearer test-token")
@@ -97,11 +97,11 @@ class WishControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(wishService).deleteWish(eq(memberId), eq(productId));
+        verify(wishService).deleteWish(eq(memberId), eq(optionId));
     }
 
     @Test
-    @DisplayName("장바구니 상품 조회")
+    @DisplayName("장바구니 옵션 목록 조회")
     void getWishes() throws Exception {
         mockMvc.perform(get("/api/wishes")
                         .header("Authorization", "Bearer test-token"))

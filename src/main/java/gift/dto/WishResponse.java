@@ -4,29 +4,36 @@ import gift.domain.Wish;
 
 public class WishResponse {
     private final Long id;
-    private final Long productId;
+    private final Long optionId;
+    private final String optionName;
     private final int quantity;
-    private final String name;
-    private final int price;
-    private final String imageUrl;
+    private final Long productId;
+    private final String productName;
+    private final int productPrice;
+    private final String productImageUrl;
 
-    public WishResponse(Long id, Long productId, int quantity, String name, int price, String imageUrl) {
+    public WishResponse(Long id, Long optionId, String optionName, int quantity,
+                        Long productId, String productName, int productPrice, String productImageUrl) {
         this.id = id;
-        this.productId = productId;
+        this.optionId = optionId;
+        this.optionName = optionName;
         this.quantity = quantity;
-        this.name = name;
-        this.price = price;
-        this.imageUrl = imageUrl;
+        this.productId = productId;
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productImageUrl = productImageUrl;
     }
 
     public static WishResponse from(Wish wish) {
         return new WishResponse(
                 wish.getId(),
-                wish.getProduct().getId(),
+                wish.getProductOption().getId(),
+                wish.getProductOption().getName(),
                 wish.getQuantity(),
-                wish.getProduct().getName(),
-                wish.getProduct().getPrice(),
-                wish.getProduct().getImageUrl()
+                wish.getProductOption().getProduct().getId(),
+                wish.getProductOption().getProduct().getName(),
+                wish.getProductOption().getProduct().getPrice(),
+                wish.getProductOption().getProduct().getImageUrl()
         );
     }
 
@@ -34,27 +41,35 @@ public class WishResponse {
         return id;
     }
 
-    public Long getProductId() {
-        return productId;
+    public Long getOptionId() {
+        return optionId;
+    }
+
+    public String getOptionName() {
+        return optionName;
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public String getName() {
-        return name;
+    public Long getProductId() {
+        return productId;
     }
 
-    public int getPrice() {
-        return price;
+    public String getProductName() {
+        return productName;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public int getProductPrice() {
+        return productPrice;
     }
 
+    public String getProductImageUrl() {
+        return productImageUrl;
+    }
 }
+
 
 
 

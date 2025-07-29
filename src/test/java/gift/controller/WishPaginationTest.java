@@ -1,9 +1,8 @@
 package gift.controller;
 
-import gift.domain.Member;
-import gift.domain.Product;
-import gift.domain.Wish;
+import gift.domain.*;
 import gift.repository.MemberRepository;
+import gift.repository.ProductOptionRepository;
 import gift.repository.ProductRepository;
 import gift.repository.WishRepository;
 import gift.util.JwtUtil;
@@ -19,8 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -30,6 +28,7 @@ class WishPaginationTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private MemberRepository memberRepository;
     @Autowired private ProductRepository productRepository;
+    @Autowired private ProductOptionRepository productOptionRepository;
     @Autowired private WishRepository wishRepository;
     @Autowired private JwtUtil jwtUtil;
 
@@ -39,10 +38,11 @@ class WishPaginationTest {
     @BeforeEach
     void setUp() {
         wishRepository.deleteAll();
+        productOptionRepository.deleteAll();
         productRepository.deleteAll();
         memberRepository.deleteAll();
 
-        Member member = new Member("testuser", "testuser@example.com");
+        Member member = new Member("testuser@example.com", "password", LoginType.LOCAL, null, Role.USER);
         memberRepository.save(member);
         memberId = member.getId();
 
@@ -52,7 +52,11 @@ class WishPaginationTest {
             Product product = new Product("상품" + i, 1000 * i, "image" + i + ".jpg");
             productRepository.save(product);
 
-            Wish wish = new Wish(member, product, i);
+            ProductOption option = new ProductOption("옵션" + i, 100L);
+            option.assignToProduct(product);
+            productOptionRepository.save(option);
+
+            Wish wish = new Wish(member, option, i);
             wishRepository.save(wish);
         });
     }
@@ -71,3 +75,4 @@ class WishPaginationTest {
                 .andExpect(jsonPath("$.currentPage").value(0));
     }
 }
+

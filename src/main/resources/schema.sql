@@ -2,7 +2,7 @@ CREATE TABLE members (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(320) UNIQUE,
     password VARCHAR(255),
-    Login_Type VARCHAR(50),
+    login_type VARCHAR(50),
     social_id VARCHAR(100),
     role VARCHAR(50) DEFAULT 'USER'
 );
@@ -24,16 +24,17 @@ CREATE TABLE product_option (
     CONSTRAINT fk_product_option_product FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
-CREATE TABLE wishes(
+CREATE TABLE wishes (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     member_id BIGINT NOT NULL,
-    product_id BIGINT NOT NULL,
+    option_id BIGINT NOT NULL,
     quantity INT NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL,
-    CONSTRAINT uk_wishes_members_products UNIQUE (member_id, product_id),
+    CONSTRAINT uk_wishes_members_options UNIQUE (member_id, option_id),
     CONSTRAINT fk_wishes_members FOREIGN KEY (member_id) REFERENCES members(id),
-    CONSTRAINT fk_wishes_products FOREIGN KEY (product_id) REFERENCES products(id)
+    CONSTRAINT fk_wishes_options FOREIGN KEY (option_id) REFERENCES product_option(id)
 );
+
 
 CREATE TABLE orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,

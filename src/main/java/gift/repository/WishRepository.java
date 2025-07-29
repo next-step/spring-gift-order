@@ -12,11 +12,11 @@ public interface WishRepository extends JpaRepository<Wish, Long> {
 
     List<Wish> findAllByMemberId(Long memberId);
 
-    Optional<Wish> findByMemberIdAndProductId(Long memberId, Long productId);
+    Optional<Wish> findByMemberIdAndProductOptionId(Long memberId, Long optionId);
 
     Page<Wish> findAllByMemberId(Long memberId, Pageable pageable);
 
-    void deleteByMemberIdAndProductId(Long memberId, Long productId);
+    void deleteByMemberIdAndProductOptionId(Long memberId, Long optionId);
 
 }
 

@@ -23,7 +23,7 @@
 - [ ] 주문하기 기능 구현
     - [x] 주문 entity
     - [x] 주문 요청, 응답 DTO
-    - [ ] 주문 Controller
+    - [x] 주문 Controller
     - [ ] 주문 Service
         - [ ] item 수량 차감
         - [ ] 위시리스트 항목 삭제

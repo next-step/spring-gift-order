@@ -69,8 +69,5 @@ public class ProductOption {
     public Product getProduct() {
         return product;
     }
-
-    protected void setProduct(Product product) {
-        this.product = product;
-    }
+    
 }

@@ -50,7 +50,6 @@ public class Product {
 
     public void addOption(ProductOption option) {
         options.add(option);
-        option.setProduct(this);
     }
 
     public ProductOption addUniqueOption(String name, Long quantity) {

@@ -5,11 +5,13 @@ import gift.entity.type.UserRole;
 import gift.repository.role.RoleRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Tag("role")
 public class RoleRepositoryTest extends AbstractRepositoryTest {
 
     @Autowired

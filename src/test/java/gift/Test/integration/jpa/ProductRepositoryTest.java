@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Tag("product")
 public class ProductRepositoryTest extends AbstractRepositoryTest {
 
     @Autowired

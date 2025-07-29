@@ -8,6 +8,7 @@ import gift.dto.user.UserCreateRequest;
 import gift.entity.type.UserRole;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag("user")
 public abstract class AbstractUserTest extends AbstractControllerTest {
     private RestAssuredUtils restAssuredUtils;
     protected Map<UserRole, UserAdminResponse> testUsers;

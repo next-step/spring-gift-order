@@ -93,7 +93,7 @@ public class OptionService {
     }
 
     @Transactional
-    public OptionResponseDto decreaseQuantity(Long optionId, Integer decrement) {
+    public OptionEntity decreaseQuantity(Long optionId, Integer decrement) {
         OptionEntity optionEntity = optionRepository.findById(optionId)
             .orElseThrow(() -> new OptionNotFoundException(optionId));
 
@@ -113,12 +113,7 @@ public class OptionService {
             }
         }
         optionEntity.setQuantity(optionEntity.getQuantity() - decrement);
-        OptionEntity updatedOptionEntity = optionRepository.save(optionEntity);
-        return new OptionResponseDto(
-            updatedOptionEntity.getId(),
-            updatedOptionEntity.getName(),
-            updatedOptionEntity.getQuantity()
-        );
+        return optionRepository.save(optionEntity);
 
     }
 

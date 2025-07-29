@@ -48,7 +48,8 @@ public class KakaoAuthService {
         return kakaoTokenDto;
     }
 
-    public KakaoUserInfoDto getKakaoUserInfo(KakaoTokenDto token) {
-        return kakaoAuthClient.getKakaoUserInfo(token);
+    public KakaoUserInfoDto getKakaoUserInfo(UserInfoDto userInfoDto) {
+        User user = userRepository.findById(userInfoDto.id()).orElseThrow(() -> new NotFoundException("User", userInfoDto.id()));
+        return kakaoAuthClient.getKakaoUserInfo(user.getKakaoToken());
     }
 }

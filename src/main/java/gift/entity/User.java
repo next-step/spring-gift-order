@@ -47,4 +47,5 @@ public class User {
     public String getPassword() {return password;}
     public LocalDateTime getCreatedDate() {return createdDate;}
     public String getRole() {return role;}
+    public KakaoToken getKakaoToken() {return kakaoToken;}
 }

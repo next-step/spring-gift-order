@@ -2,6 +2,7 @@ package gift.infrastructure;
 
 import gift.dto.KakaoTokenDto;
 import gift.dto.KakaoUserInfoDto;
+import gift.entity.KakaoToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -44,10 +45,10 @@ public class KakaoAuthClient {
         return response.getBody();
     }
 
-    public KakaoUserInfoDto getKakaoUserInfo(KakaoTokenDto token) {
+    public KakaoUserInfoDto getKakaoUserInfo(KakaoToken token) {
         final String url = "https://kapi.kakao.com/v1/oidc/userinfo";
         var headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.accessToken());
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.getAccessToken());
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         var httpentity = new HttpEntity<>(headers);

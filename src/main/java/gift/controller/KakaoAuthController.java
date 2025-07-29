@@ -30,7 +30,7 @@ public class KakaoAuthController {
     }
 
     @GetMapping("/kakao-info")
-    public ResponseEntity<KakaoUserInfoDto> getKakaoUserInfo(@RequestBody KakaoTokenDto kakaoTokenDto) {
-        return new ResponseEntity<>(kakaoAuthService.getKakaoUserInfo(kakaoTokenDto), HttpStatus.OK);
+    public ResponseEntity<KakaoUserInfoDto> getKakaoUserInfo(@UserValid UserInfoDto userInfoDto) {
+        return new ResponseEntity<>(kakaoAuthService.getKakaoUserInfo(userInfoDto), HttpStatus.OK);
     }
 }

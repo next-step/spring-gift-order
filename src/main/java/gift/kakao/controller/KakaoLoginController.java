@@ -1,5 +1,7 @@
 package gift.kakao.controller;
 
+import gift.common.security.AuthenticatedMember;
+import gift.common.security.LoginMember;
 import gift.kakao.service.KakaoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -37,9 +39,9 @@ public class KakaoLoginController {
     }
 
     @GetMapping("/callback")
-    public String kakaoCallback(@RequestParam("code") String code) {
-        kakaoService.fetchAndSaveToken(code);
-
+    public String kakaoCallback(@RequestParam("code") String code,
+        @LoginMember AuthenticatedMember member) {
+        kakaoService.fetchAndSaveToken(code, member.id());
         return "login-success";
     }
 

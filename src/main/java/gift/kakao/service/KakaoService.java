@@ -3,7 +3,9 @@ package gift.kakao.service;
 import gift.kakao.KakaoTokenEntity;
 import gift.kakao.dto.KakaoTokenResponseDto;
 import gift.kakao.exception.KakaoServerException;
-import gift.kakao.repository.KakaoTokenRepository;
+import gift.member.MemberEntity;
+import gift.member.exception.MemberNotFoundException;
+import gift.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -17,21 +19,24 @@ public class KakaoService {
     private final String clientId;
     private final String redirectUri;
 
-    private final KakaoTokenRepository kakaoTokenRepository;
+    private final MemberRepository memberRepository;
 
     private final RestClient client = RestClient.builder().build();
 
     public KakaoService(
         @Value("${kakao.app.key}") String clientId,
         @Value("${kakao.redirect_uri}") String redirectUri,
-        KakaoTokenRepository kakaoTokenRepository
+        MemberRepository memberRepository
     ) {
         this.clientId = clientId;
         this.redirectUri = redirectUri;
-        this.kakaoTokenRepository = kakaoTokenRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public void fetchAndSaveToken(String code) {
+    public void fetchAndSaveToken(String code, Long memberId) {
+
+        MemberEntity memberEntity = memberRepository.findById(memberId)
+            .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         String requestBody = String.format(
             "grant_type=authorization_code&client_id=%s&redirect_uri=%s&code=%s",
@@ -57,6 +62,9 @@ public class KakaoService {
             throw new KakaoServerException();
         }
 
-        kakaoTokenRepository.save(KakaoTokenEntity.from(response));
+        KakaoTokenEntity kakaoToken = KakaoTokenEntity.from(response);
+        memberEntity.setKakaoToken(kakaoToken);
+        memberRepository.save(memberEntity);
     }
+
 }

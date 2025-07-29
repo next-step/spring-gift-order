@@ -59,4 +59,12 @@ public class MemberEntity {
         return password;
     }
 
+    public KakaoTokenEntity getKakaoToken() {
+        return kakaoToken;
+    }
+
+    public void setKakaoToken(KakaoTokenEntity kakaoToken) {
+        this.kakaoToken = kakaoToken;
+    }
+
 }

@@ -62,19 +62,10 @@ async function requestCreateProduct() {
             body: JSON.stringify(productData)
         });
 
-        if (res.ok) {
-            alert("상품이 성공적으로 생성되었습니다.");
-            window.location.href = "/admin/products";
-        } else {
-            const errorData = await res.json();
-            console.error("상품 생성 요청 실패:", errorData);
-            if (errorData.validationErrors !== undefined && errorData.validationErrors.length > 0) {
-                const errorMessages = errorData.validationErrors.map(err => `${err.field}: ${err.message}`).join("\n");
-                alert(errorMessages);
-            } else {
-                alert(`상품 생성에 실패했습니다: ${errorData.detail}`);
-            }
-        }
+        await alertToResponse("상품 생성", res, (result) => {
+            window.location.href = `/admin/products/${result.id}`;
+        });
+
     } catch (error) {
         console.error("상품 생성 중 오류 발생:", error);
         alert("상품 생성 중 오류가 발생했습니다. 다시 시도해주세요.");

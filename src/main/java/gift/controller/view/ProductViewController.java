@@ -1,43 +1,30 @@
 package gift.controller.view;
 
 import gift.common.aop.annotation.PreAuthorize;
-import gift.common.mapper.DtoToEntityMapper;
 import gift.common.mapper.ModelMapper;
-import gift.common.model.CustomAuth;
 import gift.common.model.CustomPage;
 import gift.dto.CustomPageRequest;
-import gift.dto.product.ProductCreateRequest;
 import gift.entity.Product;
 import gift.entity.type.UserRole;
 import gift.service.product.ProductService;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin/products")
 public class ProductViewController {
     private final ProductService productService;
-    private final Validator validator;
 
     public ProductViewController(
-            ProductService productService,
-            Validator validator
+            ProductService productService
     ) {
         this.productService = productService;
-        this.validator = validator;
-    }
-
-    private void validateRequest(ProductCreateRequest request) {
-        var violations = validator.validate(request)
-                .stream()
-                .findFirst();
-        if (violations.isPresent()) {
-            throw new IllegalArgumentException(violations.get().getMessage());
-        }
     }
 
     @PreAuthorize(UserRole.ROLE_ADMIN)
@@ -54,6 +41,7 @@ public class ProductViewController {
         model.addAttribute("pageInfo", currentPage);
         model.addAttribute("pageStart", start);
         model.addAttribute("pageEnd", end);
+        model.addAttribute("baseUrl", "/admin/products");
 
         return "admin/product/product-list";
     }
@@ -75,25 +63,7 @@ public class ProductViewController {
     @GetMapping("/create")
     public String createProductForm(Model model) {
         model.addAttribute("title", "상품 등록");
-        return "admin/product/create-product";
-    }
-
-    @PreAuthorize(UserRole.ROLE_ADMIN)
-    @PostMapping("/create")
-    public String createProduct(
-            @ModelAttribute ProductCreateRequest request,
-            CustomAuth auth,
-            Model model
-    ) {
-        try {
-            validateRequest(request);
-            Product product = DtoToEntityMapper.toEntity(request);
-            Product createdProduct = productService.create(product, auth.role(), auth.userId());
-            return "redirect:/admin/products/" + createdProduct.getId();
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "admin/product/create-product";
-        }
+        return "admin/product/product-create";
     }
 
 }

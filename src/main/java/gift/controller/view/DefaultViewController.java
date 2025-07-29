@@ -72,8 +72,8 @@ public class DefaultViewController {
     @PostMapping("/login")
     public String adminLogin(
             @ModelAttribute LoginRequest loginRequest,
-             HttpServletResponse response,
-             Model model
+            HttpServletResponse response,
+            Model model
     ) {
         try {
             validateLoginRequest(loginRequest);
@@ -122,5 +122,18 @@ public class DefaultViewController {
             throw new AccessDeniedException("관리자 권한이 필요합니다.");
         }
         return tokenInfo;
+    }
+
+    @GetMapping("/logout")
+    public String adminLogout(
+            HttpServletResponse response
+    ) {
+        Cookie cookie = new Cookie(TOKEN_HEADER, null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 쿠키 삭제
+
+        response.addCookie(cookie);
+        return "redirect:/admin/login";
     }
 }

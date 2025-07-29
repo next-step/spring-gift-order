@@ -41,25 +41,6 @@ function showEditButton() {
     editButton.hidden = false;
 }
 
-async function alertToResponse(action, response, onSuccess) {
-    console.log(`${action} 요청 결과:`, response);
-    if (response.ok) {
-        alert(`${action}이(가) 성공적으로 완료되었습니다!`);
-        if (onSuccess) onSuccess();
-    } else {
-        const errorData = await response.json();
-        console.error(`${action} 요청 실패:`, errorData);
-        if (errorData.validationErrors && errorData.validationErrors.length > 0) {
-            const errorMessages = errorData.validationErrors.map(err => `${err.field}: ${err.message}`).join("\n");
-            alert(errorMessages);
-        } else if (errorData.detail) {
-            alert(`${action}에 실패했습니다: ${errorData.detail}`);
-        } else {
-            alert(`${action} 중 알 수 없는 오류가 발생했습니다.`);
-        }
-    }
-}
-
 async function requestEditProduct() {
     const id = document.getElementById("prod-id").textContent;
     const requestBody = {}

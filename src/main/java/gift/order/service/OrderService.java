@@ -9,6 +9,7 @@ import gift.order.OrderEntity;
 import gift.order.dto.OrderRequestDto;
 import gift.order.dto.OrderResponseDto;
 import gift.order.repository.OrderRepository;
+import gift.wishlist.service.WishlistService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -20,15 +21,18 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
     private final OptionService optionService;
+    private final WishlistService wishlistService;
 
     public OrderService(
-        MemberRepository memberRepository
-        , OrderRepository orderRepository,
-        OptionService optionService
+        MemberRepository memberRepository,
+        OrderRepository orderRepository,
+        OptionService optionService,
+        WishlistService wishlistService
     ) {
         this.memberRepository = memberRepository;
         this.orderRepository = orderRepository;
         this.optionService = optionService;
+        this.wishlistService = wishlistService;
     }
 
     @Transactional
@@ -41,6 +45,8 @@ public class OrderService {
             orderRequestDto.optionId(),
             orderRequestDto.quantity()
         );
+
+        wishlistService.deleteWishlistByItemId(optionEntity.getItem().getId(), memberId);
 
         OrderEntity orderEntity = new OrderEntity(
             memberEntity,
@@ -74,6 +80,5 @@ public class OrderService {
             ))
             .toList();
     }
-
 
 }

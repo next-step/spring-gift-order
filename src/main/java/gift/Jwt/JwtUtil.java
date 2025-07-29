@@ -1,6 +1,7 @@
 package gift.Jwt;
 
 import gift.Entity.Member;
+import gift.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -10,7 +11,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    private String secretKey = "Yn2kjibddFAWtnPJ2AFlL8WXmohJMCvigQggaEypa5E=";
+    private final String secretKey;
+
+    public JwtUtil(JwtProperties jwtProperties) {
+        this.secretKey = jwtProperties.getSecret();
+    }
 
     // 토큰 생성
     public String createToken(Member member) {

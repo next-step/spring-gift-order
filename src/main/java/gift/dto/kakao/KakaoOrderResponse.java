@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record KakaoOrderResponse(Long id, Long optionId, Integer quantity, LocalDateTime orderDateTime, String message) {
 
-    public static KakaoOrderResponse from(Order order) {
-        return new KakaoOrderResponse(order.getId(), order.getProductOption().getId(), order.getQuantity(), order.getOrderDateTime(), order.getMessage());
+    public static KakaoOrderResponse of(Order order, String message) {
+        return new KakaoOrderResponse(order.getId(), order.getOptionId(), order.getQuantity(), order.getOrderDateTime(), message);
     }
 }

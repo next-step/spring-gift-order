@@ -1,6 +1,5 @@
 package gift.domain;
 
-import gift.domain.product.ProductOption;
 import gift.domain.user.User;
 import jakarta.persistence.*;
 
@@ -18,9 +17,11 @@ public class Order {
     @JoinColumn(nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private ProductOption productOption;
+    @Column(nullable = false)
+    private Long optionId;
+
+    @Column(nullable = false)
+    private Integer pricePerUnit;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -28,8 +29,8 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime orderDateTime;
 
-    @Column(nullable = false)
-    private String message;
+    protected Order() {
+    }
 
     public Long getId() {
         return id;
@@ -37,10 +38,6 @@ public class Order {
 
     public User getUser() {
         return user;
-    }
-
-    public ProductOption getProductOption() {
-        return productOption;
     }
 
     public Integer getQuantity() {
@@ -51,18 +48,15 @@ public class Order {
         return orderDateTime;
     }
 
-    public String getMessage() {
-        return message;
+    public Long getOptionId() {
+        return optionId;
     }
 
-    public Order(User user, ProductOption productOption, Integer quantity, String message) {
+    public Order(User user, Long optionId, Integer pricePerUnit, Integer quantity) {
         this.user = user;
-        this.productOption = productOption;
+        this.optionId = optionId;
+        this.pricePerUnit = pricePerUnit;
         this.quantity = quantity;
-        this.message = message;
         this.orderDateTime = LocalDateTime.now();
-    }
-
-    protected Order() {
     }
 }

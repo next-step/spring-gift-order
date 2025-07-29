@@ -81,9 +81,9 @@ public class Product {
         return options.stream().anyMatch(op -> op.getName().equals(name));
     }
 
-    public Order order(User user, Long optionId, Integer quantity) {
+    public ProductOption order(Long optionId, Integer quantity) {
         ProductOption option = getOption(optionId);
         option.subtractQuantity(quantity);
-        return new Order(user, optionId, option.getPrice(), quantity);
+        return option;
     }
 }

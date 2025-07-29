@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.auth.jwt.JwtFilter;
 import gift.auth.jwt.JwtProvider;
 import gift.auth.jwt.JwtUtil;
+import gift.auth.resolver.CurrentUserArgumentResolver;
 import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
 import gift.common.exception.CustomException;
@@ -19,7 +20,9 @@ import gift.controller.WishController;
 import gift.dto.WishRequest;
 import gift.dto.WishResponse;
 import gift.entity.Member;
+import gift.repository.MemberRepository;
 import gift.service.WishService;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +38,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(WishController.class)
-@Import({JwtFilter.class, JwtProvider.class, WishE2ETest.JwtTestConfig.class})
+@Import({
+    JwtFilter.class,
+    JwtProvider.class,
+    WishE2ETest.JwtTestConfig.class,
+    CurrentUserArgumentResolver.class
+})
 class WishE2ETest {
 
     @Autowired
@@ -46,6 +54,8 @@ class WishE2ETest {
     private JwtUtil jwtUtil;
     @MockBean
     private WishService wishService;
+    @MockBean
+    private MemberRepository memberRepository;
     private Member testMember;
 
     @BeforeEach
@@ -57,6 +67,9 @@ class WishE2ETest {
             "테스트 사용자",
             "https://example.com/profile.jpg"
         );
+
+        given(memberRepository.findById(eq(testMember.getId())))
+            .willReturn(Optional.of(testMember));
     }
 
     @Test

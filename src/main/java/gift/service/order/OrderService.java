@@ -14,5 +14,4 @@ public interface OrderService {
     Order createWithNotification(Integer quantity, String message, Long optionId, CustomAuth auth, String accessToken);
     Order update(Long id, Integer quantity, Long totalPrice, String message, UserRole role, Long userId);
     void deleteById(Long id);
-    Order getReference(Long id);
 }

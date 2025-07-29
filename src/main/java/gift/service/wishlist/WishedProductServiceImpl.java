@@ -82,9 +82,9 @@ public class WishedProductServiceImpl implements WishedProductService {
         if (wishedProductRepository.existsByUserIdAndProductId(userId, productId)) {
             throw new DuplicateKeyException("이미 장바구니에 존재하는 제품입니다. productId: " + productId);
         }
-        var productRef = productService.getReference(productId);
-        var userRef = userService.getReference(userId);
-        return wishedProductRepository.save(new WishedProduct(null, userRef, productRef, quantity));
+        var user = userService.findById(userId);
+        var product = productService.findById(productId);
+        return wishedProductRepository.save(new WishedProduct(null, user, product, quantity));
     }
 
     @Override

@@ -132,13 +132,4 @@ public class OptionServiceImpl implements OptionService{
             throw new NoSuchElementException("존재하지 않는 옵션입니다. id: " + id + ", productId: " + productId);
         }
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Option getReference(Long id) {
-        if (!optionRepository.existsById(id)) {
-            throw new NoSuchElementException("존재하지 않는 옵션입니다. id: " + id);
-        }
-        return optionRepository.getReferenceById(id);
-    }
 }

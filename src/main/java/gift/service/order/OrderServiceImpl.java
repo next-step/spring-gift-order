@@ -75,11 +75,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order create(Integer quantity, String message, Long optionId, Long userId) {
         Option option = optionService.findById(optionId);
-        User userRef = userService.getReference(userId);
-
+        User user = userService.findById(userId);
         changeOptionQuantity(option, userId, -quantity);
         Long totalPrice = option.getProduct().getPrice() * quantity;
-        return orderRepository.save(new Order(quantity, totalPrice, message, userRef, option));
+        return orderRepository.save(new Order(quantity, totalPrice, message, user, option));
     }
 
     @Override
@@ -135,14 +134,5 @@ public class OrderServiceImpl implements OrderService {
 
         changeOptionQuantity(order.getOption(), order.getUser().getId(), order.getQuantity());
         orderRepository.delete(order);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Order getReference(Long id) {
-        if (!orderRepository.existsById(id)) {
-            throw new NoSuchElementException("존재하지 않는 주문입니다. orderId: " + id);
-        }
-        return orderRepository.getReferenceById(id);
     }
 }

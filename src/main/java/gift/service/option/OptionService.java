@@ -13,5 +13,4 @@ public interface OptionService {
     Option update(Long id, Long productId, CustomAuth auth, String name, Long quantity);
     Option changeQuantityBy(Long id, Long productId, CustomAuth auth, Long amount);
     void deleteBy(Long id, Long productId, CustomAuth auth);
-    Option getReference(Long id);
 }

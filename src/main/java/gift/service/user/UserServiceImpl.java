@@ -106,21 +106,4 @@ public class UserServiceImpl implements UserService {
     public Boolean existsById(Long userId) {
         return userRepository.existsById(userId);
     }
-
-    @Override
-    public Boolean existsByClientIdAndProvider(String clientId, Provider provider) {
-        if (clientId == null || provider == null) {
-            throw new IllegalArgumentException("clientId와 provider는 null일 수 없습니다.");
-        }
-        return userRepository.existsByClientIdAndProvider(clientId, provider);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public User getReference(Long userId) {
-        if (!existsById(userId)) {
-            throw new NoSuchElementException("해당 ID의 사용자를 찾을 수 없습니다. : " + userId);
-        }
-        return userRepository.getReferenceById(userId);
-    }
 }

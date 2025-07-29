@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class OrderEntity {
 
     @Id

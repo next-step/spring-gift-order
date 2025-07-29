@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.auth.jwt.JwtUtil;
 import gift.common.code.CustomResponseCode;
-import gift.dto.OrderRequest;
+import gift.dto.Order.OrderRequest;
 import gift.entity.Member;
 import gift.entity.Product;
 import gift.entity.ProductOption;
 import gift.entity.Wish;
-import gift.external.KaKaoMessageSender;
+import gift.external.KaKaoMessageClient;
 import gift.repository.MemberRepository;
 import gift.repository.OptionRepository;
 import gift.repository.ProductRepository;
@@ -50,7 +50,7 @@ class OrderE2ETest {
     private JwtUtil jwtUtil;
 
     @MockBean
-    private KaKaoMessageSender kakaoMessageSender;
+    private KaKaoMessageClient kakaoMessageClient;
 
     private RestClient client;
     private Member savedMember;

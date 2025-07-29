@@ -15,13 +15,13 @@ import gift.auth.jwt.JwtUtil;
 import gift.auth.resolver.CurrentUserArgumentResolver;
 import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
-import gift.common.exception.CustomException;
-import gift.controller.WishController;
-import gift.dto.WishRequest;
-import gift.dto.WishResponse;
+import gift.common.exception.core.CustomException;
+import gift.controller.api.WishController;
+import gift.dto.Wish.WishRequest;
+import gift.dto.Wish.WishResponse;
 import gift.entity.Member;
 import gift.repository.MemberRepository;
-import gift.service.WishService;
+import gift.service.Wish.WishService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,7 +78,7 @@ class WishE2ETest {
         WishRequest request = new WishRequest(10L, 2);
         WishResponse response = new WishResponse(1L, 10L, 2, "상품명", 1000, "https://img");
 
-        given(wishService.addWish(eq(testMember.getId()), any(WishRequest.class))).willReturn(
+        given(wishService.addWish(eq(testMember), any(WishRequest.class))).willReturn(
             response);
 
         String token = jwtUtil.generateToken(testMember);
@@ -112,7 +112,7 @@ class WishE2ETest {
     void testAddWishDuplicateFail() throws Exception {
         WishRequest request = new WishRequest(10L, 1);
 
-        given(wishService.addWish(eq(testMember.getId()), any(WishRequest.class)))
+        given(wishService.addWish(eq(testMember), any(WishRequest.class)))
             .willThrow(new CustomException(CustomResponseCode.ALREADY_EXISTS));
 
         String token = jwtUtil.generateToken(testMember);
@@ -172,7 +172,7 @@ class WishE2ETest {
     @DisplayName("위시 삭제 실패 - 존재하지 않는 wish")
     void testDeleteWishNotFoundFail() throws Exception {
         doThrow(new CustomException(CustomResponseCode.NOT_FOUND))
-            .when(wishService).deleteWish(eq(testMember.getId()), eq(999L));
+            .when(wishService).deleteWish(eq(testMember), eq(999L));
 
         String token = jwtUtil.generateToken(testMember);
 

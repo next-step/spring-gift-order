@@ -1,7 +1,7 @@
 package gift.entity;
 
 import gift.common.code.CustomResponseCode;
-import gift.common.exception.CustomException;
+import gift.common.exception.core.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

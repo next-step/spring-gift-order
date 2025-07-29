@@ -3,7 +3,7 @@ package gift.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import gift.common.exception.CustomException;
+import gift.common.exception.core.CustomException;
 import gift.entity.Product;
 import gift.entity.ProductOption;
 import org.junit.jupiter.api.DisplayName;

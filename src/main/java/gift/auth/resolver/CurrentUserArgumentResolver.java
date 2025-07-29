@@ -1,8 +1,7 @@
 package gift.auth.resolver;
 
-import gift.common.annotation.CurrentUser;
 import gift.common.code.CustomResponseCode;
-import gift.common.exception.CustomException;
+import gift.common.exception.core.CustomException;
 import gift.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;

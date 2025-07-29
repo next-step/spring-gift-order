@@ -1,7 +1,7 @@
 package gift.auth.jwt;
 
 import gift.common.code.CustomResponseCode;
-import gift.common.exception.CustomException;
+import gift.common.exception.core.CustomException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;

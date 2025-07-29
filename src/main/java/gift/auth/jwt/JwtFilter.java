@@ -1,7 +1,7 @@
 package gift.auth.jwt;
 
 import gift.common.code.CustomResponseCode;
-import gift.common.exception.CustomException;
+import gift.common.exception.core.CustomException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

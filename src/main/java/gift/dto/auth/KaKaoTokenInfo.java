@@ -1,13 +1,14 @@
 package gift.dto.auth;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record KaKaoTokenInfo(
-    @JsonProperty("access_token") String accessToken,
-    @JsonProperty("refresh_token") String refreshToken,
-    @JsonProperty("expires_in") int expiresIn,
-    @JsonProperty("refresh_token_expires_in") int refreshTokenExpiresIn
-
+    String accessToken,
+    String refreshToken,
+    int expiresIn,
+    int refreshTokenExpiresIn
 ) {
 
 }

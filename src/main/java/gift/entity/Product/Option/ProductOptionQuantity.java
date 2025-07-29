@@ -1,6 +1,6 @@
 package gift.entity.Product.Option;
 
-import gift.common.exception.core.CustomException;
+import gift.common.exception.ValidationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import org.springframework.http.HttpStatus;
@@ -15,16 +15,16 @@ public record ProductOptionQuantity(
 
     public ProductOptionQuantity {
         if (quantity == null || quantity < 1 || quantity >= MAX_QUANTITY) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "수량은 1 이상 1억 미만이어야 합니다.");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "수량은 1 이상 1억 미만이어야 합니다.");
         }
     }
 
     public ProductOptionQuantity decrease(long amount) {
         if (amount < 1) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "감소 수량은 1 이상이어야 합니다.");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "감소 수량은 1 이상이어야 합니다.");
         }
         if (amount > this.quantity) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "옵션 수량이 부족합니다.");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "옵션 수량이 부족합니다.");
         }
         return new ProductOptionQuantity(this.quantity - amount);
     }

@@ -1,6 +1,6 @@
 package gift.entity.Product;
 
-import gift.common.exception.core.CustomException;
+import gift.common.exception.ValidationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ public record ProductImageUrl(
 
     public ProductImageUrl {
         if (imageUrl == null || imageUrl.isBlank()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "이미지 URL은 필수입니다.");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "이미지 URL은 필수입니다.");
         }
     }
 }

@@ -1,6 +1,6 @@
 package gift.entity.Order;
 
-import gift.common.exception.core.CustomException;
+import gift.common.exception.ValidationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,10 @@ public record OrderMessage(
 
     public OrderMessage {
         if (message == null || message.isBlank()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "주문 메시지는 필수입니다.");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "주문 메시지는 필수입니다.");
         }
         if (message.length() > MAX_LENGTH) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "주문 메시지는 500자 이내로 입력해 주세요.");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "주문 메시지는 500자 이내로 입력해 주세요.");
         }
     }
 }

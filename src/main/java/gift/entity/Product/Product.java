@@ -1,6 +1,6 @@
 package gift.entity.Product;
 
-import gift.common.exception.core.CustomException;
+import gift.common.exception.ValidationException;
 import gift.entity.Product.Option.ProductOption;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
@@ -69,7 +69,7 @@ public class Product {
         boolean isOptionNameDuplicated = options.stream()
             .anyMatch(opt -> opt.getName().equals(name));
         if (isOptionNameDuplicated) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "동일한 상품 내 옵션 이름은 중복될 수 없습니다.");
+            throw new ValidationException(HttpStatus.BAD_REQUEST, "동일한 상품 내 옵션 이름은 중복될 수 없습니다.");
         }
     }
 

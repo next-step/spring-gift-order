@@ -24,6 +24,7 @@ public class KakaoOAuthProperties {
                 .queryParam("response_type", "code")
                 .queryParam("client_id", this.clientId)
                 .queryParam("redirect_uri", this.redirectUri)
+                .queryParam("scope", "talk_message")
                 .build()
                 .toUriString();
     }

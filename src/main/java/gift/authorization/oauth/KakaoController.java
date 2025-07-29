@@ -1,5 +1,6 @@
 package gift.authorization.oauth;
 
+import gift.authorization.dto.TokenResponseDto;
 import gift.authorization.oauth.dto.KakaoTokenResponseDto;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,8 @@ public class KakaoController {
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<KakaoTokenResponseDto> kakaoCallback(@RequestParam String code) {
-        KakaoTokenResponseDto token = kakaoService.requestAccessToken(code);
+    public ResponseEntity<TokenResponseDto> kakaoCallback(@RequestParam String code) {
+        TokenResponseDto token = kakaoService.requestAccessToken(code);
         return ResponseEntity.ok(token);
     }
 }

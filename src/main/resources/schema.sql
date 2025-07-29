@@ -8,11 +8,13 @@ CREATE TABLE product
 
 CREATE TABLE member
 (
-    id       bigint auto_increment primary key,
-    email    varchar(255),
-    password varchar(255),
-    name     varchar(255),
-    role     varchar(255)
+    id        bigint auto_increment primary key,
+    email     varchar(255),
+    password  varchar(255),
+    name      varchar(255),
+    role      varchar(255),
+    client_id varchar(255),
+    auth_type varchar(255)
 );
 
 CREATE TABLE wishlist
@@ -29,7 +31,14 @@ CREATE TABLE product_option
 (
     id         bigint auto_increment primary key,
     product_id bigint,
-    name VARCHAR(50),
+    name       VARCHAR(50),
     quantity   bigint,
     foreign key (product_id) references product (id) on delete cascade
+);
+CREATE TABLE kakao_token
+(
+    client_id     VARCHAR(500) primary key,
+    access_token  VARCHAR(500),
+    refresh_token VARCHAR(500),
+    expires_at     TIMESTAMP
 );

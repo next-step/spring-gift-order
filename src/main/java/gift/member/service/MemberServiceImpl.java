@@ -1,5 +1,6 @@
 package gift.member.service;
 
+import gift.member.AuthType;
 import gift.member.Member;
 import gift.member.dto.MemberAddRequestDto;
 import gift.member.dto.MemberResponseDto;
@@ -26,7 +27,7 @@ public class MemberServiceImpl implements MemberService{
     public void addMember(MemberAddRequestDto requestDto) {
         validateEmailUnique(requestDto.email());
         String hashedPassword = hashWithSHA256(requestDto.password());
-        Member member = new Member(requestDto.email(), hashedPassword, requestDto.name(), requestDto.role());
+        Member member = new Member(requestDto.email(), hashedPassword, requestDto.name(), requestDto.role(), "", AuthType.EMAIL);
         memberRepository.save(member);
     }
 

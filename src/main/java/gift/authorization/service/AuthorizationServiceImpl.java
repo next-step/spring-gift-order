@@ -1,9 +1,12 @@
 package gift.authorization.service;
 
-import gift.authorization.dto.LoginRequestDto;
+import gift.authorization.dto.LoginRequestByEmailDto;
+import gift.authorization.dto.LoginRequestByKakaoDto;
 import gift.authorization.dto.TokenResponseDto;
-import gift.authorization.dto.UserRegisterRequestDto;
+import gift.authorization.dto.UserRegisterRequestByEmailDto;
+import gift.authorization.dto.UserRegisterRequestByKakaoDto;
 import gift.authorization.exception.UnauthorizedException;
+import gift.member.AuthType;
 import gift.member.Member;
 import gift.member.Role;
 import gift.member.exception.InvalidMemberException;
@@ -25,19 +28,27 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     @Override
-    public TokenResponseDto registerMember(UserRegisterRequestDto requestDto) {
+    public TokenResponseDto registerMemberByEmail(UserRegisterRequestByEmailDto requestDto) {
         validateEmailUnique(requestDto.email());
 
         String hashedPassword = hashWithSHA256(requestDto.password());
 
-        Member member = new Member(requestDto.email(), hashedPassword, requestDto.name(), Role.USER);
+        Member member = new Member(requestDto.email(), hashedPassword, requestDto.name(), Role.USER, "", AuthType.EMAIL);
         Member savedMember = memberRepository.save(member);
 
-        return new TokenResponseDto(jwtProvider.createToken(savedMember.getId(), savedMember.getName(), savedMember.getEmail(), savedMember.getRole()));
+        return new TokenResponseDto(jwtProvider.createToken(savedMember.getId(), savedMember.getName(), savedMember.getEmail(), savedMember.getRole(), savedMember.getAuthType()));
     }
 
     @Override
-    public TokenResponseDto loginMember(LoginRequestDto requestDto) {
+    public TokenResponseDto registerMemberByKakao(UserRegisterRequestByKakaoDto requestDto) {
+        Member member = new Member("", "", "", Role.USER, requestDto.clientId(),AuthType.KAKAO);
+        Member savedMember = memberRepository.save(member);
+
+        return new TokenResponseDto(jwtProvider.createToken(savedMember.getId(), savedMember.getName(), savedMember.getEmail(), savedMember.getRole(), savedMember.getAuthType()));
+    }
+
+    @Override
+    public TokenResponseDto loginMemberByEmail(LoginRequestByEmailDto requestDto) {
         Member member = findMemberByEmailOrElseThrow(requestDto.email());
 
         String hashedPassword = hashWithSHA256(requestDto.password());
@@ -46,7 +57,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
             throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
         }
 
-        return new TokenResponseDto(jwtProvider.createToken(member.getId(), member.getName(), member.getEmail(), member.getRole()));
+        return new TokenResponseDto(jwtProvider.createToken(member.getId(), member.getName(), member.getEmail(), member.getRole(), member.getAuthType()));
+    }
+
+    @Override
+    public TokenResponseDto loginMemberByKakao(LoginRequestByKakaoDto requestDto) {
+        Member member = memberRepository.findByClientId(requestDto.clientId());
+
+        return new TokenResponseDto(jwtProvider.createToken(member.getId(), member.getName(), member.getEmail(), member.getRole(), member.getAuthType()));
     }
 
     private void validateEmailUnique(String email) {

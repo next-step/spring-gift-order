@@ -2,7 +2,7 @@ package gift.authorization.dto;
 
 import jakarta.validation.constraints.Email;
 
-public record LoginRequestDto(
+public record LoginRequestByEmailDto(
         @Email
         String email,
         String password) {

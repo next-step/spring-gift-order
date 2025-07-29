@@ -1,5 +1,6 @@
 package gift.oauth;
 
+import gift.authorization.dto.TokenResponseDto;
 import gift.authorization.oauth.KakaoClient;
 import gift.authorization.oauth.KakaoOAuthProperties;
 import gift.authorization.oauth.KakaoService;
@@ -46,12 +47,10 @@ class KakaoServiceTest {
         given(kakaoProps.getClientId()).willReturn(clientId);
         given(kakaoProps.getRedirectUri()).willReturn(redirectUri);
         given(kakaoClient.requestToken(tokenUri, clientId, redirectUri, code)).willReturn(mockResponse);
+        given(kakaoClient.requestUserId(mockResponse.accessToken())).willReturn("mock-user-id");
+        TokenResponseDto result = kakaoService.requestAccessToken(clientId);
 
-        KakaoTokenResponseDto result = kakaoService.requestAccessToken(code);
-
-        assertThat(result.accessToken()).isEqualTo("mock-access-token");
-        assertThat(result.refreshToken()).isNotBlank();
-        assertThat(result.expiresIn()).isGreaterThan(0);
+        assertThat(result.token()).isEqualTo("mock-access-token");
     }
 
     @Test

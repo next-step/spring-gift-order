@@ -47,7 +47,7 @@ public class ProductOption {
         }
     }
 
-    protected void decreaseQuantity(Long amount) {
+    public void decreaseQuantity(Long amount) {
         if (amount == null || amount <= 0) {
             throw new InvalidProductOptionException("optionError","수량이 잘못 입력되었습니다.");
         }
@@ -57,6 +57,10 @@ public class ProductOption {
         }
 
         this.quantity -= amount;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {

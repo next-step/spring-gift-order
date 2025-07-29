@@ -26,6 +26,10 @@ public class Option extends BaseEntity {
 
     }
 
+    public Option(Long id) {
+        this(id, null, null, null);
+    }
+
     public Option(String name, Long quantity) {
         this(name, quantity, null);
     }

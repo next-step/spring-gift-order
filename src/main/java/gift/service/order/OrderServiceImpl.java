@@ -46,6 +46,12 @@ public class OrderServiceImpl implements OrderService {
         optionService.changeQuantityBy(option.getId(), option.getProduct().getId(), temporaryAuth, (long) amount);
     }
 
+    private boolean isNotAdmin(CustomAuth auth) {
+        return auth.role().getPriority() < ADMIN_PRIORITY;
+    }
+    private boolean isOwner(Order order, CustomAuth auth) {
+        return order.getUser().getId().equals(auth.userId());
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -63,9 +69,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order findBy(Long id, UserRole role, Long userId) {
+    public Order findBy(Long id, CustomAuth auth) {
         Order order = findById(id);
-        if (role.getPriority() < ADMIN_PRIORITY && !order.getUser().getId().equals(userId)) {
+        if (isNotAdmin(auth) && !isOwner(order, auth)) {
             throw new NoSuchElementException("존재하지 않는 주문입니다. orderId: " + id);
         }
         return order;
@@ -73,18 +79,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order create(Integer quantity, String message, Long optionId, Long userId) {
-        Option option = optionService.findById(optionId);
-        User user = userService.findById(userId);
-        changeOptionQuantity(option, userId, -quantity);
-        Long totalPrice = option.getProduct().getPrice() * quantity;
-        return orderRepository.save(new Order(quantity, totalPrice, message, user, option));
+    public Order create(Order order, CustomAuth auth) {
+        Option option = optionService.findById(order.getOption().getId());
+        order.setOption(option);
+
+        changeOptionQuantity(option, auth.userId(), -order.getQuantity());
+        if (order.getTotalPrice() == null) {
+            order.setTotalPrice(option.getProduct().getPrice() * order.getQuantity());
+        }
+
+        User user = userService.findById(auth.userId());
+        order.setUser(user);
+
+        return orderRepository.save(order);
     }
 
     @Override
     @Transactional
-    public Order createWithNotification(Integer quantity, String message, Long optionId, CustomAuth auth, String accessToken) {
-        Order order = create(quantity, message, optionId, auth.userId());
+    public Order createWithNotification(Order order, CustomAuth auth, String accessToken) {
+        create(order, auth);
+
         // 현재는 KakaoProvider 에 대한 알림 처리만을 구현 합니다.
         if (auth.provider() == Provider.KAKAO) {
             // 카카오톡 메시지 전송
@@ -95,43 +109,45 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order update(Long id, Integer quantity, Long totalPrice, String message, UserRole role, Long userId) {
+    public Order update(Order order, CustomAuth auth) {
+        Order existingOrder = findById(order.getId());
 
-        Order order = findById(id);
-        if (quantity != null) {
-            // 권한 체크: 관리자 권한이 아닌 경우 주문 수량 변경을 허용하지 않음
-            if (role.getPriority() < ADMIN_PRIORITY) {
+        // 수량 변경
+        if (order.getQuantity() != null) {
+            // 권한 체크: 관리자 권한이 아닌 경우 수량 변경을 허용하지 않음
+            if (isNotAdmin(auth)) {
                 throw new AccessDeniedException("주문 수량을 변경하기 위해서는 관리자 권한이 필요합니다.");
             }
-            int quantityDiff = quantity - order.getQuantity();
-            changeOptionQuantity(order.getOption(), order.getUser().getId(), -quantityDiff);
-            order.setQuantity(quantity);
-            order.setTotalPrice(order.getOption().getProduct().getPrice() * quantity);
+            int quantityDiff = order.getQuantity() - existingOrder.getQuantity();
+            changeOptionQuantity(existingOrder.getOption(), auth.userId(), quantityDiff);
+            existingOrder.setQuantity(order.getQuantity());
+            long revisedTotalPrice = order.getQuantity() * existingOrder.getOption().getProduct().getPrice();
+            existingOrder.setTotalPrice(revisedTotalPrice);
         }
-        if (totalPrice != null) {
+
+        // 총 가격 변경
+        if (order.getTotalPrice() != null) {
             // 권한 체크: 관리자 권한이 아닌 경우 총 가격 변경을 허용하지 않음
-            if (role.getPriority() < ADMIN_PRIORITY) {
+            if (isNotAdmin(auth)) {
                 throw new AccessDeniedException("총 가격을 변경하기 위해서는 관리자 권한이 필요합니다.");
             }
-            order.setTotalPrice(totalPrice);
+            existingOrder.setTotalPrice(order.getTotalPrice());
         }
 
-        if (message != null) {
-            // 권한 체크: 관리자 권한이 아닌 경우 메시지 변경을 허용하지 않음
-            if (role.getPriority() < ADMIN_PRIORITY && !order.getUser().getId().equals(userId)) {
-                throw new NoSuchElementException("존재하지 않는 주문입니다. orderId: " + id);
+        if (order.getMessage() != null) {
+            // 권한 체크: 소유자일 경우 메시지 변경 허용
+            if (isNotAdmin(auth) && !isOwner(existingOrder, auth)) {
+                throw new NoSuchElementException("존재하지 않는 주문입니다. orderId: " + order.getId());
             }
-            order.setMessage(message);
+            existingOrder.setMessage(order.getMessage());
         }
-
-        return orderRepository.save(order);
+        return orderRepository.save(existingOrder);
     }
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
+    public void cancelById(Long id) {
         Order order = findById(id);
-
         changeOptionQuantity(order.getOption(), order.getUser().getId(), order.getQuantity());
         orderRepository.delete(order);
     }

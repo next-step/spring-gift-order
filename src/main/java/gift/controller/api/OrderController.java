@@ -1,6 +1,7 @@
 package gift.controller.api;
 
 import gift.common.aop.annotation.PreAuthorize;
+import gift.common.mapper.DtoToEntityMapper;
 import gift.common.mapper.EntityToDtoMapper;
 import gift.common.mapper.ModelMapper;
 import gift.common.model.CustomAuth;
@@ -50,7 +51,7 @@ public class OrderController {
             @PathVariable Long id,
             CustomAuth auth
     ) {
-        var order = orderService.findBy(id, auth.role(), auth.userId());
+        var order = orderService.findBy(id, auth);
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.OK);
     }
 
@@ -63,10 +64,9 @@ public class OrderController {
     ) {
         Order order;
         if (auth.provider() == Provider.KAKAO && accessToken != null) {
-            order = orderService.createWithNotification(request.quantity(), request.message(),
-                    request.optionId(), auth, accessToken);
+            order = orderService.createWithNotification(DtoToEntityMapper.toEntity(request), auth, accessToken);
         } else {
-            order = orderService.create(request.quantity(), request.message(), request.optionId(), auth.userId());
+            order = orderService.create(DtoToEntityMapper.toEntity(request), auth);
         }
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.CREATED);
     }
@@ -78,23 +78,16 @@ public class OrderController {
             @Valid @RequestBody OrderUpdateRequest request,
             CustomAuth auth
     ) {
-        var order = orderService.update(
-                id,
-                request.quantity(),
-                request.totalPrice(),
-                request.message(),
-                auth.role(),
-                auth.userId()
-        );
+        var order = orderService.update(DtoToEntityMapper.toEntity(request, id), auth);
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.OK);
     }
 
     @PreAuthorize(UserRole.ROLE_ADMIN)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(
+    public ResponseEntity<Void> cancelOrder(
             @PathVariable Long id
     ) {
-        orderService.deleteById(id);
+        orderService.cancelById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

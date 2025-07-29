@@ -12,7 +12,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 @Component
-public class KakaoLoginService {
+public class KakaoLoginApi {
 
     private final String clientId;
 
@@ -20,7 +20,7 @@ public class KakaoLoginService {
 
     private final RestClient restClient;
 
-    public KakaoLoginService(
+    public KakaoLoginApi(
             @Value("${spring.kakao.client_id}") String clientId,
             @Value("${spring.kakao.client_secret}") String clientSecret,
             RestClient.Builder builder
@@ -30,7 +30,7 @@ public class KakaoLoginService {
         this.restClient = builder.build();
     }
 
-    public KakaoTokenResponse getAccessToken(String code) {
+    public String getAccessToken(String code) {
         try {
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("grant_type", "authorization_code");
@@ -46,7 +46,8 @@ public class KakaoLoginService {
                     .retrieve()
                     .toEntity(KakaoTokenResponse.class);
 
-            return entity.getBody();
+            KakaoTokenResponse response = entity.getBody();
+            return response.accessToken();
 
         } catch (Exception e) {
             throw new KakaoLoginException(e);

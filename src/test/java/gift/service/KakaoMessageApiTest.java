@@ -1,7 +1,7 @@
 package gift.service;
 
 import gift.common.exception.KakaoMessageSendException;
-import gift.service.api.KakaoMessageService;
+import gift.service.api.KakaoMessageApi;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +14,11 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RestClientTest(value = KakaoMessageService.class)
-public class KakaoMessageServiceTest {
+@RestClientTest(value = KakaoMessageApi.class)
+public class KakaoMessageApiTest {
 
     @Autowired
-    private KakaoMessageService kakaoMessageService;
+    private KakaoMessageApi kakaoMessageApi;
 
     @Autowired
     private MockRestServiceServer mockServer;
@@ -38,7 +38,7 @@ public class KakaoMessageServiceTest {
         this.mockServer.expect(requestTo("https://kapi.kakao.com/v2/api/talk/memo/default/send"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        kakaoMessageService.sendOrderCompleteMessage(accessToken, message);
+        kakaoMessageApi.sendOrderCompleteMessage(accessToken, message);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class KakaoMessageServiceTest {
         this.mockServer.expect(requestTo("https://kapi.kakao.com/v2/api/talk/memo/default/send"))
                 .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
-        assertThatThrownBy(() -> kakaoMessageService.sendOrderCompleteMessage(accessToken, message)).isInstanceOf(KakaoMessageSendException.class);
+        assertThatThrownBy(() -> kakaoMessageApi.sendOrderCompleteMessage(accessToken, message)).isInstanceOf(KakaoMessageSendException.class);
     }
 
     @Test
@@ -68,6 +68,6 @@ public class KakaoMessageServiceTest {
         this.mockServer.expect(requestTo("https://kapi.kakao.com/v2/api/talk/memo/default/send"))
                 .andRespond(withBadRequest());
 
-        assertThatThrownBy(() -> kakaoMessageService.sendOrderCompleteMessage(accessToken, message)).isInstanceOf(KakaoMessageSendException.class);
+        assertThatThrownBy(() -> kakaoMessageApi.sendOrderCompleteMessage(accessToken, message)).isInstanceOf(KakaoMessageSendException.class);
     }
 }

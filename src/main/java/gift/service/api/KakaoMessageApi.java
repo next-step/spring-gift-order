@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class KakaoMessageService {
+public class KakaoMessageApi {
 
     private final RestClient restClient;
     private final ObjectMapper mapper;
@@ -28,7 +28,7 @@ public class KakaoMessageService {
                     )
             );
 
-    public KakaoMessageService(RestClient.Builder builder, ObjectMapper mapper) {
+    public KakaoMessageApi(RestClient.Builder builder, ObjectMapper mapper) {
         this.restClient = builder.build();
         this.mapper = mapper;
     }

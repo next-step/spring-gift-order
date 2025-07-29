@@ -9,6 +9,7 @@ import gift.common.dto.CustomResponseBody;
 import gift.dto.ProductOptionRequest;
 import gift.dto.ProductRequest;
 import gift.dto.ProductResponse;
+import gift.dto.ProductUpdateRequest;
 import gift.entity.Member;
 import gift.repository.MemberRepository;
 import java.util.List;
@@ -120,12 +121,8 @@ public class ProductE2ETest {
     void testUpdateProduct() {
         Long id = createSampleProduct("테스트 기존 상품", 1000, "https://old.jpg");
 
-        List<ProductOptionRequest> updateOption = List.of(
-            new ProductOptionRequest("수정 옵션1", 10L),
-            new ProductOptionRequest("수정 옵션2", 20L)
-        );
-        ProductRequest update = new ProductRequest("테스트 수정 상품", 1500, "https://new.jpg",
-            updateOption);
+        ProductUpdateRequest update = new ProductUpdateRequest("테스트 수정 상품", 1500,
+            "https://new.jpg");
 
         CustomResponseBody<ProductResponse> response = client.put()
             .uri("/{id}", id)
@@ -143,11 +140,7 @@ public class ProductE2ETest {
             () -> assertThat(data.id()).isEqualTo(id),
             () -> assertThat(data.name()).isEqualTo("테스트 수정 상품"),
             () -> assertThat(data.price()).isEqualTo(1500),
-            () -> assertThat(data.imageUrl()).isEqualTo("https://new.jpg"),
-            () -> assertThat(data.options().get(0).name()).isEqualTo("수정 옵션1"),
-            () -> assertThat(data.options().get(0).quantity()).isEqualTo(10),
-            () -> assertThat(data.options().get(1).name()).isEqualTo("수정 옵션2"),
-            () -> assertThat(data.options().get(1).quantity()).isEqualTo(20)
+            () -> assertThat(data.imageUrl()).isEqualTo("https://new.jpg")
         );
     }
 

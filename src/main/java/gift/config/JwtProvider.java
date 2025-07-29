@@ -50,6 +50,15 @@ public class JwtProvider {
 
         return Long.parseLong(claims.getSubject());
     }
+    public String getEmail(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        return claims.get("email", String.class);
+    }
 
 
     public String createToken(Member member, String kakaoAccessToken) {

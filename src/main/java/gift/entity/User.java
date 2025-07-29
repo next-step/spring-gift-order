@@ -23,6 +23,9 @@ public class User {
 
     private String role;
 
+    @OneToOne
+    private KakaoToken kakaoToken;
+
     protected User() {}
 
     public User(String email, String password) {

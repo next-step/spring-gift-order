@@ -4,7 +4,8 @@ CREATE TABLE members (
     password VARCHAR(255),
     login_type VARCHAR(50),
     social_id VARCHAR(100),
-    role VARCHAR(50) DEFAULT 'USER'
+    role VARCHAR(50) DEFAULT 'USER',
+    access_token VARCHAR(2000)
 );
 
 

@@ -42,15 +42,20 @@ public class AuthService {
         return jwtUtil.createToken(member);
     }
 
-    public String loginOrRegisterWithKakao(KakaoUserResponse kakaoUser) {
+    public String loginOrRegisterWithKakao(KakaoUserResponse kakaoUser, String accessToken) {
         String kakaoId = String.valueOf(kakaoUser.id());
 
         Member member = memberRepository.findBySocialIdAndLoginType(kakaoId, LoginType.KAKAO)
-                .orElseGet(() -> {
-                    Member newMember = Member.createKakaoMember(kakaoId);
-                    return memberRepository.save(newMember);
-                });
+                .orElse(null);
+
+        if (member == null) {
+            member = Member.createKakaoMember(kakaoId);
+        }
+
+        member.updateAccessToken(accessToken);
+        memberRepository.save(member);
 
         return jwtUtil.createToken(member);
     }
+
 }

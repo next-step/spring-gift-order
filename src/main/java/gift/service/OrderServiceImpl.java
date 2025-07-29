@@ -11,6 +11,7 @@ import gift.external.KaKaoMessageSender;
 import gift.repository.OptionRepository;
 import gift.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -30,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderResponse create(Member member, OrderRequest request) {
         ProductOption option = optionRepository.findById(request.optionId())
             .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));

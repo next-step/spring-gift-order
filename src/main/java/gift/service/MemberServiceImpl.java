@@ -6,6 +6,7 @@ import gift.dto.AuthUser;
 import gift.entity.Member;
 import gift.repository.MemberRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -17,12 +18,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public Member getOrCreate(AuthUser authUser) {
         return memberRepository.findByEmail(authUser.email())
             .orElseGet(() -> memberRepository.save(Member.from(authUser)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Member findByRefreshToken(String refreshToken) {
         return memberRepository.findByRefreshToken(refreshToken)
             .orElseThrow(() -> new CustomException(

@@ -30,10 +30,6 @@ public class KaKaoAuthServiceImpl implements AuthService {
     private String redirectUri;
     @Value("${kakao.scope}")
     private String scope;
-    @Value("${kakao.token-url}")
-    private String tokenUrl;
-    @Value("${kakao.user-info-url}")
-    private String userInfoUrl;
 
     public KaKaoAuthServiceImpl(MemberService memberService, JwtUtil jwtUtil,
         KaKaoTokenClient kaKaoTokenClient) {

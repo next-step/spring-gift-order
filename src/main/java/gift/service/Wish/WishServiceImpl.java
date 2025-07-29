@@ -12,7 +12,6 @@ import gift.entity.Member;
 import gift.entity.Product;
 import gift.entity.ProductOption;
 import gift.entity.Wish;
-import gift.repository.MemberRepository;
 import gift.repository.ProductRepository;
 import gift.repository.WishRepository;
 import org.springframework.data.domain.Page;
@@ -27,13 +26,10 @@ public class WishServiceImpl implements WishService {
 
     private final WishRepository wishRepository;
     private final ProductRepository productRepository;
-    private final MemberRepository memberRepository;
 
-    public WishServiceImpl(WishRepository wishRepository, ProductRepository productRepository,
-        MemberRepository memberRepository) {
+    public WishServiceImpl(WishRepository wishRepository, ProductRepository productRepository) {
         this.wishRepository = wishRepository;
         this.productRepository = productRepository;
-        this.memberRepository = memberRepository;
     }
 
     @Override

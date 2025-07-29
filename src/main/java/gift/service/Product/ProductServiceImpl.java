@@ -31,10 +31,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductResponse create(ProductRequest request) {
-        if (request.options() == null || request.options().isEmpty()) {
-            throw new CustomException(CustomResponseCode.OPTION_REQUIRED);
-        }
-
         Product product = new Product(request.name(), request.price(), request.imageUrl());
 
         for (ProductOptionRequest optionRequest : request.options()) {

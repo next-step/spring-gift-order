@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class KakaoToken {
 
     @Id
-    private String clientId; // 카카오 유저 ID
+    private String clientId; //카카오 유저 아이디
     private String accessToken;
     private String refreshToken;
     private LocalDateTime expiresAt;

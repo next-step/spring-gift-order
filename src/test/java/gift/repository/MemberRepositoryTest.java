@@ -1,5 +1,6 @@
 package gift.repository;
 
+import gift.member.AuthType;
 import gift.member.Member;
 import gift.member.Role;
 import gift.member.repository.MemberRepository;
@@ -19,7 +20,7 @@ public class MemberRepositoryTest {
 
     @Test
     void 회원저장_그리고_조회() {
-        Member member = new Member("rusy@kakao.com", "1234", "rusy", Role.USER);
+        Member member = new Member("rusy@kakao.com", "1234", "rusy", Role.USER, "", AuthType.EMAIL);
         memberRepository.save(member);
 
         Optional<Member> foundMember = memberRepository.findByEmail("rusy@kakao.com");
@@ -30,7 +31,7 @@ public class MemberRepositoryTest {
 
     @Test
     void 회원삭제() {
-        Member member = new Member("rusy@kakao.com", "1234", "rusy", Role.USER);
+        Member member = new Member("rusy@kakao.com", "1234", "rusy", Role.USER, "", AuthType.EMAIL);
         memberRepository.save(member);
 
         Optional<Member> foundMember = memberRepository.findByEmail("rusy@kakao.com");

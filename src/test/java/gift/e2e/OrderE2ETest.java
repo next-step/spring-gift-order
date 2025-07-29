@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -143,7 +144,7 @@ class OrderE2ETest {
         assertAll("재고 부족 에러 메세지 검증",
             () -> Assertions.assertThat(response).isNotNull(),
             () -> Assertions.assertThat(response.getStatusCode().value())
-                .isEqualTo(CustomResponseCode.OPTION_INSUFFICIENT_STOCK.getHttpStatus().value()),
+                .isEqualTo(HttpStatus.BAD_REQUEST.value()),
             () -> Assertions.assertThat(response.getBody()).contains("옵션 수량이 부족합니다.")
         );
     }

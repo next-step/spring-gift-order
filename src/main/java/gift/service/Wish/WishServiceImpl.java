@@ -39,12 +39,10 @@ public class WishServiceImpl implements WishService {
     @Override
     @Transactional
     public WishResponse addWish(Member member, WishRequest request) {
-        Member foundMember = memberRepository.findById(member.getId())
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
         Product product = productRepository.findById(request.productId())
             .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
 
-        boolean exists = wishRepository.existsByMemberAndProduct(foundMember, product);
+        boolean exists = wishRepository.existsByMemberAndProduct(member, product);
         if (exists) {
             throw new CustomException(CustomResponseCode.ALREADY_EXISTS);
         }
@@ -58,17 +56,15 @@ public class WishServiceImpl implements WishService {
     @Override
     @Transactional
     public void deleteWish(Member member, Long productId) {
-        Member foundMember = memberRepository.findById(member.getId())
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
 
-        boolean exists = wishRepository.existsByMemberAndProduct(foundMember, product);
+        boolean exists = wishRepository.existsByMemberAndProduct(member, product);
         if (!exists) {
             throw new CustomException(CustomResponseCode.NOT_FOUND);
         }
 
-        wishRepository.deleteByMemberAndProduct(foundMember, product);
+        wishRepository.deleteByMemberAndProduct(member, product);
     }
 
     @Override
@@ -85,9 +81,6 @@ public class WishServiceImpl implements WishService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<WishResponse> getWishes(Member member, Pagination pagination) {
-        Member foundMember = memberRepository.findById(member.getId())
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
-
         Sort sortCondition = SortUtil.createSort(
             pagination.getSort(),
             WishSortField.allowedFields()
@@ -99,7 +92,7 @@ public class WishServiceImpl implements WishService {
         );
 
         Page<WishResponse> page = wishRepository
-            .findAllByMember(foundMember, pageable)
+            .findAllByMember(member, pageable)
             .map(WishResponse::from);
 
         return PageResponse.from(page);

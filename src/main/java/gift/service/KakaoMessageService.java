@@ -11,12 +11,22 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class KakaoMessageService {
 
     private final RestClient restClient;
     private final ObjectMapper mapper;
+    private static final Function<String, Map<String, Object>> TEXT_TEMPLATE =
+            message -> Map.of(
+                    "object_type", "text",
+                    "text", message,
+                    "link", Map.of(
+                            "web_url", "http://localhost:8080",
+                            "mobile_web_url", "http://localhost:8080"
+                    )
+            );
 
     public KakaoMessageService(RestClient.Builder builder, ObjectMapper mapper) {
         this.restClient = builder.build();
@@ -28,7 +38,7 @@ public class KakaoMessageService {
         ResponseEntity<KakaoSendMessageResultCode> entity;
         try {
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-            body.add("template_object", mapper.writeValueAsString(createTextTemplate(message)));
+            body.add("template_object", mapper.writeValueAsString(TEXT_TEMPLATE.apply(message)));
 
             entity = restClient
                     .post()
@@ -47,10 +57,6 @@ public class KakaoMessageService {
         if (entity.getBody().resultCode() != 0) {
             throw new KakaoMessageSendException();
         }
-    }
-
-    private Map<String, Object> createTextTemplate(String message) {
-        return Map.of("object_type", "text", "text", message, "link", Map.of("web_url", "http://localhost:8080", "mobile_web_url", "http://localhost:8080"));
     }
 
 }

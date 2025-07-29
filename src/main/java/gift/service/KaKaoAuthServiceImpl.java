@@ -1,26 +1,16 @@
 package gift.service;
 
 import gift.auth.jwt.JwtUtil;
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.ForbiddenException;
-import gift.common.exception.KaKaoClientException;
-import gift.common.exception.ServerErrorException;
-import gift.common.exception.UnauthorizedException;
-import gift.common.exception.ValidationException;
 import gift.dto.AuthUser;
 import gift.dto.KaKaoTokenInfo;
 import gift.dto.KaKaoUserInfo;
 import gift.dto.TokenResponse;
 import gift.entity.Member;
+import gift.external.KaKaoTokenClient;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
@@ -28,7 +18,8 @@ public class KaKaoAuthServiceImpl implements AuthService {
 
     private final MemberService memberService;
     private final JwtUtil jwtUtil;
-    private final RestClient restClient;
+
+    private final KaKaoTokenClient kaKaoTokenClient;
 
     @Value("${kakao.client-id}")
     private String clientId;
@@ -44,10 +35,10 @@ public class KaKaoAuthServiceImpl implements AuthService {
     private String userInfoUrl;
 
     public KaKaoAuthServiceImpl(MemberService memberService, JwtUtil jwtUtil,
-        RestClient.Builder restClient) {
+        KaKaoTokenClient kaKaoTokenClient) {
         this.memberService = memberService;
         this.jwtUtil = jwtUtil;
-        this.restClient = restClient.build();
+        this.kaKaoTokenClient = kaKaoTokenClient;
     }
 
     @Override
@@ -67,7 +58,7 @@ public class KaKaoAuthServiceImpl implements AuthService {
     @Override
     public AuthUser authenticate(String code) {
         KaKaoTokenInfo tokenInfo = requestTokenByCode(code);
-        KaKaoUserInfo userInfo = requestUserInfo(tokenInfo.accessToken());
+        KaKaoUserInfo userInfo = kaKaoTokenClient.requestUserInfo(tokenInfo.accessToken());
 
         return AuthUser.fromKakao(userInfo, tokenInfo);
     }
@@ -101,7 +92,7 @@ public class KaKaoAuthServiceImpl implements AuthService {
             "code", code,
             "client_secret", clientSecret
         );
-        return requestToken(params);
+        return kaKaoTokenClient.requestToken(params);
     }
 
     private KaKaoTokenInfo requestTokenByRefreshToken(String refreshToken) {
@@ -110,63 +101,6 @@ public class KaKaoAuthServiceImpl implements AuthService {
             "client_id", clientId,
             "refresh_token", refreshToken
         );
-        return requestToken(params);
-    }
-
-    private KaKaoTokenInfo requestToken(Map<String, String> params) {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        params.forEach(formData::add);
-
-        return restClient.post()
-            .uri(tokenUrl)
-            .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
-            .body(formData)
-            .retrieve()
-            .onStatus(status -> status.value() == 400, (req, res) -> {
-                throw new ValidationException();
-            })
-            .onStatus(status -> status.value() == 401, (req, res) -> {
-                throw new UnauthorizedException();
-            })
-            .onStatus(status -> status.value() == 403, (req, res) -> {
-                throw new ForbiddenException();
-            })
-            .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                throw new KaKaoClientException();
-            })
-            .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
-                throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
-            })
-            .body(KaKaoTokenInfo.class);
-    }
-
-    private KaKaoUserInfo requestUserInfo(String accessToken) {
-        KaKaoUserInfo userInfo = restClient.get()
-            .uri(userInfoUrl)
-            .header("Authorization", "Bearer " + accessToken)
-            .retrieve()
-            .onStatus(status -> status.value() == 400,
-                (req, res) -> {
-                    throw new ValidationException();
-                })
-            .onStatus(status -> status.value() == 401,
-                (req, res) -> {
-                    throw new UnauthorizedException();
-                })
-            .onStatus(status -> status.value() == 403,
-                (req, res) -> {
-                    throw new ForbiddenException();
-                })
-            .onStatus(HttpStatusCode::is4xxClientError,
-                (req, res) -> {
-                    throw new KaKaoClientException();
-                })
-            .onStatus(HttpStatusCode::is5xxServerError,
-                (req, res) -> {
-                    throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
-                })
-            .body(KaKaoUserInfo.class);
-
-        return userInfo;
+        return kaKaoTokenClient.requestToken(params);
     }
 }

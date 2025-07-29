@@ -4,6 +4,7 @@ import gift.dto.PageResponse;
 import gift.dto.Pagination;
 import gift.dto.ProductRequest;
 import gift.dto.ProductResponse;
+import gift.dto.ProductUpdateRequest;
 
 public interface ProductService {
 
@@ -13,7 +14,7 @@ public interface ProductService {
 
     ProductResponse getProduct(Long id);
 
-    ProductResponse update(Long id, ProductRequest request);
+    ProductResponse update(Long id, ProductUpdateRequest request);
 
     void delete(Long id);
 }

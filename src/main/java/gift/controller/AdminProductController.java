@@ -5,6 +5,7 @@ import gift.dto.Pagination;
 import gift.dto.ProductOptionRequest;
 import gift.dto.ProductRequest;
 import gift.dto.ProductResponse;
+import gift.dto.ProductUpdateRequest;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -67,7 +68,7 @@ public class AdminProductController {
 
     @PostMapping("/{id}")
     public String updateProduct(@PathVariable Long id,
-        @Valid @ModelAttribute("product") ProductRequest request,
+        @Valid @ModelAttribute("product") ProductUpdateRequest request,
         BindingResult result,
         Model model) {
 

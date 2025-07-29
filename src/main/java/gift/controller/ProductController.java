@@ -6,6 +6,7 @@ import gift.dto.PageResponse;
 import gift.dto.Pagination;
 import gift.dto.ProductRequest;
 import gift.dto.ProductResponse;
+import gift.dto.ProductUpdateRequest;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<CustomResponseBody<ProductResponse>> updateProduct(
         @PathVariable Long id,
-        @Valid @RequestBody ProductRequest request
+        @Valid @RequestBody ProductUpdateRequest request
     ) {
         ProductResponse response = productService.update(id, request);
 

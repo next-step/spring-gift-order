@@ -40,9 +40,9 @@ public class KaKaoMessageClient {
         String template = createOrderMessageTemplate(order);
 
         try {
-            sendTemplate(template, member.getaccessToken());
+            sendTemplate(template, member.getAccessToken());
         } catch (UnauthorizedException e) {
-            String refreshToken = member.getrefreshToken();
+            String refreshToken = member.getRefreshToken();
             String newAccessToken = authService.refreshAccessToken(refreshToken);
             sendTemplate(template, newAccessToken);
         }

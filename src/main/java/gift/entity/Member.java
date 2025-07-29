@@ -91,11 +91,11 @@ public class Member {
         return profileImage;
     }
 
-    public String getaccessToken() {
+    public String getAccessToken() {
         return accessToken;
     }
 
-    public String getrefreshToken() {
+    public String getRefreshToken() {
         return refreshToken;
     }
 }

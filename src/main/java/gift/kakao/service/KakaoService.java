@@ -1,7 +1,9 @@
 package gift.kakao.service;
 
+import gift.kakao.KakaoTokenEntity;
 import gift.kakao.dto.KakaoTokenResponseDto;
 import gift.kakao.exception.KakaoServerException;
+import gift.kakao.repository.KakaoTokenRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -15,17 +17,21 @@ public class KakaoService {
     private final String clientId;
     private final String redirectUri;
 
+    private final KakaoTokenRepository kakaoTokenRepository;
+
     RestClient client = RestClient.builder().build();
 
     public KakaoService(
         @Value("${kakao.app.key}") String clientId,
-        @Value("${kakao.redirect_uri}") String redirectUri
+        @Value("${kakao.redirect_uri}") String redirectUri,
+        KakaoTokenRepository kakaoTokenRepository
     ) {
         this.clientId = clientId;
         this.redirectUri = redirectUri;
+        this.kakaoTokenRepository = kakaoTokenRepository;
     }
 
-    public String getToken(String code) {
+    public void fetchAndSaveToken(String code) {
 
         String requestBody = String.format(
             "grant_type=authorization_code&client_id=%s&redirect_uri=%s&code=%s",
@@ -47,6 +53,10 @@ public class KakaoService {
                 })
             .body(KakaoTokenResponseDto.class);
 
-        return response.accessToken();
+        if (response == null) {
+            throw new KakaoServerException();
+        }
+
+        kakaoTokenRepository.save(KakaoTokenEntity.from(response));
     }
 }

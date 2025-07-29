@@ -37,9 +37,9 @@ public class KakaoLoginController {
     }
 
     @GetMapping("/callback")
-    public String kakaoCallback(@RequestParam("code") String code, Model model) {
-        String token = kakaoService.getToken(code);
-        model.addAttribute("token", token);
+    public String kakaoCallback(@RequestParam("code") String code) {
+        kakaoService.fetchAndSaveToken(code);
+
         return "login-success";
     }
 

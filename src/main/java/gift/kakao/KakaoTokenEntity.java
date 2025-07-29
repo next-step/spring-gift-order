@@ -1,5 +1,6 @@
 package gift.kakao;
 
+import gift.kakao.dto.KakaoTokenResponseDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,4 +32,30 @@ public class KakaoTokenEntity {
     protected KakaoTokenEntity() {
     }
 
+    public static KakaoTokenEntity from(KakaoTokenResponseDto dto) {
+        KakaoTokenEntity entity = new KakaoTokenEntity();
+        LocalDateTime now = LocalDateTime.now();
+        entity.setAccessToken(dto.accessToken());
+        entity.setAccessTokenExpiresAt(now.plusSeconds(dto.expiresIn()));
+        entity.setRefreshToken(dto.refreshToken());
+        entity.setRefreshTokenExpiresAt(now.plusSeconds(dto.refreshTokenExpiresIn()));
+        return entity;
+    }
+
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public void setAccessTokenExpiresAt(LocalDateTime accessTokenExpiresAt) {
+        this.accessTokenExpiresAt = accessTokenExpiresAt;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public void setRefreshTokenExpiresAt(LocalDateTime refreshTokenExpiresAt) {
+        this.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    }
 }

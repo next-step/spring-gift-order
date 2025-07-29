@@ -39,11 +39,13 @@ public class KakaoService {
     @Value("${kakao.api.user-info-uri}")
     private String userInfoUri;
 
-    public KakaoService(MemberRepository memberRepository, TokenRepository tokenRepository,
+    public KakaoService(MemberRepository memberRepository,
+            TokenRepository tokenRepository,
+            RestClient restClient,
             JwtUtil jwtUtil) {
         this.memberRepository = memberRepository;
         this.tokenRepository = tokenRepository;
-        this.restClient = RestClient.create();
+        this.restClient = restClient;
         this.jwtUtil = jwtUtil;
     }
 

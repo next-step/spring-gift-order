@@ -57,7 +57,7 @@ class KakaoServiceTest {
                 .baseUrl(mockWebServer.url("/").toString())
                 .build();
 
-        kakaoService = new KakaoService(memberRepository, tokenRepository, jwtUtil);
+        kakaoService = new KakaoService(memberRepository, tokenRepository, restClient, jwtUtil);
         ReflectionTestUtils.setField(kakaoService, "restClient", restClient);
 
         // @Value 필드 값 주입

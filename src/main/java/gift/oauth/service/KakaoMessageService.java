@@ -22,8 +22,8 @@ public class KakaoMessageService {
     @Value("${kakao.api.message-uri}")
     private String messageUri;
 
-    public KakaoMessageService(ObjectMapper objectMapper) {
-        this.restClient = RestClient.create();
+    public KakaoMessageService(RestClient restClient, ObjectMapper objectMapper) {
+        this.restClient = restClient;
         this.objectMapper = objectMapper;
     }
 

@@ -14,8 +14,19 @@ public class AppConfig {
     @Bean
     public RestTemplate kakaoAuthRestTemplate(RestTemplateBuilder builder) {
         return builder
-                .connectTimeout(Duration.ofSeconds(10))
-                .readTimeout(Duration.ofSeconds(10))
+                .rootUri("https://kauth.kakao.com")
+                .connectTimeout(Duration.ofSeconds(5))
+                .readTimeout(Duration.ofSeconds(5))
+                .build();
+    }
+
+    // 카카오 토큰으로 불러오는 API 요청 템플릿
+    @Bean
+    public RestTemplate kakaoKapiRestTemplate(RestTemplateBuilder builder) {
+        return builder
+                .rootUri("https://kapi.kakao.com")
+                .connectTimeout(Duration.ofSeconds(3))
+                .readTimeout(Duration.ofSeconds(3))
                 .build();
     }
 }

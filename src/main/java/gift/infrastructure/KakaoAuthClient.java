@@ -14,20 +14,23 @@ public class KakaoAuthClient {
     private final String kakaoRestApiKey;
     private final String redirectUri;
     private final String clientSecret;
-    private final RestTemplate restTemplate;
+    private final RestTemplate kakaoAuthRestTemplate;
+    private final RestTemplate kakaoKapiRestTemplate;
 
     public KakaoAuthClient(@Value("${kakao_rest_api_key}") String kakaoRestApiKey,
-                            @Value("${redirect_uri}") String redirectUri,
-                            @Value("${client_secret}") String clientSecret,
-                            RestTemplate kakaoAuthRestTemplate) {
+                           @Value("${redirect_uri}") String redirectUri,
+                           @Value("${client_secret}") String clientSecret,
+                           RestTemplate kakaoAuthRestTemplate,
+                           RestTemplate kakaoKapiRestTemplate) {
         this.kakaoRestApiKey = kakaoRestApiKey;
         this.redirectUri = redirectUri;
         this.clientSecret = clientSecret;
-        this.restTemplate = kakaoAuthRestTemplate;
+        this.kakaoAuthRestTemplate = kakaoAuthRestTemplate;
+        this.kakaoKapiRestTemplate = kakaoKapiRestTemplate;
     }
 
     public KakaoTokenDto getKakaoToken(String code) {
-        final String url = "https://kauth.kakao.com/oauth/token";
+        final String url = "/oauth/token";
 
         var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -41,18 +44,18 @@ public class KakaoAuthClient {
 
         var httpentity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<KakaoTokenDto> response = restTemplate.exchange(url, HttpMethod.POST, httpentity, KakaoTokenDto.class);
+        ResponseEntity<KakaoTokenDto> response = kakaoAuthRestTemplate.exchange(url, HttpMethod.POST, httpentity, KakaoTokenDto.class);
         return response.getBody();
     }
 
     public KakaoUserInfoDto getKakaoUserInfo(KakaoToken token) {
-        final String url = "https://kapi.kakao.com/v1/oidc/userinfo";
+        final String url = "/v1/oidc/userinfo";
         var headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.getAccessToken());
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         var httpentity = new HttpEntity<>(headers);
-        ResponseEntity<KakaoUserInfoDto> response = restTemplate.exchange(url, HttpMethod.GET, httpentity, KakaoUserInfoDto.class);
+        ResponseEntity<KakaoUserInfoDto> response = kakaoKapiRestTemplate.exchange(url, HttpMethod.GET, httpentity, KakaoUserInfoDto.class);
         return response.getBody();
     }
 }

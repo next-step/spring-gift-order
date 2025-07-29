@@ -1,4 +1,4 @@
-package gift.service;
+package gift.service.api;
 
 import gift.common.exception.KakaoLoginException;
 import gift.dto.kakao.KakaoTokenResponse;

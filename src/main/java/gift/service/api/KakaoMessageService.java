@@ -1,4 +1,4 @@
-package gift.service;
+package gift.service.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.common.exception.KakaoMessageSendException;

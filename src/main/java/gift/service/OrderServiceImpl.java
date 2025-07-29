@@ -16,6 +16,7 @@ import gift.repository.OrderRepository;
 import gift.repository.ProductRepository;
 import gift.repository.UserRepository;
 import gift.repository.WishlistRepository;
+import gift.service.api.KakaoMessageService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

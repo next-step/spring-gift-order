@@ -1,6 +1,7 @@
 package gift.service;
 
 import gift.common.exception.KakaoMessageSendException;
+import gift.service.api.KakaoMessageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

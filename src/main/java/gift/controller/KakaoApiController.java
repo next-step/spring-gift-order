@@ -4,7 +4,7 @@ import gift.common.argumentResolver.LoginUser;
 import gift.dto.jwt.JwtTokenResponse;
 import gift.dto.kakao.*;
 import gift.dto.user.UserInfo;
-import gift.service.KakaoLoginService;
+import gift.service.api.KakaoLoginService;
 import gift.service.OrderService;
 import gift.service.UserService;
 import jakarta.validation.Valid;

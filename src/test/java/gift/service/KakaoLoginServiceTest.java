@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.common.exception.KakaoLoginException;
 import gift.dto.kakao.KakaoTokenResponse;
+import gift.service.api.KakaoLoginService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

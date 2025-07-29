@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.kakao.KakaoLoginResponse;
 import gift.dto.kakao.KakaoTokenResponse;
 import gift.dto.kakao.KakaoUserIdResponse;
-import gift.service.KakaoLoginService;
+import gift.service.api.KakaoLoginService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

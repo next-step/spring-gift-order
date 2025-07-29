@@ -14,30 +14,30 @@ public class ProductOption {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "option_id")
     private Option option;
 
-    private Long value;
+    private Long stock;
 
     protected ProductOption() {}
 
-    public ProductOption(Product product, Option option, Long value) {
+    public ProductOption(Product product, Option option, Long stock) {
         this.product = product;
         this.option = option;
-        this.value = value;
+        this.stock = stock;
     }
 
-    public void subtract(Long value){
-        this.value -= value;
+    public void subtract(Long stock){
+        this.stock -= stock;
     }
 
     public Long getId() { return id; }
     public Product getProduct() { return product; }
     public Option getOption() { return option; }
-    public Long getValue() { return value; }
+    public Long getStock() { return stock; }
 }

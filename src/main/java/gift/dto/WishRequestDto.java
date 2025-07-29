@@ -1,7 +1,7 @@
 package gift.dto;
 
-public record WishRequestDto(Long id, Long productId, Long quantity) {
-    public WishRequestDto(Long productId, Long quantity) {
-        this(null, productId, quantity);
+public record WishRequestDto(Long id, Long productOptionId, Long quantity) {
+    public WishRequestDto(Long productOptionId, Long quantity) {
+        this(null, productOptionId, quantity);
     }
 }

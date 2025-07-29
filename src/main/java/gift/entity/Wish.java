@@ -1,6 +1,5 @@
 package gift.entity;
 
-import gift.dto.WishRequestDto;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,22 +10,22 @@ public class Wish {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
-    private Long productId;
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "product_id")
+    private ProductOption productOption;
+
     private Long quantity;
 
     protected Wish() {}
 
-    public Wish(Long userId, Long productId, Long quantity) {
-        this.userId = userId;
-        this.productId = productId;
+    public Wish(User user, ProductOption productOption, Long quantity) {
+        this.user = user;
+        this.productOption = productOption;
         this.quantity = quantity;
-    }
-
-    public Wish(WishRequestDto wishRequestDto) {
-        id = wishRequestDto.id();
-        productId = wishRequestDto.productId();
-        quantity = wishRequestDto.quantity();
     }
 
     public void update(Long quantity) {
@@ -34,7 +33,7 @@ public class Wish {
     }
 
     public Long getId() {return id;}
-    public Long getUserId() {return userId;}
-    public Long getProductId() {return productId;}
+    public User getUser() {return user;}
+    public ProductOption getProductOption() {return productOption;}
     public Long getQuantity() {return quantity;}
 }

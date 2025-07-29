@@ -1,9 +1,9 @@
 package gift.service;
 
 import gift.common.exception.InvalidUserException;
-import gift.common.exception.ProductNotFoundException;
 import gift.common.exception.ProductOptionException;
 import gift.domain.Role;
+import gift.domain.Wishlist;
 import gift.domain.product.Product;
 import gift.domain.product.ProductOption;
 import gift.domain.user.User;
@@ -13,6 +13,7 @@ import gift.dto.product.CreateProductOptionRequest;
 import gift.dto.product.CreateProductRequest;
 import gift.dto.user.UserInfo;
 import gift.repository.UserRepository;
+import gift.repository.WishlistRepository;
 import gift.service.fake.FakeOrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,6 +40,9 @@ public class OrderServiceTest {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    WishlistRepository wishlistRepository;
 
     Product product;
     ProductOption productOption;
@@ -93,5 +98,20 @@ public class OrderServiceTest {
         fakeOrderService.order(new UserInfo(user.getId(), user.getRole()), kakaoOrderRequest);
 
         assertThat(productOption.getQuantity()).isEqualTo(8);
+    }
+
+    @Test
+    @DisplayName("상품 주문 시 상품을 위시리스트에 등록해 놓은 상태라면 그 위시리스트는 삭제된다.")
+    void test5() {
+        User user = userRepository.save(User.createKakaoUser(123123L, "카카오액세스토큰", Role.USER));
+
+        Wishlist wishlist = wishlistRepository.save(new Wishlist(user, product));
+
+        KakaoOrderRequest kakaoOrderRequest = new KakaoOrderRequest(productOption.getId(), 2, "샤프 사줬으니 공부 열심히 해야한단다");
+
+        fakeOrderService.order(new UserInfo(user.getId(), user.getRole()), kakaoOrderRequest);
+
+        Optional<Wishlist> getWishlist = wishlistRepository.findById(wishlist.getId());
+        assertThat(getWishlist).isEmpty();
     }
 }

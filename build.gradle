@@ -37,6 +37,23 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.register('copyExampleConfig') {
+    doLast {
+        def targetFile = file("src/main/resources/application.yml")
+        def exampleFile = file("src/main/resources/application-example.yml")
+
+        if (!targetFile.exists() && exampleFile.exists()) {
+            targetFile << exampleFile.text
+            println "application.yml 생성됨 (application-example.yml 기반)"
+        }
+    }
+}
+
+tasks.named('processResources') {
+    dependsOn('copyExampleConfig')
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
+

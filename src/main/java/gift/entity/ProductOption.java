@@ -36,7 +36,7 @@ public class ProductOption {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Min(value = 1, message = "1 이상 1억 미만의 값을 가져야 합니다.")
+    @Min(value = 0, message = "0 이상 1억 미만의 값을 가져야 합니다.")
     @Max(value = 99999999, message = "1 이상 1억 미만의 값을 가져야 합니다.")
     @Column(name = "quantity", nullable = false)
     private int quantity = 1;
@@ -89,6 +89,7 @@ public class ProductOption {
             throw new InvalidQuantityException("요청한 상품의 수량이 잘못되었습니다.");
         }
         this.quantity -= quantity;
+        this.product.recalculateQuantity();
     }
 
     public ProductOption withProduct(Product product) {

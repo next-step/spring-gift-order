@@ -30,3 +30,9 @@ INSERT INTO options(name, product_id, quantity) VALUES('option7', 4L, 10);
 INSERT INTO options(name, product_id, quantity) VALUES('option8', 4L, 10);
 INSERT INTO options(name, product_id, quantity) VALUES('option9', 5L, 10);
 INSERT INTO options(name, product_id, quantity) VALUES('option10', 5L, 10);
+
+INSERT INTO orders(quantity, member_id, option_id, message) VALUES(1, 1, 1, 'testMessage1');
+INSERT INTO orders(quantity, member_id, option_id, message) VALUES(2, 1, 2, 'testMessage2');
+INSERT INTO orders(quantity, member_id, option_id, message) VALUES(3, 2, 1, 'testMessage3');
+INSERT INTO orders(quantity, member_id, option_id, message) VALUES(4, 2, 2, 'testMessage4');
+INSERT INTO orders(quantity, member_id, option_id, message) VALUES(5, 3, 1, 'testMessage5');

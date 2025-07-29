@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -26,8 +27,11 @@ public class Member {
     @Column
     private String password;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<WishList> wishLists;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishList> wishLists = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orderList= new ArrayList<>();
 
     public Member(Long id, String email, String password){
         this.id=id;

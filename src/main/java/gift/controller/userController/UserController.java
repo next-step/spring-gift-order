@@ -3,6 +3,7 @@ package gift.controller.userController;
 
 import gift.Jwt.TokenUtils;
 import gift.config.Interceptor.AdminOnly;
+import gift.config.Interceptor.TemporaryOnly;
 import gift.dto.userDto.UserLoginDto;
 import gift.dto.userDto.UserRegisterDto;
 import gift.dto.userDto.UserUpdateDto;
@@ -32,6 +33,7 @@ public class UserController {
         this.tokenUtils = tokenUtils;
     }
 
+    @TemporaryOnly
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody @Valid UserRegisterDto dto) {
         String token = userService.registerUser(dto.dtoToUser());

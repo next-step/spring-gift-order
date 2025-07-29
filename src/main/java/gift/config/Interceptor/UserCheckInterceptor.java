@@ -23,6 +23,7 @@ public class UserCheckInterceptor implements HandlerInterceptor {
                 String token = tokenUtils.extractToken(request.getHeader(HttpHeaders.AUTHORIZATION));
                 if (tokenUtils.extractUserRole(token) == null) {
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("로그인 유저만 접근 가능합니다.");
                     return false;
                 }
             }

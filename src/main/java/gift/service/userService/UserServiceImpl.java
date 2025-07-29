@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveSocialUser(String email) {
-        User user = new User(email, "1234", UserRole.USER);
+        User user = new User(email, "1234", UserRole.TEMPORARY);
         return userRepository.save(user);
     }
 

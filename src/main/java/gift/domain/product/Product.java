@@ -2,6 +2,8 @@ package gift.domain.product;
 
 import gift.common.exception.DuplicateOptionNameException;
 import gift.common.exception.ProductOptionException;
+import gift.domain.Order;
+import gift.domain.user.User;
 import gift.dto.product.CreateProductOptionRequest;
 import jakarta.persistence.*;
 
@@ -23,6 +25,9 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<ProductOption> options = new ArrayList<>();
+
+    protected Product() {
+    }
 
     public Product(String name, String imageUrl, List<CreateProductOptionRequest> options) {
         addOption(options.toArray(new CreateProductOptionRequest[0]));
@@ -76,12 +81,9 @@ public class Product {
         return options.stream().anyMatch(op -> op.getName().equals(name));
     }
 
-    protected Product() {
-    }
-
-    public ProductOption order(Long optionId, Integer quantity) {
+    public Order order(User user, Long optionId, Integer quantity) {
         ProductOption option = getOption(optionId);
         option.subtractQuantity(quantity);
-        return option;
+        return new Order(user, optionId, option.getPrice(), quantity);
     }
 }

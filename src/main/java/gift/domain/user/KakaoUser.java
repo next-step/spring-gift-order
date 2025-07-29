@@ -15,6 +15,9 @@ public class KakaoUser extends User {
 
     private String accessToken;
 
+    protected KakaoUser() {
+    }
+
     protected KakaoUser(Long kakaoId, String accessToken, Role role) {
         super(role);
         this.accessToken = accessToken;
@@ -37,9 +40,5 @@ public class KakaoUser extends User {
     @Override
     public void changePassword(String password) {
         throw new InvalidUserException("카카오 로그인 유저는 비밀번호를 변경할 수 없습니다.");
-    }
-
-    protected KakaoUser() {
-
     }
 }

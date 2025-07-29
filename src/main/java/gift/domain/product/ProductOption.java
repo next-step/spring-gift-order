@@ -57,13 +57,13 @@ public class ProductOption {
         this.quantity -= quantity;
     }
 
+    protected ProductOption() {
+    }
+
     private ProductOption(Product product, String name, Integer price, Integer quantity) {
         this.product = product;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
-    }
-
-    protected ProductOption() {
     }
 }

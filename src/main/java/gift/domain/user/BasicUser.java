@@ -16,6 +16,9 @@ public class BasicUser extends User {
     @Column(nullable = false)
     private String password;
 
+    protected BasicUser() {
+    }
+
     protected BasicUser(String email, String password, Role role) {
         super(role);
         this.email = email;
@@ -32,10 +35,6 @@ public class BasicUser extends User {
     @Override
     public void changePassword(String password) {
         this.password = password;
-    }
-
-    protected BasicUser() {
-
     }
 
     public String getEmail() {

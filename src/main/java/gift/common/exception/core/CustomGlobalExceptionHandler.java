@@ -14,11 +14,24 @@ public class CustomGlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CustomResponseBody<Void>> handleCustomException(CustomException e) {
-        CustomResponseCode errorCode = e.getErrorCode();
+        int code;
+        String message;
+        int status;
+
+        if (e.getErrorCode() != null) {
+            CustomResponseCode errorCode = e.getErrorCode();
+            code = errorCode.getHttpStatus().value();
+            message = errorCode.getMessage();
+            status = errorCode.getHttpStatus().value();
+        } else {
+            code = e.getStatusCode().value();
+            message = e.getMessage();
+            status = e.getStatusCode().value();
+        }
 
         return ResponseEntity
-            .status(errorCode.getHttpStatus())
-            .body(new CustomResponseBody<>(errorCode.getCode(), errorCode.getMessage(), null));
+            .status(status)
+            .body(new CustomResponseBody<>(code, message, null));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

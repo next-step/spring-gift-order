@@ -4,6 +4,7 @@ import gift.dto.order.KakaoOrderResponseDto;
 
 public interface ProductOrderService {
 
-    public KakaoOrderResponseDto sendOrderMessage(Long id, Long memberId, String message,
+    public KakaoOrderResponseDto sendOrderMessage(Long productId, Long productOptionId,
+        Long memberId, String message,
         int quantity);
 }

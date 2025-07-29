@@ -12,6 +12,7 @@ import gift.repository.product.ProductOptionRepository;
 import gift.repository.product.ProductRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductOrderServiceImpl implements ProductOrderService {
@@ -31,9 +32,10 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     }
 
     @Override
-    public KakaoOrderResponseDto sendOrderMessage(Long id, Long memberId, String message,
+    @Transactional
+    public KakaoOrderResponseDto sendOrderMessage(Long productId, Long productOptionId, Long memberId, String message,
         int quantity) {
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException());
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new ResourceNotFoundException());
@@ -46,10 +48,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
             throw new KakaoSendMessageException("카카오 메시지가 전달되지 않았습니다.");
         }
 
-        /* TODO: 주문하기에 옵션도 추가해야 함. 임시로 0번 인덱스를 채워넣었음. */
-        List<ProductOption> optionList = productOptionRepository.findAllByProductId(
-            product.getId());
-        ProductOption productOption = productOptionRepository.findById(optionList.get(0).getId())
+        ProductOption productOption = productOptionRepository.findById(productOptionId)
             .orElseThrow(() -> new ResourceNotFoundException());
 
         productOption.decreaseQuantity(quantity);

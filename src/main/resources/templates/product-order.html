@@ -26,10 +26,18 @@
       <input type="number" id="quantity" name="quantity" value="1" min="1"
              th:max="${productResponseDto.quantity}" required>
     </div>
-    <div class="stock-info">
-      <span>(현재 재고: </span>
-      <span th:text="${productResponseDto.quantity}">0</span>
-      <span>개)</span>
+    <div class="order-form-group">
+      <label for="option-select">옵션 선택:</label>
+      <select id="option-select" name="optionId" class="order-option-select" required>
+
+        <option value="" selected disabled>옵션을 선택해주세요.</option>
+
+        <option th:each="option : ${productOptionList}"
+                th:value="${option.id}"
+                th:text="|${option.name} (재고: ${option.quantity}개)|"
+                th:disabled="${option.quantity == 0}">
+        </option>
+      </select>
     </div>
 
     <div class="order-form-group" style="margin-top: 20px;">

@@ -1,7 +1,29 @@
+.page-header {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.page-title {
+    display: inline-block;
+    font-size: 28px;
+    font-weight: 300;
+}
+
+.header-button {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-decoration: none;
+    color: #555;
+    font-size: 16px;
+}
+
 .order-container {
     max-width: 600px;
     margin: 40px auto;
-    padding: 24px;
+    padding: 32px;
     border: 1px solid #ddd;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -25,15 +47,34 @@
 .order-product-price {
     font-size: 20px;
     color: #e65b5b;
-    margin-bottom: 24px;
+    margin-bottom: 30px;
 }
 
+.wish-order-button {
+    background-color: #333;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.wish-order-button:hover {
+    background-color: #555;
+}
+
+
+/* 폼 그룹 스타일 */
 .order-form-group {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .order-form-group label {
@@ -41,33 +82,35 @@
     font-weight: 500;
 }
 
-.order-form-group input[type="number"] {
-    width: 80px;
-    padding: 8px;
+.order-form-group input[type="number"],
+.order-form-group input[type="text"] {
+    width: 250px;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 16px;
     text-align: center;
-}
-
-.stock-info {
-    font-size: 14px;
-    color: #777;
-}
-
-/* 위시리스트의 주문 폼 스타일 --- */
-.order-form {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-width: 200px;
-}
-
-.message-input {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
     box-sizing: border-box;
 }
+
+.order-form-group input[type="number"] {
+    width: 100px;
+}
+
+.order-option-select {
+    width: 250px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.order-option-select option:disabled {
+    color: #aaa;
+}
+
+.option-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* 옵

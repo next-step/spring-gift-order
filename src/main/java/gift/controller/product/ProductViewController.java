@@ -1,7 +1,9 @@
 package gift.controller.product;
 
+import gift.dto.product.ProductOptionResponseDto;
 import gift.dto.product.ProductRequestDto;
 import gift.dto.product.ProductResponseDto;
+import gift.service.product.ProductOptionService;
 import gift.service.product.ProductService;
 import gift.service.wishlist.WishListService;
 import gift.util.JwtUtil;
@@ -28,12 +30,15 @@ public class ProductViewController {
 
     private final JwtUtil jwtUtil;
     private final ProductService productService;
+    private final ProductOptionService productOptionService;
     private final WishListService wishListService;
 
     public ProductViewController(JwtUtil jwtUtil, ProductService productService,
+        ProductOptionService productOptionService,
         WishListService wishListService) {
         this.jwtUtil = jwtUtil;
         this.productService = productService;
+        this.productOptionService = productOptionService;
         this.wishListService = wishListService;
     }
 
@@ -156,6 +161,10 @@ public class ProductViewController {
     ) {
         ProductResponseDto productResponseDto = productService.findById(id);
         model.addAttribute("productResponseDto", productResponseDto);
+
+        List<ProductOptionResponseDto> productOptionList = productOptionService.findAllById(
+            productResponseDto.id());
+        model.addAttribute("productOptionList", productOptionList);
 
         return "product-order";
     }

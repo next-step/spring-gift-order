@@ -2,9 +2,7 @@ package gift.e2e;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gift.dto.AuthUser;
@@ -44,8 +42,8 @@ public class KaKaoAuthE2ETest {
     }
 
     @Test
-    @DisplayName("콜백 요청시 토큰 반환 성공")
-    void callbackSuccessReturnAccessToken() throws Exception {
+    @DisplayName("콜백 요청 시 쿠키에 액세스 토큰 설정 후 리다이렉트")
+    void callbackSuccessSetAccessTokenInCookie() throws Exception {
         String code = "testCode";
 
         AuthUser mockUser = new AuthUser(
@@ -63,8 +61,11 @@ public class KaKaoAuthE2ETest {
 
         mockMvc.perform(get("/api/auth/kakao/callback")
                 .param("code", code))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.token").value("mock-access-token"));
+            .andExpect(status().isFound())
+            .andExpect(header().string("Set-Cookie",
+                org.hamcrest.Matchers.containsString("access_token=mock-access-token")))
+            .andExpect(
+                header().string("Set-Cookie", org.hamcrest.Matchers.containsString("HttpOnly")))
+            .andExpect(header().string("Location", "http://localhost:8080"));
     }
 }

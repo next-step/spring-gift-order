@@ -22,7 +22,7 @@
 - [x] 카카오 토큰 DB 저장 로직 구현
 - [ ] 주문하기 기능 구현
     - [x] 주문 entity
-    - [ ] 주문 요청, 응답 DTO
+    - [x] 주문 요청, 응답 DTO
     - [ ] 주문 Controller
     - [ ] 주문 Service
         - [ ] item 수량 차감

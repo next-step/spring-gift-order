@@ -34,7 +34,10 @@ public enum CustomResponseCode {
     OPTION_REQUIRED("상품에는 최소 1개의 옵션이 필요합니다.", HttpStatus.BAD_REQUEST),
     OPTION_DUPLICATED("동일한 상품 내 옵션 이름은 중복될 수 없습니다.", HttpStatus.CONFLICT),
     OPTION_DECREASE_AMOUNT_INVALID("감소 수량은 1 이상이어야 합니다.", HttpStatus.BAD_REQUEST),
-    OPTION_INSUFFICIENT_STOCK("옵션 수량이 부족합니다.", HttpStatus.BAD_REQUEST);
+    OPTION_INSUFFICIENT_STOCK("옵션 수량이 부족합니다.", HttpStatus.BAD_REQUEST),
+
+    KAKAO_MESSAGE_SEND_FAILED("카카오 메시지 전송에 실패했습니다.", HttpStatus.BAD_REQUEST),
+    KAKAO_CLIENT_ERROR("카카오 API 요청 중 오류가 발생했습니다.", HttpStatus.BAD_GATEWAY);
 
     private final int code;
     private final String message;

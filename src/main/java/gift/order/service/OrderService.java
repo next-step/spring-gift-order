@@ -2,6 +2,7 @@ package gift.order.service;
 
 import gift.item.OptionEntity;
 import gift.item.service.OptionService;
+import gift.kakao.service.KakaoService;
 import gift.member.MemberEntity;
 import gift.member.exception.MemberNotFoundException;
 import gift.member.repository.MemberRepository;
@@ -22,17 +23,20 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OptionService optionService;
     private final WishlistService wishlistService;
+    private final KakaoService kakaoService;
 
     public OrderService(
         MemberRepository memberRepository,
         OrderRepository orderRepository,
         OptionService optionService,
-        WishlistService wishlistService
+        WishlistService wishlistService,
+        KakaoService kakaoService
     ) {
         this.memberRepository = memberRepository;
         this.orderRepository = orderRepository;
         this.optionService = optionService;
         this.wishlistService = wishlistService;
+        this.kakaoService = kakaoService;
     }
 
     @Transactional
@@ -56,6 +60,8 @@ public class OrderService {
         );
 
         OrderEntity savedOrderEntity = orderRepository.save(orderEntity);
+
+        kakaoService.sendOrderMessageToMe(savedOrderEntity, memberId);
 
         return new OrderResponseDto(
             savedOrderEntity.getId(),

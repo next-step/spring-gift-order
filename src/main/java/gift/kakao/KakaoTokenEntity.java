@@ -42,6 +42,26 @@ public class KakaoTokenEntity {
         return entity;
     }
 
+    public KakaoTokenEntity updateAccessToken(String accessToken, long accessTokenExpiresIn) {
+        this.accessToken = accessToken;
+        this.accessTokenExpiresAt = LocalDateTime.now().plusSeconds(accessTokenExpiresIn);
+        return this;
+    }
+
+    public KakaoTokenEntity updateRefreshToken(String refreshToken, long refreshTokenExpiresIn) {
+        this.refreshToken = refreshToken;
+        this.refreshTokenExpiresAt = LocalDateTime.now().plusSeconds(refreshTokenExpiresIn);
+        return this;
+    }
+
+    public boolean isAccessTokenExpired() {
+        // 만료시간 체크와 api 호출 사이에 만료되는 경우를 고려하여 버퍼를 둠.
+        return LocalDateTime.now().isAfter(accessTokenExpiresAt.minusSeconds(10));
+    }
+
+    public boolean isRefreshTokenExpired() {
+        return LocalDateTime.now().isAfter(refreshTokenExpiresAt.minusSeconds(10));
+    }
 
     public void setAccessToken(String accessToken) {
         this.accessToken = accessToken;
@@ -57,5 +77,13 @@ public class KakaoTokenEntity {
 
     public void setRefreshTokenExpiresAt(LocalDateTime refreshTokenExpiresAt) {
         this.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 }

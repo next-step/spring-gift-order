@@ -5,6 +5,7 @@ import gift.common.security.exception.MissingTokenException;
 import gift.item.exception.ItemNotFoundException;
 import gift.item.exception.LastOptionCannotBeDeletedException;
 import gift.kakao.exception.KakaoServerException;
+import gift.kakao.exception.TokenExpiredException;
 import gift.member.exception.DuplicateEmailException;
 import gift.member.exception.InvalidLoginException;
 import gift.member.exception.MemberNotFoundException;
@@ -138,6 +139,20 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errorResponse);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<ErrorResponseDto> handleTokenExpiredException(
+        TokenExpiredException e,
+        HttpServletRequest request
+    ) {
+        ErrorResponseDto errorResponse = new ErrorResponseDto(
+            HttpStatus.UNAUTHORIZED,
+            e.getMessage(),
+            URI.create(request.getRequestURI())
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)

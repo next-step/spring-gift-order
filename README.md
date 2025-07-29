@@ -24,10 +24,10 @@
     - [x] 주문 entity
     - [x] 주문 요청, 응답 DTO
     - [x] 주문 Controller
-    - [ ] 주문 Service
+    - [x] 주문 Service
         - [x] item 수량 차감
         - [x] 위시리스트 항목 삭제
-        - [ ] 메세지 전송
+        - [x] 메세지 전송
 - [ ] 테스트 작성
 
 # spring-gift-enhancement

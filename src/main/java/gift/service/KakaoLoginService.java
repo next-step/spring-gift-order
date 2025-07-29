@@ -47,13 +47,25 @@ public class KakaoLoginService {
                     KakaoLoginResponse.class
             );
 
-            return response.getBody().accessToken();
+            String accessToken = response.getBody().accessToken();
+            saveAccessTokenToMember(accessToken);
+            return accessToken;
         } catch(HttpClientErrorException e) {
             throw new IllegalArgumentException("잘못된 요청입니다." + e.getResponseBodyAsString());
         } catch(HttpServerErrorException e) {
             throw new RuntimeException("카카오 서버에 문제가 발생하였습니다." + e.getResponseBodyAsString());
         }
+    }
 
+    private void saveAccessTokenToMember(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        RequestEntity<Void> request = new RequestEntity<>(headers, HttpMethod.GET,
+                URI.create("https://kapi.kakao.com/v2/user/me"));
+
+        ResponseEntity<String> response = restTemplate.exchange(request, String.class);
     }
 
 }

@@ -1,6 +1,6 @@
 package gift.entity;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,17 +26,17 @@ public class Wish {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(nullable = false)
-    private Integer quantity;
+    @Embedded
+    private WishQuantity quantity;
 
     protected Wish() {
     }
 
-    public Wish(Long id, Member member, Product product, Integer quantity) {
+    private Wish(Long id, Member member, Product product, Integer quantity) {
         this.id = id;
         this.member = member;
         this.product = product;
-        this.quantity = quantity;
+        this.quantity = new WishQuantity(quantity);
     }
 
     public Wish(Member member, Product product, Integer quantity) {
@@ -55,7 +55,7 @@ public class Wish {
         return product;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public int getQuantity() {
+        return quantity.quantity();
     }
 }

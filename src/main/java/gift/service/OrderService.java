@@ -10,6 +10,7 @@ import gift.exception.OptionNotFoundException;
 import gift.repository.MemberRepository;
 import gift.repository.OptionRepository;
 import gift.repository.OrderRepository;
+import gift.repository.WishRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +20,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final OptionRepository optionRepository;
+    private final WishRepository wishRepository;
 
     public OrderService(OrderRepository orderRepository, MemberRepository memberRepository,
-            OptionRepository optionRepository) {
+            OptionRepository optionRepository, WishRepository wishRepository) {
         this.orderRepository = orderRepository;
         this.memberRepository = memberRepository;
         this.optionRepository = optionRepository;
+        this.wishRepository = wishRepository;
     }
 
     @Transactional
@@ -41,6 +44,8 @@ public class OrderService {
 
         Order order = new Order(member, option, orderRequest.quantity(), orderRequest.message());
         Order savedOrder = orderRepository.save(order);
+
+        wishRepository.deleteByMemberAndProductId(member, option.getProduct().getId());
 
         return OrderResponse.from(savedOrder);
     }

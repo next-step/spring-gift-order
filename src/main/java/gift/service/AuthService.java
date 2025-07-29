@@ -10,4 +10,6 @@ public interface AuthService {
     AuthUser authenticate(String code);
 
     TokenResponse registerOrLogin(AuthUser authUser);
+
+    String refreshAccessToken(String refreshToken);
 }

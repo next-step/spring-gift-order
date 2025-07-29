@@ -3,6 +3,7 @@ package gift.service;
 import gift.auth.jwt.JwtUtil;
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.ForbiddenException;
+import gift.common.exception.KaKaoClientException;
 import gift.common.exception.ServerErrorException;
 import gift.common.exception.UnauthorizedException;
 import gift.common.exception.ValidationException;
@@ -11,6 +12,7 @@ import gift.dto.KaKaoTokenInfo;
 import gift.dto.KaKaoUserInfo;
 import gift.dto.TokenResponse;
 import gift.entity.Member;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -64,7 +66,7 @@ public class KaKaoAuthServiceImpl implements AuthService {
 
     @Override
     public AuthUser authenticate(String code) {
-        KaKaoTokenInfo tokenInfo = requestAccessToken(code);
+        KaKaoTokenInfo tokenInfo = requestTokenByCode(code);
         KaKaoUserInfo userInfo = requestUserInfo(tokenInfo.accessToken());
 
         return AuthUser.fromKakao(userInfo, tokenInfo);
@@ -79,38 +81,63 @@ public class KaKaoAuthServiceImpl implements AuthService {
         return TokenResponse.from(token);
     }
 
-    private KaKaoTokenInfo requestAccessToken(String code) {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("grant_type", "authorization_code");
-        formData.add("client_id", clientId);
-        formData.add("redirect_uri", redirectUri);
-        formData.add("code", code);
-        formData.add("client_secret", clientSecret);
+    @Override
+    @Transactional
+    public String refreshAccessToken(String refreshToken) {
+        KaKaoTokenInfo tokenInfo = requestTokenByRefreshToken(refreshToken);
 
-        KaKaoTokenInfo tokenInfo = restClient.post()
+        Member member = memberService.findByRefreshToken(refreshToken);
+
+        member.updateTokens(tokenInfo.accessToken(), tokenInfo.refreshToken());
+
+        return tokenInfo.accessToken();
+    }
+
+    private KaKaoTokenInfo requestTokenByCode(String code) {
+        Map<String, String> params = Map.of(
+            "grant_type", "authorization_code",
+            "client_id", clientId,
+            "redirect_uri", redirectUri,
+            "code", code,
+            "client_secret", clientSecret
+        );
+        return requestToken(params);
+    }
+
+    private KaKaoTokenInfo requestTokenByRefreshToken(String refreshToken) {
+        Map<String, String> params = Map.of(
+            "grant_type", "refresh_token",
+            "client_id", clientId,
+            "refresh_token", refreshToken
+        );
+        return requestToken(params);
+    }
+
+    private KaKaoTokenInfo requestToken(Map<String, String> params) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        params.forEach(formData::add);
+
+        return restClient.post()
             .uri(tokenUrl)
             .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
             .body(formData)
             .retrieve()
-            .onStatus(status -> status.value() == 400,
-                (req, res) -> {
-                    throw new ValidationException();
-                })
-            .onStatus(status -> status.value() == 401,
-                (req, res) -> {
-                    throw new UnauthorizedException();
-                })
-            .onStatus(status -> status.value() == 403,
-                (req, res) -> {
-                    throw new ForbiddenException();
-                })
-            .onStatus(HttpStatusCode::is5xxServerError,
-                (req, res) -> {
-                    throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
-                })
+            .onStatus(status -> status.value() == 400, (req, res) -> {
+                throw new ValidationException();
+            })
+            .onStatus(status -> status.value() == 401, (req, res) -> {
+                throw new UnauthorizedException();
+            })
+            .onStatus(status -> status.value() == 403, (req, res) -> {
+                throw new ForbiddenException();
+            })
+            .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
+                throw new KaKaoClientException();
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
+                throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
+            })
             .body(KaKaoTokenInfo.class);
-
-        return tokenInfo;
     }
 
     private KaKaoUserInfo requestUserInfo(String accessToken) {
@@ -129,6 +156,10 @@ public class KaKaoAuthServiceImpl implements AuthService {
             .onStatus(status -> status.value() == 403,
                 (req, res) -> {
                     throw new ForbiddenException();
+                })
+            .onStatus(HttpStatusCode::is4xxClientError,
+                (req, res) -> {
+                    throw new KaKaoClientException();
                 })
             .onStatus(HttpStatusCode::is5xxServerError,
                 (req, res) -> {

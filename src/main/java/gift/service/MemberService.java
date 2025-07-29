@@ -6,4 +6,6 @@ import gift.entity.Member;
 public interface MemberService {
 
     Member getOrCreate(AuthUser authUser);
+
+    Member findByRefreshToken(String refreshToken);
 }

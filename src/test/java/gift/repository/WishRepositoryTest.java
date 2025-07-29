@@ -1,6 +1,7 @@
 package gift.repository;
 
 import gift.entity.*;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -25,6 +26,8 @@ public class WishRepositoryTest {
     private OptionRepository optionRepository;
     @Autowired
     private ProductOptionRepository productOptionRepository;
+    @Autowired
+    private EntityManager em;
 
     @Test
     void save() {
@@ -90,5 +93,26 @@ public class WishRepositoryTest {
         List<Wish> wishes = page.getContent();
         assertThat(wishes.stream().map(Wish::getUser).toList())
                 .containsExactly(expectUser1, expectUser2 , expectUser3);
+    }
+
+    @Test
+    void getWishListFromUser() {
+        User expectUser1 = userRepository.save(new User("kakao@kakao.com", "1234"));
+        Product expectProduct = productRepository.save(new Product("과자", 1000L, "http://snack"));
+        Option expectOption1 = optionRepository.save(new Option("땅콩맛"));
+        Option expectOption2 = optionRepository.save(new Option("우유맛"));
+        ProductOption expectProductOption1 = productOptionRepository.save(new ProductOption(expectProduct, expectOption1, 30L));
+        ProductOption expectProductOption2 = productOptionRepository.save(new ProductOption(expectProduct, expectOption2, 10L));
+        Wish expect1 = wishRepository.save(new Wish(expectUser1, expectProductOption1, 3L));
+        Wish expect2 = wishRepository.save(new Wish(expectUser1, expectProductOption2, 3L));
+
+        em.flush();
+        em.clear();
+
+        Wish actualWish1 = wishRepository.findById(expect1.getId()).orElse(null);
+        Wish actualWish2 = wishRepository.findById(expect2.getId()).orElse(null);
+        List<Wish> actual = userRepository.findById(expectUser1.getId()).get().getWishList();
+
+        assertThat(actual).containsExactly(actualWish1, actualWish2);
     }
 }

@@ -5,6 +5,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name= "user")
@@ -25,6 +27,9 @@ public class User {
 
     @OneToOne
     private KakaoToken kakaoToken;
+
+    @OneToMany(mappedBy = "user")
+    private List<Wish> wishList = new ArrayList<>();
 
     protected User() {}
 
@@ -48,4 +53,5 @@ public class User {
     public LocalDateTime getCreatedDate() {return createdDate;}
     public String getRole() {return role;}
     public KakaoToken getKakaoToken() {return kakaoToken;}
+    public List<Wish> getWishList() {return wishList;}
 }

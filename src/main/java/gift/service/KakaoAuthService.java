@@ -9,6 +9,7 @@ import gift.exception.NotFoundException;
 import gift.infrastructure.KakaoAuthClient;
 import gift.repository.KakaoTokenRepository;
 import gift.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public class KakaoAuthService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public KakaoTokenDto accessKakaoToken(UserInfoDto userInfoDto, String code) {
         KakaoTokenDto kakaoTokenDto = kakaoAuthClient.getKakaoToken(code);
         LocalDateTime expiresDate = LocalDateTime.now().plusSeconds(kakaoTokenDto.expiresIn());
@@ -48,6 +50,7 @@ public class KakaoAuthService {
         return kakaoTokenDto;
     }
 
+    @Transactional
     public KakaoUserInfoDto getKakaoUserInfo(UserInfoDto userInfoDto) {
         User user = userRepository.findById(userInfoDto.id()).orElseThrow(() -> new NotFoundException("User", userInfoDto.id()));
         return kakaoAuthClient.getKakaoUserInfo(user.getKakaoToken());

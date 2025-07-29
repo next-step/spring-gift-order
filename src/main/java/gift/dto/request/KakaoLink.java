@@ -1,4 +1,11 @@
 package gift.dto.request;
 
-public record KakaoLink(String web_url, String mobile_web_url) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record KakaoLink(
+        @JsonProperty("web_url")
+        String webUrl,
+
+        @JsonProperty("mobile_web_url")
+        String mobileWebUrl) {
 }

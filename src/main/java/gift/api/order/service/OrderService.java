@@ -7,13 +7,11 @@ import gift.api.option.repository.OptionRepository;
 import gift.api.order.domain.Order;
 import gift.api.order.dto.OrderRequestDto;
 import gift.api.order.dto.OrderResponseDto;
+import gift.api.order.event.OrderCompletedEvent;
 import gift.api.order.repository.OrderRepository;
-import gift.api.product.domain.Product;
-import gift.api.wish.repository.WishRepository;
 import gift.exception.notfound.MemberNotFoundException;
 import gift.exception.notfound.OptionNotFoundException;
-import gift.oauth.repository.TokenRepository;
-import gift.oauth.service.KakaoMessageService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,22 +24,16 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MemberRepository memberRepository;
     private final OptionRepository optionRepository;
-    private final WishRepository wishRepository;
-    private final TokenRepository tokenRepository;
-    private final KakaoMessageService kakaoMessageService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public OrderService(OrderRepository orderRepository,
             MemberRepository memberRepository,
             OptionRepository optionRepository,
-            WishRepository wishRepository,
-            TokenRepository tokenRepository,
-            KakaoMessageService kakaoMessageService) {
+            ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.memberRepository = memberRepository;
         this.optionRepository = optionRepository;
-        this.wishRepository = wishRepository;
-        this.tokenRepository = tokenRepository;
-        this.kakaoMessageService = kakaoMessageService;
+        this.eventPublisher = eventPublisher;
     }
 
     public Page<OrderResponseDto> getOrders(String email, Pageable pageable) {
@@ -68,9 +60,9 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        removeProductFromWishListIfExists(member, option.getProduct());
-
-        sendKakaoMessage(member, savedOrder);
+        // 1. 위시 리스트에서 주문한 상품 삭제
+        // 2. 주문 완료 알림 발송
+        eventPublisher.publishEvent(new OrderCompletedEvent(this, savedOrder));
 
         return OrderResponseDto.from(savedOrder);
     }
@@ -83,16 +75,5 @@ public class OrderService {
     private Option findOptionByIdOrThrow(Long optionId) {
         return optionRepository.getOptionById(optionId)
                 .orElseThrow(() -> new OptionNotFoundException(optionId));
-    }
-
-    private void removeProductFromWishListIfExists(Member member, Product product) {
-        wishRepository.findByMemberAndProduct(member, product)
-                .ifPresent(wishRepository::delete);
-    }
-
-    private void sendKakaoMessage(Member member, Order order) {
-        tokenRepository.findByMemberAndProvider(member, "KAKAO")
-                .ifPresent(token -> kakaoMessageService.sendOrderMessageToMe(token.getAccessToken(),
-                        order));
     }
 }

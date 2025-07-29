@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>전송 완료</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        p {
+            font-size: 18px;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        .button {
+            margin-top: 30px;
+        }
+
+        .button a {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .button a:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>✅ 전송 완료</h2>
+    <p>주문 및 카카오톡 메시지 전송이 성공적으로 완료되었습니다.</p>
+
+    <div class="button">
+        <a th:href="@{/message}">다시 주문하러 가기</a>
+    </div>
+</div>
+</body>
+</html>

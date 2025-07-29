@@ -8,7 +8,7 @@ public class ProductResponse {
     private String name;
     private int price;
     private String imageUrl;
-    private List<ProductOption> options;
+    private List<ProductOptionResponse> options;
 
     public ProductResponse(Long id, String name, int price, String imageUrl) {
         this.id = id;
@@ -30,11 +30,11 @@ public class ProductResponse {
         return imageUrl;
     }
 
-    public List<ProductOption> getOptions() {
+    public List<ProductOptionResponse> getOptions() {
         return options;
     }
 
-    public void setOptions(List<ProductOption> options) {
+    public void setOptions(List<ProductOptionResponse> options) {
         this.options = options;
     }
 }

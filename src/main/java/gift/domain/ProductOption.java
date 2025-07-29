@@ -1,5 +1,6 @@
 package gift.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -15,6 +16,7 @@ public class ProductOption {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id")
+    @JsonIgnore
     private Product product;
 
     @Column(length = 50, nullable = false)
@@ -69,6 +71,18 @@ public class ProductOption {
         if (amount < 1 || amount > this.quantity) {
             throw new IllegalArgumentException("삭제할 수량이 잘못되었습니다.");
         }
+        this.quantity -= amount;
+    }
+
+    public void decreaseQuantity(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("차감 수량은 1 이상이어야 합니다.");
+        }
+
+        if (this.quantity < amount) {
+            throw new IllegalArgumentException("재고가 부족합니다. 현재 재고: " + this.quantity);
+        }
+
         this.quantity -= amount;
     }
 

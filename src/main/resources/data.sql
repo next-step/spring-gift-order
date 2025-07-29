@@ -27,3 +27,29 @@ INSERT INTO product (name, price, image_url) VALUES ('상품 17', 17000, 'http:/
 INSERT INTO product (name, price, image_url) VALUES ('상품 18', 18000, 'http://image18.com');
 INSERT INTO product (name, price, image_url) VALUES ('상품 19', 19000, 'http://image19.com');
 INSERT INTO product (name, price, image_url) VALUES ('상품 20', 20000, 'http://image20.com');
+
+INSERT INTO product_option (product_id, name, quantity) VALUES
+                                                            (1, '기본 옵션', 100),
+                                                            (2, '기본 옵션', 100),
+                                                            (3, '기본 옵션', 100),
+                                                            (4, '기본 옵션', 100),
+                                                            (5, '기본 옵션', 100),
+                                                            (6, '기본 옵션', 100),
+                                                            (7, '기본 옵션', 100),
+                                                            (8, '기본 옵션', 100),
+                                                            (9, '기본 옵션', 100),
+                                                            (10, '기본 옵션', 100),
+                                                            (11, '기본 옵션', 100),
+                                                            (12, '기본 옵션', 100),
+                                                            (13, '기본 옵션', 100),
+                                                            (14, '기본 옵션', 100),
+                                                            (15, '기본 옵션', 100),
+                                                            (16, '기본 옵션', 100),
+                                                            (17, '기본 옵션', 100),
+                                                            (18, '기본 옵션', 100),
+                                                            (19, '기본 옵션', 100),
+                                                            (20, '기본 옵션', 100),
+                                                            (21, '기본 옵션', 100),
+                                                            (22, '기본 옵션', 100),
+                                                            (23, '기본 옵션', 100);
+

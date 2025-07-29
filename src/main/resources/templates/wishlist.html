@@ -40,7 +40,7 @@
             alert("로그인이 필요합니다.");
             window.location.href = "/auth";
         }
-        getAllProducts(0);  // 첫 페이지 자동 로드
+        getAllProducts(0);
     };
 
     function getToken() {
@@ -49,9 +49,7 @@
 
     function getWishes() {
         fetch(apiUrl, {
-            headers: {
-                Authorization: "Bearer " + getToken()
-            }
+            headers: { Authorization: "Bearer " + getToken() }
         })
             .then(res => res.json())
             .then(data => {
@@ -61,13 +59,21 @@
     }
 
     function addWish(productId) {
+        const select = document.getElementById(`option-select-${productId}`);
+        if (!select || !select.value) {
+            alert("옵션을 선택해주세요.");
+            return;
+        }
+
+        const optionId = Number(select.value);
+
         fetch(apiUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + getToken()
             },
-            body: JSON.stringify({ productId })
+            body: JSON.stringify({ productId, optionId })
         })
             .then(() => alert("추가 성공"))
             .catch(err => alert("추가 실패: " + err));
@@ -102,13 +108,29 @@
         list.innerHTML = "";
         products.forEach(product => {
             const li = document.createElement("li");
-            li.textContent = `${product.id}. ${product.name} (${product.price}원) `;
-            const btn = document.createElement("button");
-            btn.textContent = "➕ 추가";
-            btn.onclick = () => addWish(product.id);
-            li.appendChild(btn);
+            li.innerHTML = `
+                ${product.id}. ${product.name} (${product.price}원)
+                <select id="option-select-${product.id}"><option>옵션 불러오는 중...</option></select>
+                <button onclick="addWish(${product.id})">➕ 추가</button>
+            `;
             list.appendChild(li);
+            loadOptions(product.id);
         });
+    }
+
+    function loadOptions(productId) {
+        fetch(`${productUrl}/${productId}/options`)
+            .then(res => res.json())
+            .then(options => {
+                const select = document.getElementById(`option-select-${productId}`);
+                select.innerHTML = options.map(o =>
+                    `<option value="${o.id}">${o.name} (수량: ${o.quantity})</option>`
+                ).join('');
+            })
+            .catch(err => {
+                const select = document.getElementById(`option-select-${productId}`);
+                select.innerHTML = `<option>옵션 불러오기 실패</option>`;
+            });
     }
 
     function renderPagination(totalPages, currentPage) {
@@ -133,5 +155,6 @@
         window.location.href = "/auth";
     }
 </script>
+
 </body>
 </html>

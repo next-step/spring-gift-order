@@ -17,6 +17,11 @@ public class Wish {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "option_id")
+    private ProductOption option;
+
+
     protected Wish() {
     }
 
@@ -24,6 +29,17 @@ public class Wish {
         this.member = member;
         this.product = product;
     }
+
+    public Wish(Member member, Product product, ProductOption option) {
+        this.member = member;
+        this.product = product;
+        this.option = option;
+    }
+
+    public ProductOption getOption() {
+        return option;
+    }
+
 
     public Long getId() {
         return id;

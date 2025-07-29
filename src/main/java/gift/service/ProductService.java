@@ -33,7 +33,10 @@ public class ProductService {
                             product.getPrice(),
                             product.getImageUrl()
                     );
-                    response.setOptions(product.getOptions());
+                    List<ProductOptionResponse> optionResponses = product.getOptions().stream()
+                            .map(ProductOptionResponse::from)
+                            .toList();
+                    response.setOptions(optionResponses);
                     return response;
                 });
     }
@@ -113,7 +116,10 @@ public class ProductService {
                 product.getPrice(),
                 product.getImageUrl()
         );
-        response.setOptions(product.getOptions());
+        List<ProductOptionResponse> optionResponses = product.getOptions().stream()
+                .map(ProductOptionResponse::from)
+                .toList();
+        response.setOptions(optionResponses);
         return response;
     }
 

@@ -63,7 +63,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String login(String email, String password) {
         User user;
-        // sql 비용을 줄이기 위해 try-catch로 예외 처리
         try {
             user = userService.findByEmail(email);
         } catch (NoSuchElementException e) {

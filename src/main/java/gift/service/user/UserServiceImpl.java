@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         if (email == null) {
-            throw new IllegalArgumentException("이메일은 null일 수 없습니다.");
+            throw new IllegalArgumentException("null인 이메일을 조회하였습니다.");
         }
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NoSuchElementException("해당 이메일의 사용자를 찾을 수 없습니다. : " + email));
@@ -48,7 +48,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByClientIdAndProvider(String clientId, Provider provider) {
         if (clientId == null || provider == null) {
-            throw new IllegalArgumentException("clientId와 provider는 null일 수 없습니다.");
+            throw new IllegalArgumentException("null인 클라이언트 ID 또는 제공자를 사용하여 조회하였습니다."+
+                    " 단일 사용자를 조회하기 위해서는 클라이언트 ID와 제공자가 모두 필요합니다.");
         }
         return userRepository.findByClientIdAndProvider(clientId, provider)
                 .orElseThrow(() -> new NoSuchElementException("해당 클라이언트 ID와 제공자의 사용자를 찾을 수 없습니다. clientId: "

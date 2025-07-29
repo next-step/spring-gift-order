@@ -38,6 +38,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(authorizationArgumentResolver); // AuthorizationArgumentResolver를 추가
+        resolvers.add(authorizationArgumentResolver);
     }
 }

@@ -44,4 +44,39 @@ public class OrderEntity {
     protected OrderEntity() {
     }
 
+    public OrderEntity(
+        MemberEntity member,
+        OptionEntity option,
+        Integer quantity,
+        String message
+    ) {
+        this.member = member;
+        this.option = option;
+        this.quantity = new Quantity(quantity);
+        this.message = new Message(message);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public MemberEntity getMember() {
+        return member;
+    }
+
+    public OptionEntity getOption() {
+        return option;
+    }
+
+    public Integer getQuantity() {
+        return quantity.toValue();
+    }
+
+    public String getMessage() {
+        return message.toValue();
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }

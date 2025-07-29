@@ -48,7 +48,7 @@ public class KakaoLoginController {
     // 2. 카카오 로그인 완료 후 인가코드 콜백 처리
     @GetMapping("/oauth/kakao/callback")
     public String kakaoCallback(@RequestParam String code, HttpServletResponse response) {
-        kakaoLoginService.kakaoLogin(code, response);
+        String kakaoAccessToken = kakaoLoginService.kakaoLogin(code, response);
         return "redirect:/user/products";
     }
 }

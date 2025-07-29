@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>주문 확인</title>
+</head>
+<body>
+
+<h1>주문 확인</h1>
+
+<p>아래 상품을 주문하시겠습니까?</p>
+
+<table border="1">
+    <tr>
+        <th>상품명</th>
+        <th>옵션</th>
+        <th>수량</th>
+        <th>가격</th>
+    </tr>
+    <tr th:each="wish : ${wishList}">
+        <td th:text="${wish.product.name}">상품명</td>
+        <td th:text="${wish.option.name}">옵션</td>
+        <td>
+            <input type="number" name="quantities" th:value="1" min="1"
+                   th:attr="max=${wish.option.quantity}" />
+        </td>
+        <td th:text="${wish.product.price}">가격</td>
+    </tr>
+</table>
+
+<form th:action="@{/user/orders/confirm}" method="post">
+    <label>요청사항</label><br/>
+    <textarea name="message" rows="3" cols="50" placeholder="요청 사항을 입력해주세요..."></textarea>
+    <br/><br/>
+    <button type="submit">최종 주문하기</button>
+</form>
+
+<br/>
+<a href="/user/wishes">← 다시 위시리스트로</a>
+
+</body>
+</html>

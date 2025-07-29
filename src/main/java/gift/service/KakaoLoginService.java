@@ -28,7 +28,7 @@ public class KakaoLoginService {
         this.jwtUtil = jwtUtil;
     }
 
-    public void kakaoLogin(String code, HttpServletResponse response) {
+    public String kakaoLogin(String code, HttpServletResponse response) {
         try {
             String accessToken = kakaoOauthClient.getAccessToken(code);
             JsonNode userInfo = kakaoOauthClient.getUserInfo(accessToken);
@@ -39,8 +39,9 @@ public class KakaoLoginService {
 
             Member member = registerIfAbsent(kakaoId, nickname, email);
             String token = jwtUtil.createToken(member);
-            setTokenAsCookie(response, token);
+            setTokenAsCookie(response, token, accessToken);
 
+            return accessToken;
         } catch (Exception e) {
             log.error("카카오 로그인 중 오류 발생", e);
             throw new RuntimeException("카카오 로그인 처리 중 오류 발생: " + e.getMessage());
@@ -70,11 +71,17 @@ public class KakaoLoginService {
     }
 
 
-    private void setTokenAsCookie(HttpServletResponse response, String token) {
+    private void setTokenAsCookie(HttpServletResponse response, String token, String accessToken) {
         Cookie cookie = new Cookie("Authorization", token);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60);  // 1시간
         response.addCookie(cookie);
+
+        Cookie kakaoCookie = new Cookie("KakaoAccessToken", accessToken);
+        kakaoCookie.setHttpOnly(true);
+        kakaoCookie.setPath("/");
+        kakaoCookie.setMaxAge(60 * 60);
+        response.addCookie(kakaoCookie);
     }
 }

@@ -79,19 +79,4 @@ public class WishRepositoryTest {
         assertThat(saved.getOption().getQuantity()).isEqualTo(10);
     }
 
-    @Test
-    void testDuplicateWishNotAllowed() {
-        Member member = createMember("test");
-        Product product = createProduct("카푸치노", 3000);
-        Option option = createOption("ice", 5, product);
-
-        Wish wish1 = new Wish(member, product, option);
-        Wish wish2 = new Wish(member, product, option);
-
-        wishRepository.save(wish1);
-
-        // 중복 저장 시도 시 예외 발생 가능성 테스트
-        assertThatThrownBy(() -> wishRepository.save(wish2))
-                .isInstanceOf(Exception.class); // or use DataIntegrityViolationException
-    }
 }

@@ -35,9 +35,9 @@ public class WishRestControllerTest {
     @Autowired
     OptionRepository optionRepository;
 
-    String token;
-    Long productId;
-    Long optionId;
+    private String token;
+    private Long productId;
+    private Long optionId;
 
     @BeforeEach
     void setup() {

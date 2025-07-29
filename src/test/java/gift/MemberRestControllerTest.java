@@ -12,8 +12,10 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
+import static com.jayway.jsonpath.internal.path.PathCompiler.fail;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -71,14 +73,17 @@ public class MemberRestControllerTest {
         var url = "http://localhost:" + port + "/members/register";
         var duplicate = new Member("helloworld", "new@kakao.com", "password", "중복유저", "주소", "USER");
 
-        var response = client.post()
-                .uri(url)
-                .body(duplicate)
-                .retrieve()
-                .toEntity(String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).contains("이미 사용 중인 아이디입니다.");
+        try {
+            client.post()
+                    .uri(url)
+                    .body(duplicate)
+                    .retrieve()
+                    .toEntity(String.class);
+            fail("예외가 발생해야 합니다.");
+        } catch (HttpClientErrorException.BadRequest e) {
+            assertThat(e.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            assertThat(e.getResponseBodyAsString()).contains("이미 사용 중인 아이디입니다.");
+        }
     }
 
     @Test

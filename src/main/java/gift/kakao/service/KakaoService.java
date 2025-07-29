@@ -19,7 +19,7 @@ public class KakaoService {
 
     private final KakaoTokenRepository kakaoTokenRepository;
 
-    RestClient client = RestClient.builder().build();
+    private final RestClient client = RestClient.builder().build();
 
     public KakaoService(
         @Value("${kakao.app.key}") String clientId,

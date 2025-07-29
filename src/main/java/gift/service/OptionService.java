@@ -55,12 +55,12 @@ public class OptionService {
         return OptionResponse.of(optionRepository.save(option));
     }
 
-    public OptionResponse subtractOptionQuantity(Long optionId, int quantity) {
+    public Option subtractOptionQuantity(Long optionId, int quantity) {
         Option option = optionRepository.findById(optionId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 옵션이 존재하지 않습니다."));
 
         option.subtract(quantity);
 
-        return OptionResponse.of(option);
+        return optionRepository.save(option);
     }
 }

@@ -52,4 +52,8 @@ public class Option {
     public void subtract(int quantity) {
         this.quantity.subtract(quantity);
     }
+
+    public Product getProduct() {
+        return product;
+    }
 }

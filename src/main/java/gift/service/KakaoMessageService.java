@@ -78,7 +78,7 @@ public class KakaoMessageService {
         Map<String, Object> template = new LinkedHashMap<>();
         template.put("object_type", "commerce");
 
-        String productUrl = "http://localhost:8080/admin";
+        String productUrl = "http://localhost:8080/products/" + order.getOption().getProduct().getId();
 
         Map<String, Object> content = new HashMap<>();
         content.put("title", order.getOption().getProduct().getName());

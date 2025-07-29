@@ -1,13 +1,18 @@
 package gift.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.config.KakaoProperties;
+import gift.dto.kakao.KakaoUserInfo;
 import gift.dto.response.KaKaoTokenResponseDto;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 
 @Service
@@ -41,4 +46,18 @@ public class KakaoAuthService {
                 .retrieve()
                 .body(KaKaoTokenResponseDto.class);
     }
+
+    public KakaoUserInfo parseIdToken(String idToken) {
+        String[] parts = idToken.split("\\.");
+        String payload = parts[1];
+        String decoded = new String(Base64.getUrlDecoder().decode(payload), StandardCharsets.UTF_8);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(decoded, KakaoUserInfo.class);  // email, sub 포함
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

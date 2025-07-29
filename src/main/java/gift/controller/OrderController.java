@@ -38,8 +38,14 @@ public class OrderController {
         Order order = orderService.placeOrder(member, dto);
         String kakaoAccessToken = jwtProvider.getKakaoAccessToken(token);
 
-        String message = dto.getMessage();
-        kakaoMessageService.sendMessageToMe(kakaoAccessToken, message);
+        kakaoMessageService.sendMessageToMe(
+                kakaoAccessToken,
+                order.getOption().getProduct().getName(),
+                order.getOption().getName(),
+                order.getQuantity(),
+                order.getMessage(),
+                order.getOrderDateTime()
+        );
 
 
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -20,6 +20,9 @@ public record KaKaoTokenResponseDto(
         int refreshTokenExpiresIn,
 
         @JsonProperty("scope")
-        String scope
+        String scope,
+
+        @JsonProperty("id_token")
+        String idToken
 
 ) {}

@@ -23,7 +23,7 @@ public class KakaoMessageController {
             @RequestBody MessageRequestDto request
     ) throws JsonProcessingException {
         String accessToken = bearerToken.replace("Bearer ", "");
-        kakaoMessageService.sendMessageToMe(accessToken, request.getMessage());
+//        kakaoMessageService.sendMessageToMe(accessToken, request.message());
         return ResponseEntity.ok("메시지 전송 완료");
     }
 }

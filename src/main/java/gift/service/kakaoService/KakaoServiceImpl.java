@@ -4,7 +4,9 @@ import gift.Jwt.JwtUtil;
 import gift.config.KakaoProperties;
 import gift.dto.KakaoTokenResponseDto;
 import gift.dto.KakaoUserInfoDto;
+import gift.entity.SocialUser;
 import gift.entity.User;
+import gift.service.userService.SocialUserService;
 import gift.service.userService.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -19,15 +21,26 @@ public class KakaoServiceImpl implements KakaoService {
     private final KakaoProperties kakaoProperties;
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final SocialUserService socialUserService;
 
-    public KakaoServiceImpl(KakaoProperties kakaoProperties, JwtUtil jwtUtil, UserService userService) {
+    public KakaoServiceImpl(KakaoProperties kakaoProperties, JwtUtil jwtUtil, UserService userService, SocialUserService socialUserService) {
         this.kakaoProperties = kakaoProperties;
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.socialUserService = socialUserService;
     }
 
     @Override
     public String getAccessTokenFromKakao(String authorizationCode) {
+        String kakaoAccessToken = getAccessToken(authorizationCode);
+
+        KakaoUserInfoDto kakaoUserInfo = getUserInfo(kakaoAccessToken);
+        SocialUser socialUser = socialUserService.saveSocialUser(kakaoUserInfo.getEmail(), kakaoAccessToken);
+        User user = userService.saveSocialUser(kakaoUserInfo.getEmail());
+        return jwtUtil.generateToken(user);
+    }
+
+    public String getAccessToken(String authorizationCode) {
         RestClient client = RestClient.create();
 
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
@@ -41,11 +54,7 @@ public class KakaoServiceImpl implements KakaoService {
             throw new RuntimeException("카카오 토큰 요청 실패");
         }
 
-        String kakaoAccessToken = responseBody.accessToken();
-        KakaoUserInfoDto kakaoUserInfo = getUserInfo(kakaoAccessToken);
-        User user = userService.saveSocialUser(kakaoUserInfo.getEmail());
-
-        return jwtUtil.generateToken(user);
+        return responseBody.accessToken();
     }
 
     private KakaoUserInfoDto getUserInfo(String kakaoAccessToken) {

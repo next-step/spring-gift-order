@@ -6,6 +6,7 @@ import gift.entity.Order;
 import gift.entity.User;
 import gift.repository.orderRepository.OrderRepository;
 import gift.service.itemService.ItemService;
+import gift.service.kakaoService.KaKaoMessageService;
 import gift.service.optionService.OptionService;
 import gift.service.userService.UserService;
 import jakarta.transaction.Transactional;

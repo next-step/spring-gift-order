@@ -21,8 +21,8 @@ public class OptionController {
         this.optionService = optionService;
     }
 
-    @PostMapping
-    public ResponseEntity<OptionResponseDto> addItemOption(@RequestBody OptionRequestDto optionRequestDto, @RequestParam Long itemId) {
+    @PostMapping("/{itemId}")
+    public ResponseEntity<OptionResponseDto> addItemOption(@RequestBody OptionRequestDto optionRequestDto, @PathVariable Long itemId) {
         ItemOption itemOption = optionRequestDto.dtoToEntity();
         ItemOption savedOption = optionService.save(itemOption, itemId);
         OptionResponseDto optionResponseDto = OptionResponseDto.from(savedOption);

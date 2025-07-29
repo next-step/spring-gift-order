@@ -1,9 +1,9 @@
 package gift.entity;
 
 import gift.exception.orderException.OrderQuantityException;
-import gift.exception.orderException.OrderQuantityStockOverException;
 import jakarta.persistence.*;
 
+@Table(name = "orders")
 @Entity
 public class Order {
     @Id

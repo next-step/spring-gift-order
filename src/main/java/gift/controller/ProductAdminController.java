@@ -78,7 +78,7 @@ public class ProductAdminController {
                     throw new IllegalArgumentException("옵션 이름이 중복됩니다: " + name);
                 }
 
-                ProductOption option = new ProductOption(product, name, quantity); // ← 여기서 예외 가능
+                ProductOption option = new ProductOption(product, name, quantity);
                 product.addOption(option);
                 productOptionRepository.save(option);
             }

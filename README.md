@@ -24,8 +24,8 @@
 
 - [x] `docs`: 2단계 주문하기 기능 목록 추가
 - [x] `feat`: 주문(Order) 관련 도메인(Entity, Repository) 추가
-- [ ] `feat`: 주문(Order) API DTO(Request, Response) 추가
-- [ ] `feat`: 주문 생성 서비스 로직 구현 (재고 차감 포함)
+- [x] `feat`: 주문(Order) API DTO(Request, Response) 추가
+- [x] `feat`: 주문 생성 서비스 로직 구현 (재고 차감 포함)
 - [ ] `refactor`: 주문 시 위시리스트 상품 제거 로직 추가
 - [ ] `feat`: 카카오톡 나에게 메시지 보내기 기능 클라이언트 추가
 - [ ] `feat`: 주문 완료 후 카카오톡 메시지 발송 기능 연동

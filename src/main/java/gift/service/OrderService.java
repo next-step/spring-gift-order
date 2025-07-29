@@ -23,7 +23,7 @@ public class OrderService {
 
     public OrderService(OrderRepository orderRepository, ProductOptionRepository optionRepository, WishRepository wishRepository) {
         this.orderRepository = orderRepository;
-        this.optionRepository =optionRepository;
+        this.optionRepository = optionRepository;
         this.wishRepository = wishRepository;
     }
 
@@ -34,7 +34,7 @@ public class OrderService {
         option.subtractQuantity(dto.getQuantity());
 
         wishRepository.deleteByMemberIdAndProductId(member.getId(), option.getProduct().getId());
-        Order order =new Order(member,option,dto.getQuantity(), dto.getMessage());
+        Order order = new Order(member, option, dto.getQuantity(), dto.getMessage());
 
         return orderRepository.save(order);
     }

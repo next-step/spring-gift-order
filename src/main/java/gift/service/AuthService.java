@@ -7,6 +7,7 @@ import gift.dto.MemberLoginRequest;
 import gift.dto.MemberRegisterRequest;
 import gift.repository.MemberRepository;
 import gift.util.JwtUtil;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
+    @Transactional
     public String registerAndIssueToken(MemberRegisterRequest request) {
         Member member = memberService.register(request);
         return jwtUtil.createToken(member);
@@ -42,6 +44,7 @@ public class AuthService {
         return jwtUtil.createToken(member);
     }
 
+    @Transactional
     public String loginOrRegisterWithKakao(KakaoUserResponse kakaoUser, String accessToken) {
         String kakaoId = String.valueOf(kakaoUser.id());
 

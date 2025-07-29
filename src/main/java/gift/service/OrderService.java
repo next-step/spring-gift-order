@@ -5,21 +5,26 @@ import gift.domain.Order;
 import gift.domain.ProductOption;
 import gift.dto.OrderRequest;
 import gift.dto.OrderResponse;
+import gift.exception.UnauthorizedException;
+import gift.repository.MemberRepository;
 import gift.repository.OrderRepository;
 import gift.repository.ProductOptionRepository;
 import gift.repository.WishRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
 
+    private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
     private final ProductOptionRepository productOptionRepository;
     private final WishRepository wishRepository;
     private final KakaoMessageService kakaoMessageService;
 
-    public OrderService(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, WishRepository wishRepository, KakaoMessageService kakaoMessageService) {
+    public OrderService(MemberRepository memberRepository, OrderRepository orderRepository, ProductOptionRepository productOptionRepository, WishRepository wishRepository, KakaoMessageService kakaoMessageService) {
+        this.memberRepository = memberRepository;
         this.orderRepository = orderRepository;
         this.productOptionRepository = productOptionRepository;
         this.wishRepository = wishRepository;
@@ -27,7 +32,11 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse createOrder(Member member, OrderRequest request) {
+    public OrderResponse createOrder(Member loginMember, OrderRequest request) {
+
+        Member member = memberRepository.findById(loginMember.getId())
+                .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
+
         ProductOption option = productOptionRepository.findById(request.getOptionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 옵션이 존재하지 않습니다."));
 
@@ -40,7 +49,7 @@ public class OrderService {
         Order saved = orderRepository.save(order);
 
         String message = """
-            ✅ 주문이 완료되었어요!
+            주문이 완료되었어요!
             - 옵션: %s
             - 수량: %d개
             - 메시지: %s

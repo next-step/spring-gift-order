@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
 
         wishService.deleteWishIfExists(member, option);
 
-        kakaoMessageSender.sendOrderMessage(savedOrder, member.getaccessToken());
+        kakaoMessageSender.sendOrderMessage(savedOrder, member);
 
         return OrderResponse.from(savedOrder);
     }

@@ -4,9 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.KaKaoClientException;
+import gift.common.exception.UnauthorizedException;
+import gift.entity.Member;
 import gift.entity.Order;
 import gift.entity.Product;
 import gift.entity.ProductOption;
+import gift.service.AuthService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
@@ -21,18 +24,31 @@ public class KaKaoMessageSender {
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
+    private final AuthService authService;
 
     @Value("${kakao.message-url}")
     private String messageUrl;
 
-    public KaKaoMessageSender(RestClient.Builder restClientBuilder, ObjectMapper objectMapper) {
+    public KaKaoMessageSender(RestClient.Builder restClientBuilder, ObjectMapper objectMapper,
+        AuthService authService) {
         this.restClient = restClientBuilder.build();
         this.objectMapper = objectMapper;
+        this.authService = authService;
     }
 
-    public void sendOrderMessage(Order order, String accessToken) {
+    public void sendOrderMessage(Order order, Member member) {
         String template = createOrderMessageTemplate(order);
 
+        try {
+            sendTemplate(template, member.getaccessToken());
+        } catch (UnauthorizedException e) {
+            String refreshToken = member.getrefreshToken();
+            String newAccessToken = authService.refreshAccessToken(refreshToken);
+            sendTemplate(template, newAccessToken);
+        }
+    }
+
+    private void sendTemplate(String template, String accessToken) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("template_object", template);
 
@@ -44,6 +60,9 @@ public class KaKaoMessageSender {
             })
             .body(body)
             .retrieve()
+            .onStatus(status -> status.value() == 401, (req, res) -> {
+                throw new UnauthorizedException();
+            })
             .onStatus(HttpStatusCode::is4xxClientError,
                 (req, res) -> {
                     throw new KaKaoClientException(
@@ -74,8 +93,8 @@ public class KaKaoMessageSender {
             "object_type", "text",
             "text", text,
             "link", Map.of(
-                "web_url", "https://github.com/seoyoungjin23",
-                "mobile_web_url", "https://github.com/seoyoungjin23"
+                "web_url", "https://docstory.kr",
+                "mobile_web_url", "https://docstory.kr"
             ),
             "button_title", "주문 확인"
         );

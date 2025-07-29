@@ -22,6 +22,9 @@ CREATE TABLE wish
     product_id BIGINT NOT NULL
 );
 
+ALTER TABLE member
+    ADD kakao_access_token VARCHAR(255) NOT NULL;
+
 ALTER TABLE IF EXISTS wish
     ADD CONSTRAINT fk_wish_member
     FOREIGN KEY (member_id)

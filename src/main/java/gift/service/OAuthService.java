@@ -8,10 +8,14 @@ import gift.dto.kakao.KakaoTokenResponse;
 import gift.dto.kakao.KakaoUserInfoResponse;
 import gift.entity.Member;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OAuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(OAuthService.class);
 
     private final KakaoOauthProperties kakaoOauthProperties;
     private final MemberService memberService;
@@ -35,12 +39,16 @@ public class OAuthService {
                 code,
                 kakaoOauthProperties.clientSecret()
         );
+        log.info("✅ 카카오 액세스 토큰, ('X-Kakao-Token' 헤더용): {}", kakaoToken.accessToken());
 
         KakaoUserInfoResponse userInfo = kakaoClient.getKakaoUserInfo(kakaoToken.accessToken());
 
         Member member = memberService.findOrCreateMemberByKakaoId(userInfo.id());
 
         String accessToken = jwtTokenProvider.createToken(member.getId().toString());
+
+        log.info("✅ Application JWT ('Authorization' 헤더용): {}", accessToken);
+
         return new TokenResponse(accessToken);
     }
 }

@@ -10,6 +10,7 @@ import gift.dto.WishResponse;
 import gift.dto.WishSortField;
 import gift.entity.Member;
 import gift.entity.Product;
+import gift.entity.ProductOption;
 import gift.entity.Wish;
 import gift.repository.MemberRepository;
 import gift.repository.ProductRepository;
@@ -68,6 +69,17 @@ public class WishServiceImpl implements WishService {
         }
 
         wishRepository.deleteByMemberAndProduct(member, product);
+    }
+
+    @Override
+    @Transactional
+    public void deleteWishIfExists(Member member, ProductOption option) {
+        Product product = option.getProduct();
+
+        boolean exists = wishRepository.existsByMemberAndProduct(member, product);
+        if (exists) {
+            wishRepository.deleteByMemberAndProduct(member, product);
+        }
     }
 
     @Override

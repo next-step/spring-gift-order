@@ -4,6 +4,7 @@ import gift.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
+@TestPropertySource(properties = "spring.sql.init.mode=never")
 class RepositoryTest {
 
     @Autowired
@@ -27,7 +29,7 @@ class RepositoryTest {
 
     @Test
     void saveMember() {
-        Member expected = new Member("test@email.com", "password");
+        Member expected = new Member("user@test.com", "pw", LoginType.LOCAL, "socialId", Role.USER);
         Member actual = memberRepository.save(expected);
 
         assertAll(
@@ -70,16 +72,21 @@ class RepositoryTest {
 
     @Test
     void saveWishWithOptionRelation() {
-        Member member = memberRepository.save(new Member("user@test.com", "pw"));
+        // given
+        Member member = memberRepository.save(
+                new Member("user@test.com", "pw", LoginType.LOCAL, "socialId", Role.USER)
+        );
 
         Product product = productRepository.save(new Product("Grape", 4000, "grape.jpg"));
         ProductOption option = new ProductOption("옵션1", 50L);
         option.assignToProduct(product);
         productOptionRepository.save(option);
 
+        // when
         Wish wish = new Wish(member, option, 2);
         Wish actual = wishRepository.save(wish);
 
+        // then
         assertAll(
                 () -> assertThat(actual.getId()).isNotNull(),
                 () -> assertThat(actual.getMember().getId()).isEqualTo(member.getId()),
@@ -87,4 +94,5 @@ class RepositoryTest {
                 () -> assertThat(actual.getProductOption().getProduct().getId()).isEqualTo(product.getId())
         );
     }
+
 }

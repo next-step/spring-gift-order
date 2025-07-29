@@ -1,4 +1,4 @@
-package gift.entity;
+package gift.entity.Order;
 
 import gift.common.exception.core.CustomException;
 import jakarta.persistence.Column;
@@ -6,14 +6,14 @@ import jakarta.persistence.Embeddable;
 import org.springframework.http.HttpStatus;
 
 @Embeddable
-public record WishQuantity(
+public record OrderQuantity(
     @Column(name = "quantity", nullable = false)
-    Integer quantity
+    int quantity
 ) {
 
-    public WishQuantity {
-        if (quantity == null || quantity < 0) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "수량은 0 이상이어야 합니다.");
+    public OrderQuantity {
+        if (quantity < 1) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "주문 수량은 1 이상이어야 합니다.");
         }
     }
 }

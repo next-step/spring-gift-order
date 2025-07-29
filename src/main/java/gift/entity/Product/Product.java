@@ -1,6 +1,7 @@
-package gift.entity;
+package gift.entity.Product;
 
 import gift.common.exception.core.CustomException;
+import gift.entity.Product.Option.ProductOption;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

@@ -1,6 +1,6 @@
 package gift.dto.Order;
 
-import gift.entity.Order;
+import gift.entity.Order.Order;
 
 public record OrderResponse(
     Long id,

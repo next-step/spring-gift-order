@@ -3,7 +3,7 @@ package gift.service.Member;
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.core.CustomException;
 import gift.dto.auth.AuthUser;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 import gift.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package gift.entity;
+package gift.entity.Product.Option;
 
 import gift.common.exception.core.CustomException;
 import jakarta.persistence.Column;

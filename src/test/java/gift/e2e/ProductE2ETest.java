@@ -10,7 +10,7 @@ import gift.dto.Product.Option.ProductOptionRequest;
 import gift.dto.Product.ProductRequest;
 import gift.dto.Product.ProductResponse;
 import gift.dto.Product.ProductUpdateRequest;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 import gift.repository.MemberRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

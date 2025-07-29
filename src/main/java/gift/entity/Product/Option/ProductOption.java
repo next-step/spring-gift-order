@@ -1,5 +1,6 @@
-package gift.entity;
+package gift.entity.Product.Option;
 
+import gift.entity.Product.Product;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

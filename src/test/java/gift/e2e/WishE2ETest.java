@@ -19,7 +19,7 @@ import gift.common.exception.core.CustomException;
 import gift.controller.api.WishController;
 import gift.dto.Wish.WishRequest;
 import gift.dto.Wish.WishResponse;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 import gift.repository.MemberRepository;
 import gift.service.Wish.WishService;
 import java.util.Optional;

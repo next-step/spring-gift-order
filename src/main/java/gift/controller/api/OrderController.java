@@ -5,7 +5,7 @@ import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
 import gift.dto.Order.OrderRequest;
 import gift.dto.Order.OrderResponse;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 import gift.service.Order.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

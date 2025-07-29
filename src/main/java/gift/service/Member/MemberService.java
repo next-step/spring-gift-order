@@ -1,7 +1,7 @@
 package gift.service.Member;
 
 import gift.dto.auth.AuthUser;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 
 public interface MemberService {
 

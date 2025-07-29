@@ -1,5 +1,7 @@
-package gift.entity;
+package gift.entity.Wish;
 
+import gift.entity.Member.Member;
+import gift.entity.Product.Product;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,8 +13,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "orders")
-public class Order {
+@Table(name = "wish")
+public class Wish {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,29 +25,24 @@ public class Order {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_option_id", nullable = false)
-    private ProductOption productOption;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Embedded
-    private OrderQuantity quantity;
+    private WishQuantity quantity;
 
-    @Embedded
-    private OrderMessage message;
-
-    protected Order() {
+    protected Wish() {
     }
 
-    private Order(Long id, Member member, ProductOption productOption, int quantity,
-        String message) {
+    private Wish(Long id, Member member, Product product, Integer quantity) {
         this.id = id;
         this.member = member;
-        this.productOption = productOption;
-        this.quantity = new OrderQuantity(quantity);
-        this.message = new OrderMessage(message);
+        this.product = product;
+        this.quantity = new WishQuantity(quantity);
     }
 
-    public Order(Member member, ProductOption productOption, int quantity, String message) {
-        this(null, member, productOption, quantity, message);
+    public Wish(Member member, Product product, Integer quantity) {
+        this(null, member, product, quantity);
     }
 
     public Long getId() {
@@ -56,15 +53,11 @@ public class Order {
         return member;
     }
 
-    public ProductOption getProductOption() {
-        return productOption;
+    public Product getProduct() {
+        return product;
     }
 
     public int getQuantity() {
         return quantity.quantity();
-    }
-
-    public String getMessage() {
-        return message.message();
     }
 }

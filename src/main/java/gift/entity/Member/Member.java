@@ -1,4 +1,4 @@
-package gift.entity;
+package gift.entity.Member;
 
 import gift.dto.auth.AuthUser;
 import jakarta.persistence.Column;

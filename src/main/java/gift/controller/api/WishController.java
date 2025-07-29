@@ -7,7 +7,7 @@ import gift.dto.Pagination.PageResponse;
 import gift.dto.Pagination.Pagination;
 import gift.dto.Wish.WishRequest;
 import gift.dto.Wish.WishResponse;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 import gift.service.Wish.WishService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

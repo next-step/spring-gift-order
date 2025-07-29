@@ -12,7 +12,7 @@ import gift.dto.Product.ProductRequest;
 import gift.dto.Product.ProductResponse;
 import gift.dto.Wish.WishRequest;
 import gift.dto.Wish.WishResponse;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 import gift.repository.MemberRepository;
 import java.util.Comparator;
 import java.util.List;

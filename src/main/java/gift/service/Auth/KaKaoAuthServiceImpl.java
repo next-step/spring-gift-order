@@ -5,7 +5,7 @@ import gift.dto.auth.AuthUser;
 import gift.dto.auth.KaKaoTokenInfo;
 import gift.dto.auth.KaKaoUserInfo;
 import gift.dto.auth.TokenResponse;
-import gift.entity.Member;
+import gift.entity.Member.Member;
 import gift.external.KaKaoTokenClient;
 import gift.service.Member.MemberService;
 import java.util.Map;

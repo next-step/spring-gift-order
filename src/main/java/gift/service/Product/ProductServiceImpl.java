@@ -10,7 +10,7 @@ import gift.dto.Product.ProductRequest;
 import gift.dto.Product.ProductResponse;
 import gift.dto.Product.ProductSortField;
 import gift.dto.Product.ProductUpdateRequest;
-import gift.entity.Product;
+import gift.entity.Product.Product;
 import gift.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

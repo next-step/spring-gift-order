@@ -4,8 +4,8 @@ import gift.dto.Pagination.PageResponse;
 import gift.dto.Pagination.Pagination;
 import gift.dto.Wish.WishRequest;
 import gift.dto.Wish.WishResponse;
-import gift.entity.Member;
-import gift.entity.ProductOption;
+import gift.entity.Member.Member;
+import gift.entity.Product.Option.ProductOption;
 
 public interface WishService {
 

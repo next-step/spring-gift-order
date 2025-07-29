@@ -1,6 +1,6 @@
 package gift.dto.Wish;
 
-import gift.entity.Wish;
+import gift.entity.Wish.Wish;
 
 public record WishResponse(
     Long wishId,

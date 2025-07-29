@@ -30,7 +30,7 @@ public class KakaoOauthClient {
     }
 
     public String getAccessToken(String code) throws Exception {
-        String tokenUrl = "https://kauth.kakao.com/oauth/token";
+        String tokenUrl = kakaoProperties.getAuthBaseUrl() + kakaoProperties.getTokenPath();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

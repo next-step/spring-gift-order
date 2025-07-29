@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WishService {
@@ -83,9 +84,10 @@ public class WishService {
     }
 
     public void deleteWish(Long userId, Long productId) {
-        Wish wish = wishRepository.findByUserIdAndProductId(userId, productId)
-                .orElseThrow(() -> new EntityNotFoundException("해당하는 상품이 없습니다."));
+        Optional<Wish> wish = wishRepository.findByUserIdAndProductId(userId, productId);
 
-        wishRepository.delete(wish);
+        if (wish.isPresent()) {
+            wishRepository.delete(wish.get());
+        }
     }
 }

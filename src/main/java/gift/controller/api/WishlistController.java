@@ -7,11 +7,10 @@ import gift.common.model.CustomAuth;
 import gift.common.model.CustomPage;
 import gift.common.validation.annotation.AllowedSortFields;
 import gift.dto.CustomPageRequest;
+import gift.dto.wishlist.UpdateWishedProductRequest;
 import gift.dto.wishlist.WishedProductCreateRequest;
 import gift.dto.wishlist.WishedProductPatchRequest;
-import gift.dto.wishlist.UpdateWishedProductRequest;
 import gift.dto.wishlist.WishedProductResponse;
-import gift.entity.type.UserRole;
 import gift.entity.WishedProduct;
 import gift.service.wishlist.WishedProductService;
 import jakarta.validation.Valid;
@@ -20,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+
+import static gift.entity.type.UserRole.ROLE_USER;
 
 @RestController
 @RequestMapping("/api/wishes")
@@ -31,7 +32,7 @@ public class WishlistController {
     }
 
     @GetMapping
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<CustomPage<WishedProductResponse>> getWishlist(
             @AllowedSortFields(
                 value = {"id", "product.price", "product.name", "quantity", "createdAt", "updatedAt"},
@@ -50,7 +51,7 @@ public class WishlistController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<WishedProductResponse> getWishlistItem(
             @PathVariable Long id,
             CustomAuth auth
@@ -60,7 +61,7 @@ public class WishlistController {
     }
 
     @PostMapping()
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<WishedProductResponse> addWishlistItem(
             @Valid @RequestBody WishedProductCreateRequest request,
             CustomAuth auth
@@ -70,7 +71,7 @@ public class WishlistController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<?> updateWishlistItem(
             @PathVariable Long id,
             @Valid @RequestBody UpdateWishedProductRequest request,
@@ -84,7 +85,7 @@ public class WishlistController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<?> patchWishlistItem(
             @PathVariable Long id,
             @Valid @RequestBody WishedProductPatchRequest request,
@@ -99,7 +100,7 @@ public class WishlistController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<Void> deleteWishlistItem(
             @PathVariable Long id,
             CustomAuth auth
@@ -109,7 +110,7 @@ public class WishlistController {
     }
 
     @DeleteMapping
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<Void> deleteAllWishlistItems(
             CustomAuth auth
     ) {

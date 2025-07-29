@@ -13,12 +13,14 @@ import gift.dto.order.OrderResponse;
 import gift.dto.order.OrderUpdateRequest;
 import gift.entity.Order;
 import gift.entity.type.Provider;
-import gift.entity.type.UserRole;
 import gift.service.order.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static gift.entity.type.UserRole.ROLE_ADMIN;
+import static gift.entity.type.UserRole.ROLE_USER;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -30,7 +32,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @GetMapping
     public ResponseEntity<CustomPage<OrderResponse>> getAllOrders(
             @AllowedSortFields(
@@ -45,7 +47,7 @@ public class OrderController {
                 CustomPage.convert(ordersPage, EntityToDtoMapper::toDto), HttpStatus.OK);
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrder(
             @PathVariable Long id,
@@ -55,7 +57,7 @@ public class OrderController {
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.OK);
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
             @Valid @RequestBody OrderCreateRequest request,
@@ -71,7 +73,7 @@ public class OrderController {
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.CREATED);
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponse> updateOrder(
             @PathVariable Long id,
@@ -82,7 +84,7 @@ public class OrderController {
         return new ResponseEntity<>(EntityToDtoMapper.toDto(order), HttpStatus.OK);
     }
 
-    @PreAuthorize(UserRole.ROLE_ADMIN)
+    @PreAuthorize(ROLE_ADMIN)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> cancelOrder(
             @PathVariable Long id

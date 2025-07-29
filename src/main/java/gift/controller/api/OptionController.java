@@ -8,16 +8,16 @@ import gift.common.model.CustomPage;
 import gift.common.validation.annotation.AllowedSortFields;
 import gift.dto.CustomPageRequest;
 import gift.dto.option.OptionCreateRequest;
-import gift.dto.option.OptionResponse;
 import gift.dto.option.OptionPatchRequest;
+import gift.dto.option.OptionResponse;
 import gift.dto.option.OptionUpdateRequest;
-import gift.entity.type.UserRole;
 import gift.service.option.OptionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static gift.entity.type.UserRole.ROLE_USER;
 
 @RestController
 @RequestMapping("/api/products/{productId}/options")
@@ -51,7 +51,7 @@ public class OptionController {
         return ResponseEntity.ok(option);
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @PostMapping
     public ResponseEntity<OptionResponse> createOption(
             @PathVariable Long productId,
@@ -64,7 +64,7 @@ public class OptionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedOption);
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateOption(
             @PathVariable Long productId,
@@ -76,7 +76,7 @@ public class OptionController {
         return ResponseEntity.ok(EntityToDtoMapper.toDto(updatedOption));
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @PatchMapping("/{id}")
     public ResponseEntity<OptionResponse> updateOptionQuantity(
             @PathVariable Long productId,
@@ -88,7 +88,7 @@ public class OptionController {
         return ResponseEntity.ok(EntityToDtoMapper.toDto(updatedOption));
     }
 
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOption(
             @PathVariable Long productId,

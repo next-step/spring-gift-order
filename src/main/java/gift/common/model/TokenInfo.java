@@ -7,6 +7,7 @@ public record TokenInfo(
         String value,
         String id,
         UserRole role,
+        Long expiresIn,
         Provider provider
 ) {
 }

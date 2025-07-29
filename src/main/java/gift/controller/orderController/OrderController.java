@@ -1,7 +1,8 @@
 package gift.controller.orderController;
 
 
-import gift.config.LoginUser;
+import gift.config.Interceptor.LoginUser;
+import gift.config.Interceptor.UserOnly;
 import gift.dto.orderDto.OrderRequestDto;
 import gift.dto.orderDto.OrderResponseDto;
 import gift.entity.Order;
@@ -9,7 +10,10 @@ import gift.service.kakaoService.KaKaoMessageService;
 import gift.service.order.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -23,6 +27,7 @@ public class OrderController {
         this.kaKaoMessageService = kaKaoMessageService;
     }
 
+    @UserOnly
     @PostMapping
     public ResponseEntity<OrderResponseDto> order(@LoginUser String userEmail, @RequestBody OrderRequestDto orderRequestDto) {
         Long optionId = orderRequestDto.optionId();
@@ -30,7 +35,7 @@ public class OrderController {
         Integer quantity = orderRequestDto.quantity();
 
         Order order = orderService.order(optionId, userEmail, message, quantity);
-        kaKaoMessageService.sendMessage(userEmail,message);
+        kaKaoMessageService.sendMessage(userEmail, message);
 
         return new ResponseEntity<>(OrderResponseDto.from(order), HttpStatus.CREATED);
     }

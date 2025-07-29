@@ -1,6 +1,7 @@
 package gift.config;
 
 import gift.Jwt.TokenUtils;
+import gift.config.Interceptor.LoginUser;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;

@@ -13,8 +13,6 @@ public class SocialUserService {
     }
 
 
-
-
     public SocialUser saveSocialUser(String email, String kakaoAccessToken) {
         SocialUser existing = socialUserRepository.findByUserEmail(email);
 

@@ -5,8 +5,6 @@ import gift.entity.ItemOption;
 import gift.entity.Order;
 import gift.entity.User;
 import gift.repository.orderRepository.OrderRepository;
-import gift.service.itemService.ItemService;
-import gift.service.kakaoService.KaKaoMessageService;
 import gift.service.optionService.OptionService;
 import gift.service.userService.UserService;
 import jakarta.transaction.Transactional;
@@ -24,6 +22,7 @@ public class OrderServiceImpl implements OrderService {
         this.userService = userService;
         this.optionService = optionService;
     }
+
     @Transactional
     @Override
     public Order order(Long optionId, String userEmail, String message, Integer quantity) {

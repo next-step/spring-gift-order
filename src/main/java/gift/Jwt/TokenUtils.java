@@ -60,4 +60,11 @@ public class TokenUtils {
     public Claims getClaims(String token) {
         return jwtUtil.getClaims(token);
     }
+
+    public UserRole extractUserRole(String token) {
+        Claims claims = jwtUtil.getClaims(token);
+        String claimRole = claims.get(CLAIM_ROLE, String.class);
+
+        return UserRole.valueOf(claimRole);
+    }
 }

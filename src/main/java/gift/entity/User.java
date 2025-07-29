@@ -42,7 +42,7 @@ public class User {
     }
 
     public void checkPassword(String password) {
-        if (this.password.equals(password)) {
+        if (!this.password.equals(password)) {
             throw new UserPasswordException();
         }
     }

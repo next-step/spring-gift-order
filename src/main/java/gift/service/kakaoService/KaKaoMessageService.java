@@ -1,7 +1,6 @@
 package gift.service.kakaoService;
 
 import gift.entity.SocialUser;
-import gift.repository.userRepository.SocialUserRepository;
 import gift.service.userService.SocialUserService;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -29,16 +28,16 @@ public class KaKaoMessageService {
         String apiUrl = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
 
         String templateJson = String.format("""
-            {
-              "object_type": "text",
-              "text": "%s",
-              "link": {
-                "web_url": "https://developers.kakao.com",
-                "mobile_web_url": "https://developers.kakao.com"
-              },
-              "button_title": "확인"
-            }
-        """, message);
+                    {
+                      "object_type": "text",
+                      "text": "%s",
+                      "link": {
+                        "web_url": "https://developers.kakao.com",
+                        "mobile_web_url": "https://developers.kakao.com"
+                      },
+                      "button_title": "확인"
+                    }
+                """, message);
 
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();

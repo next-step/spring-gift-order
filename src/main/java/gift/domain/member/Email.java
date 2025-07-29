@@ -9,7 +9,7 @@ public class Email {
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "email", unique = true)
     private String value;
 
     protected Email() {}
@@ -33,4 +33,9 @@ public class Email {
 
     @Override
     public int hashCode() { return value.hashCode(); }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

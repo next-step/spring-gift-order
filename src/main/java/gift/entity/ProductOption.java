@@ -1,8 +1,6 @@
 package gift.entity;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
-import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,18 +17,15 @@ import jakarta.persistence.UniqueConstraint;
 })
 public class ProductOption {
 
-    private static final int MAX_NAME_LENGTH = 50;
-    private static final String NAME_PATTERN = "^[\\p{L}0-9()\\[\\]+\\-&/_ ]+$";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, nullable = false)
-    private String name;
+    @Embedded
+    private ProductOptionName name;
 
-    @Column(nullable = false)
-    private Long quantity;
+    @Embedded
+    private ProductOptionQuantity quantity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
@@ -39,53 +34,26 @@ public class ProductOption {
     protected ProductOption() {
     }
 
-    public ProductOption(String name, Long quantity, Product product) {
-        validateName(name);
-        validateQuantity(quantity);
-
+    private ProductOption(ProductOptionName name, ProductOptionQuantity quantity, Product product) {
         this.name = name;
         this.quantity = quantity;
         this.product = product;
     }
 
     public static ProductOption of(String name, Long quantity, Product product) {
-        return new ProductOption(name, quantity, product);
+        return new ProductOption(
+            new ProductOptionName(name),
+            new ProductOptionQuantity(quantity),
+            product);
     }
 
     public void update(String name, Long quantity) {
-        validateName(name);
-        validateQuantity(quantity);
-
-        this.name = name;
-        this.quantity = quantity;
-    }
-
-    private void validateName(String name) {
-        if (name == null || name.isBlank()) {
-            throw new CustomException(CustomResponseCode.OPTION_NAME_REQUIRED);
-        }
-        if (name.length() > MAX_NAME_LENGTH) {
-            throw new CustomException(CustomResponseCode.OPTION_NAME_TOO_LONG);
-        }
-        if (!name.matches(NAME_PATTERN)) {
-            throw new CustomException(CustomResponseCode.OPTION_NAME_INVALID_CHAR);
-        }
-    }
-
-    private void validateQuantity(Long quantity) {
-        if (quantity == null || quantity < 1 || quantity >= 100_000_000L) {
-            throw new CustomException(CustomResponseCode.OPTION_QUANTITY_INVALID);
-        }
+        this.name = new ProductOptionName(name);
+        this.quantity = new ProductOptionQuantity(quantity);
     }
 
     public void decreaseQuantity(long amount) {
-        if (amount < 1) {
-            throw new CustomException(CustomResponseCode.OPTION_DECREASE_AMOUNT_INVALID);
-        }
-        if (amount > this.quantity) {
-            throw new CustomException(CustomResponseCode.OPTION_INSUFFICIENT_STOCK);
-        }
-        this.quantity -= amount;
+        this.quantity = quantity.decrease(amount);
     }
 
     public Long getId() {
@@ -93,11 +61,11 @@ public class ProductOption {
     }
 
     public String getName() {
-        return name;
+        return name.name();
     }
 
     public Long getQuantity() {
-        return quantity;
+        return quantity.quantity();
     }
 
     public Product getProduct() {

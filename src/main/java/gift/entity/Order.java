@@ -1,6 +1,6 @@
 package gift.entity;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,11 +26,11 @@ public class Order {
     @JoinColumn(name = "product_option_id", nullable = false)
     private ProductOption productOption;
 
-    @Column(nullable = false)
-    private int quantity;
+    @Embedded
+    private OrderQuantity quantity;
 
-    @Column(length = 500)
-    private String message;
+    @Embedded
+    private OrderMessage message;
 
     protected Order() {
     }
@@ -38,8 +38,8 @@ public class Order {
     public Order(Member member, ProductOption productOption, int quantity, String message) {
         this.member = member;
         this.productOption = productOption;
-        this.quantity = quantity;
-        this.message = message;
+        this.quantity = new OrderQuantity(quantity);
+        this.message = new OrderMessage(message);
     }
 
     public Long getId() {
@@ -55,10 +55,10 @@ public class Order {
     }
 
     public int getQuantity() {
-        return quantity;
+        return quantity.quantity();
     }
 
     public String getMessage() {
-        return message;
+        return message.message();
     }
 }

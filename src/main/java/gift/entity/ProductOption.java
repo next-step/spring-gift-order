@@ -34,17 +34,14 @@ public class ProductOption {
     protected ProductOption() {
     }
 
-    private ProductOption(ProductOptionName name, ProductOptionQuantity quantity, Product product) {
-        this.name = name;
-        this.quantity = quantity;
+    private ProductOption(String name, Long quantity, Product product) {
+        this.name = new ProductOptionName(name);
+        this.quantity = new ProductOptionQuantity(quantity);
         this.product = product;
     }
 
     public static ProductOption of(String name, Long quantity, Product product) {
-        return new ProductOption(
-            new ProductOptionName(name),
-            new ProductOptionQuantity(quantity),
-            product);
+        return new ProductOption(name, quantity, product);
     }
 
     public void update(String name, Long quantity) {

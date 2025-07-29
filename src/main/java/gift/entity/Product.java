@@ -36,7 +36,7 @@ public class Product {
     protected Product() {
     }
 
-    public Product(Long id, String name, Integer price, String imageUrl) {
+    private Product(Long id, String name, Integer price, String imageUrl) {
         this.id = id;
         this.name = new ProductName(name);
         this.price = new ProductPrice(price);

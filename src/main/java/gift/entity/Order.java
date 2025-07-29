@@ -35,11 +35,17 @@ public class Order {
     protected Order() {
     }
 
-    public Order(Member member, ProductOption productOption, int quantity, String message) {
+    private Order(Long id, Member member, ProductOption productOption, int quantity,
+        String message) {
+        this.id = id;
         this.member = member;
         this.productOption = productOption;
         this.quantity = new OrderQuantity(quantity);
         this.message = new OrderMessage(message);
+    }
+
+    public Order(Member member, ProductOption productOption, int quantity, String message) {
+        this(null, member, productOption, quantity, message);
     }
 
     public Long getId() {

@@ -32,8 +32,12 @@ public class ProductOption {
         this.stock = stock;
     }
 
-    public void subtract(Long stock){
+    public void subtract(Long stock) {
         this.stock -= stock;
+        if (this.stock < 0) {
+            this.stock += stock;
+            throw new RuntimeException("재고가 없습니다.");
+        }
     }
 
     public Long getId() { return id; }

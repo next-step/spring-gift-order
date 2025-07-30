@@ -29,6 +29,12 @@ public class KakaoAuthController {
         return new ResponseEntity<> (kakaoAuthService.accessKakaoToken(userInfoDto, code), HttpStatus.OK);
     }
 
+
+    /**
+     * 내 유저 정보에 저장돼있는 카카오 토큰으로 카카오 유저 정보 받아오는 API
+     * @param userInfoDto 유저 정보
+     * @return 카카오 유저 정보
+     */
     @GetMapping("/kakao-info")
     public ResponseEntity<KakaoUserInfoDto> getKakaoUserInfo(@UserValid UserInfoDto userInfoDto) {
         return new ResponseEntity<>(kakaoAuthService.getKakaoUserInfo(userInfoDto), HttpStatus.OK);

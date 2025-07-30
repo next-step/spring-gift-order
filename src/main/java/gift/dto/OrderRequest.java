@@ -5,8 +5,6 @@ public class OrderRequest {
     private int quantity;
     private String message;
 
-
-
     public Long getOptionId() {
         return optionId;
     }

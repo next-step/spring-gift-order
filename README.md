@@ -28,7 +28,7 @@
         - [x] item 수량 차감
         - [x] 위시리스트 항목 삭제
         - [x] 메세지 전송
-- [ ] 테스트 작성
+- [x] 테스트 작성
 
 # spring-gift-enhancement
 

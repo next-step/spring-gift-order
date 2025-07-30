@@ -30,9 +30,8 @@ public class ProductOrderViewController {
         @LoginMember Member member
     ) {
 
-        KakaoOrderResponseDto kakaoOrderResponseDto = productOrderService.placeOrderAndSendMessage(
-            productId, productOptionId,
-            member.getId(), message, quantity);
+        productOrderService.placeOrderAndSendMessage(productId, productOptionId, member.getId(),
+            message, quantity);
 
         return "order-success";
     }

@@ -1,14 +1,11 @@
 package gift.controller;
 
-import gift.config.JwtUtil;
 import gift.config.LoginMember;
-import gift.dto.KakaoLoginRequest;
 import gift.dto.MemberRequest;
 import gift.dto.MemberResponse;
 import gift.dto.PaginationResponse;
 import gift.dto.TokenResponse;
 import gift.entity.Member;
-import gift.service.KakaoLoginService;
 import gift.service.MemberService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -28,14 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-    private final KakaoLoginService kakaoLoginService;
-    private final JwtUtil jwtUtil;
 
-    public MemberController(MemberService memberService, KakaoLoginService kakaoLoginService,
-        JwtUtil jwtUtil) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.kakaoLoginService = kakaoLoginService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
@@ -47,12 +39,6 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody MemberRequest request) {
         TokenResponse response = memberService.login(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping("/kakao/login")
-    public ResponseEntity<TokenResponse> kakaoLogin(@RequestBody KakaoLoginRequest request) {
-        TokenResponse response = kakaoLoginService.getAccessToken(request.authorizationCode());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

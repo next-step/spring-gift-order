@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import gift.order.vo.Message;
 import org.junit.jupiter.api.Test;
 
-public class MessageTest {
+public class MessageUnitTest {
 
     @Test
     void 정상_문자열_테스트() {

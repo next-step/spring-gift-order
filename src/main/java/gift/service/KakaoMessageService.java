@@ -15,12 +15,6 @@ public class KakaoMessageService {
     private final RestClient restClient = RestClient.create();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private ObjectNode createItem(String item, String itemOp) {
-        return objectMapper.createObjectNode()
-                .put("item", item)
-                .put("item_op", itemOp);
-    }
-
     public String buildFeedTemplate(OrderResponseDto order) {
         ObjectNode content = objectMapper.createObjectNode();
         content.put("title", "주문 정보 일람");
@@ -46,13 +40,13 @@ public class KakaoMessageService {
     }
 
     public void sendKakaoMessage(String accessToken, OrderResponseDto order) {
-        String templateJson = buildFeedTemplate(order); // JSON 문자열로 구성한 템플릿
+        String templateJson = buildFeedTemplate(order);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("template_object", templateJson);
 
         restClient.post()
-                .uri("https://kapi.kakao.com/v2/api/talk/memo/default/send")
+                .uri(MessageUrl)
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(body)

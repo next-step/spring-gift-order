@@ -84,7 +84,7 @@ public class KakaoOAuthService {
                     existing.setKakaoAccessToken(tokenResponse.accessToken());
                     existing.setKakaoRefreshToken(tokenResponse.refreshToken());
                     existing.setKakaoTokenExpiry(expiry);
-                    return memberRepository.save(existing); // 꼭 return 해줘야 함
+                    return memberRepository.save(existing);
                 })
                 .orElseGet(() -> {
                     Member newMember = Member.fromKakao(kakaoId);

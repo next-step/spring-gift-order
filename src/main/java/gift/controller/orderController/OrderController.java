@@ -6,8 +6,10 @@ import gift.config.Interceptor.UserOnly;
 import gift.dto.orderDto.OrderRequestDto;
 import gift.dto.orderDto.OrderResponseDto;
 import gift.entity.Order;
+import gift.event.OrderEvent;
 import gift.service.kakaoService.KaKaoMessageService;
 import gift.service.order.OrderService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
-    private final KaKaoMessageService kaKaoMessageService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public OrderController(OrderService orderService, KaKaoMessageService kaKaoMessageService) {
+    public OrderController(OrderService orderService, ApplicationEventPublisher eventPublisher) {
         this.orderService = orderService;
-        this.kaKaoMessageService = kaKaoMessageService;
-    }
+        this.eventPublisher = eventPublisher;}
 
     @UserOnly
     @PostMapping
@@ -35,7 +36,7 @@ public class OrderController {
         Integer quantity = orderRequestDto.quantity();
 
         Order order = orderService.order(optionId, userEmail, message, quantity);
-        kaKaoMessageService.sendMessage(userEmail, message);
+        eventPublisher.publishEvent(new OrderEvent(userEmail, message));
 
         return new ResponseEntity<>(OrderResponseDto.from(order), HttpStatus.CREATED);
     }

@@ -2,8 +2,8 @@ package gift.service.kakaoService;
 
 import gift.Jwt.JwtUtil;
 import gift.config.KakaoProperties;
-import gift.dto.KakaoTokenResponseDto;
-import gift.dto.KakaoUserInfoDto;
+import gift.dto.kakaoDto.KakaoTokenResponseDto;
+import gift.dto.kakaoDto.KakaoUserInfoDto;
 import gift.entity.SocialUser;
 import gift.entity.User;
 import gift.service.userService.SocialUserService;

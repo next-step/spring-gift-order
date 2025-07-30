@@ -27,7 +27,14 @@ public class OrderController {
         @RequestHeader("Authorization") String authorizationHeader
     ) {
         String jwtToken = authorizationHeader.replace("Bearer ", "");
-        OrderResponseDTO response = orderService.createOrder(orderRequestDTO, member.getId(), jwtToken);
+        OrderResponseDTO response = orderService.createOrder(orderRequestDTO, member.getId());
+
+        try {
+            orderService.sendKakaoMessage(jwtToken, orderRequestDTO);
+        } catch (Exception e) {
+            System.err.println("카카오톡 메시지 전송 실패: " + e.getMessage());
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

@@ -37,7 +37,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO, Long memberId, String jwtToken) {
+    public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO, Long memberId) {
         Product product = productRepository.findById(orderRequestDTO.productId())
             .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
@@ -60,20 +60,20 @@ public class OrderService {
 
         wishRepository.deleteByMemberIdAndProductId(memberId, orderRequestDTO.productId());
 
-        try {
-            sendKakaoMessage(jwtToken, product, option, orderRequestDTO.quantity(), orderRequestDTO.message());
-        } catch (Exception e) {
-            System.err.println("카카오톡 메시지 전송 실패: " + e.getMessage());
-        }
-
         return OrderResponseDTO.from(savedOrder);
     }
 
-    private void sendKakaoMessage(String jwtToken, Product product, Option option, int quantity, String message) {
+    public void sendKakaoMessage(String jwtToken, OrderRequestDTO orderRequestDTO) {
         try {
             String kakaoAccessToken = jwtUtil.getKakaoAccessToken(jwtToken);
 
             if (kakaoAccessToken != null) {
+                Product product = productRepository.findById(orderRequestDTO.productId())
+                    .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+                Option option = optionRepository.findById(orderRequestDTO.optionId())
+                    .orElseThrow(() -> new IllegalArgumentException("옵션을 찾을 수 없습니다."));
+
                 String orderMessage = String.format(
                     "🎁 주문이 완료되었습니다!\n\n" +
                     "상품: %s\n" +
@@ -83,9 +83,9 @@ public class OrderService {
                     "메시지: %s",
                     product.getName(),
                     option.getName(),
-                    quantity,
-                    product.getPrice() * quantity,
-                    message != null ? message : "없음"
+                    orderRequestDTO.quantity(),
+                    product.getPrice() * orderRequestDTO.quantity(),
+                    orderRequestDTO.message() != null ? orderRequestDTO.message() : "없음"
                 );
 
                 kakaoService.sendMessage(kakaoAccessToken, orderMessage);

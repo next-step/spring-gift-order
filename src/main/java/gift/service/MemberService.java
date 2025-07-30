@@ -55,7 +55,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member processKakaoLogin(KakaoUserInfoResponseDto kakaoUserInfoResponseDto, String kakaoAccessToken) {
+    public MemberResponseDto processKakaoLogin(KakaoUserInfoResponseDto kakaoUserInfoResponseDto, String kakaoAccessToken) {
         String email = kakaoUserInfoResponseDto.getEmail();
 
         Member member = memberRepository.findByEmail(email)
@@ -67,6 +67,6 @@ public class MemberService {
 
         member.setKakaoAccessToken(kakaoAccessToken);
 
-        return member;
+        return new MemberResponseDto(jwtTokenProvider.generateToken(member));
     }
 }

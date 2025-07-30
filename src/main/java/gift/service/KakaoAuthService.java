@@ -4,6 +4,7 @@ import gift.config.KakaoProperties;
 import gift.dto.KakaoTokenRequestDto;
 import gift.dto.KakaoTokenResponseDto;
 import gift.dto.KakaoUserInfoResponseDto;
+import gift.dto.MemberResponseDto;
 import gift.entity.Member;
 import gift.exception.KakaoClientException;
 import gift.exception.KakaoApiError;
@@ -104,10 +105,9 @@ public class KakaoAuthService {
         }
     }
 
-    public String kakaoLogin(String authorizeCode) {
+    public MemberResponseDto kakaoLogin(String authorizeCode) {
         String accessToken = getAccessToken(authorizeCode);
         KakaoUserInfoResponseDto kakaoUserInfoResponseDto = getUserInfo(accessToken);
-        Member member = memberService.processKakaoLogin(kakaoUserInfoResponseDto, accessToken);
-        return jwtTokenProvider.generateToken(member);
+        return memberService.processKakaoLogin(kakaoUserInfoResponseDto, accessToken);
     }
 }

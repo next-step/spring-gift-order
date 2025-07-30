@@ -20,8 +20,8 @@ public class Wish {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_wishes_products"))
-    private Product product;
+    @JoinColumn(name = "option_id")
+    private ProductOption productOption;
 
     @Column(nullable = false)
     private int quantity;
@@ -33,9 +33,9 @@ public class Wish {
 
     }
 
-    public Wish(Member member, Product product, int quantity){
+    public Wish(Member member, ProductOption option, int quantity){
         this.member = member;
-        this.product = product;
+        this.productOption = option;
         this.quantity = quantity;
     }
 
@@ -45,8 +45,8 @@ public class Wish {
 
     public Member getMember() { return member;}
 
-    public Product getProduct(){
-        return product;
+    public ProductOption getProductOption(){
+        return productOption;
     }
 
     public int getQuantity(){

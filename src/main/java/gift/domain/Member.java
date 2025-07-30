@@ -78,6 +78,9 @@ public class Member {
         return role;
     }
 
+    @Column(name = "access_token", length = 2000)
+    private String accessToken;
+
     public static Member createLocalMember(String email, String password) {
         Member member = new Member();
         member.email = email;
@@ -95,5 +98,13 @@ public class Member {
                 kakaoId,
                 Role.USER
         );
+    }
+
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
     }
 }

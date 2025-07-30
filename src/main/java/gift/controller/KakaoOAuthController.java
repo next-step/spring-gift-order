@@ -37,10 +37,10 @@ public class KakaoOAuthController {
     public JwtResponse callback(@RequestParam("code") String code) {
         KakaoTokenResponse tokenResponse = kakaoOAuthService.getToken(code);
         KakaoUserResponse kakaoUser = kakaoOAuthService.getUserInfo(tokenResponse.accessToken());
-
-        String jwt = authService.loginOrRegisterWithKakao(kakaoUser);
+        String jwt = authService.loginOrRegisterWithKakao(kakaoUser, tokenResponse.accessToken());
         return new JwtResponse(jwt);
     }
+
 
     @GetMapping("/me")
     public LoginMemberResponse getCurrentUser(@LoginMember Member member) {

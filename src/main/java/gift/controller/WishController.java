@@ -35,23 +35,16 @@ public class WishController {
 
     @PostMapping
     public void addWish(@RequestBody WishRequest request, @LoginMember Member member) {
-        wishService.addWish(member.getId(), request.getProductId(), request.getQuantity());
+        wishService.addWish(member.getId(), request.getOptionId(), request.getQuantity());
     }
 
     @PatchMapping
-    public void updateWish(
-            @RequestBody WishRequest request,
-            @LoginMember Member member
-    ) {
-        wishService.updateWish(member.getId(), request.getProductId(), request.getQuantity());
+    public void updateWish(@RequestBody WishRequest request, @LoginMember Member member) {
+        wishService.updateWish(member.getId(), request.getOptionId(), request.getQuantity());
     }
 
     @DeleteMapping
     public void deleteWish(@RequestBody WishRequest request, @LoginMember Member member) {
-        wishService.deleteWish(member.getId(), request.getProductId());
+        wishService.deleteWish(member.getId(), request.getOptionId());
     }
-
-
-
-
 }

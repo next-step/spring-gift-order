@@ -1,15 +1,9 @@
 package gift.dto;
 
-public class WishRequest {
+public class OrderRequest {
     private Long optionId;
     private int quantity;
-
-    public WishRequest() {}
-
-    public WishRequest(Long optionId, int quantity) {
-        this.optionId = optionId;
-        this.quantity = quantity;
-    }
+    private String message;
 
     public Long getOptionId() {
         return optionId;
@@ -18,6 +12,9 @@ public class WishRequest {
     public int getQuantity() {
         return quantity;
     }
-}
 
+    public String getMessage() {
+        return message;
+    }
+}
 

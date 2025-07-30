@@ -2,9 +2,11 @@ package gift.service;
 
 import gift.domain.Member;
 import gift.domain.Product;
+import gift.domain.ProductOption;
 import gift.domain.Wish;
 import gift.dto.PageResponse;
 import gift.dto.WishResponse;
+import gift.repository.ProductOptionRepository;
 import gift.repository.WishRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +20,11 @@ import java.util.stream.Collectors;
 public class WishService {
 
     private final WishRepository wishRepository;
+    private final ProductOptionRepository productOptionRepository;
 
-    public WishService(WishRepository wishRepository) {
+    public WishService(WishRepository wishRepository, ProductOptionRepository productOptionRepository) {
         this.wishRepository = wishRepository;
+        this.productOptionRepository = productOptionRepository;
     }
 
     public PageResponse<WishResponse> getWishesPage(Long memberId, Pageable pageable) {
@@ -32,31 +36,34 @@ public class WishService {
     }
 
     @Transactional
-    public void addWish(Long memberId, Long productId, int quantity) {
-        wishRepository.findByMemberIdAndProductId(memberId, productId)
+    public void addWish(Long memberId, Long optionId, int quantity) {
+        ProductOption option = productOptionRepository.findById(optionId)
+                .orElseThrow(() -> new IllegalArgumentException("옵션이 존재하지 않습니다."));
+
+        wishRepository.findByMemberIdAndProductOptionId(memberId, optionId)
                 .ifPresentOrElse(
                         wish -> wish.updateQuantity(quantity),
                         () -> {
-                            Wish wish = new Wish(new Member(memberId), new Product(productId), quantity);
+                            Wish wish = new Wish(new Member(memberId), option, quantity);
                             wishRepository.save(wish);
                         }
                 );
     }
 
     @Transactional
-    public void updateWish(Long memberId, Long productId, int quantity) {
-        Wish wish = wishRepository.findByMemberIdAndProductId(memberId, productId)
+    public void updateWish(Long memberId, Long optionId, int quantity) {
+        Wish wish = wishRepository.findByMemberIdAndProductOptionId(memberId, optionId)
                 .orElseThrow(() -> new IllegalArgumentException("위시가 존재하지 않습니다."));
 
         if (quantity <= 0) {
-            wishRepository.deleteByMemberIdAndProductId(memberId, productId);
+            wishRepository.deleteByMemberIdAndProductOptionId(memberId, optionId);
         } else {
             wish.updateQuantity(quantity);
         }
     }
 
     @Transactional
-    public void deleteWish(Long memberId, Long productId) {
-        wishRepository.deleteByMemberIdAndProductId(memberId, productId);
+    public void deleteWish(Long memberId, Long optionId) {
+        wishRepository.deleteByMemberIdAndProductOptionId(memberId, optionId);
     }
 }

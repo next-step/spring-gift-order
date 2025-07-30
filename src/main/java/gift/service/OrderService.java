@@ -45,7 +45,15 @@ public class OrderService {
 
         wishRepository.deleteByMemberIdAndProductOptionId(member.getId(), option.getId());
 
-        Order order = new Order(member, option.getId(), request.getQuantity(), request.getMessage());
+        Order order = new Order(
+                member,
+                option.getId(),
+                option.getName(),
+                option.getProduct().getPrice(),
+                request.getQuantity(),
+                request.getMessage()
+        );
+
         Order saved = orderRepository.save(order);
 
         kakaoMessageService.sendOrderMessageToMe(member.getAccessToken(), saved);
@@ -58,5 +66,6 @@ public class OrderService {
                 saved.getMessage()
         );
     }
+
 }
 

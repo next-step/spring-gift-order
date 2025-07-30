@@ -18,6 +18,12 @@ public class Order {
     @Column(name = "option_id", nullable = false)
     private Long optionId;
 
+    @Column(name = "option_name", nullable = false, length = 255)
+    private String optionName;
+
+    @Column(name = "option_price", nullable = false)
+    private int optionPrice;
+
     @Column(nullable = false)
     private int quantity;
 
@@ -30,9 +36,11 @@ public class Order {
     public Order() {
     }
 
-    public Order(Member member, Long optionId, int quantity, String message) {
+    public Order(Member member, Long optionId, String optionName, int optionPrice, int quantity, String message) {
         this.member = member;
         this.optionId = optionId;
+        this.optionName = optionName;
+        this.optionPrice = optionPrice;
         this.quantity = quantity;
         this.message = message;
         this.orderDateTime = LocalDateTime.now();
@@ -48,6 +56,14 @@ public class Order {
 
     public Long getOptionId() {
         return optionId;
+    }
+
+    public String getOptionName() {
+        return optionName;
+    }
+
+    public int getOptionPrice() {
+        return optionPrice;
     }
 
     public int getQuantity() {

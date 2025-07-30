@@ -41,6 +41,8 @@ CREATE TABLE orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     member_id BIGINT NOT NULL,
     option_id BIGINT NOT NULL,
+    option_name VARCHAR(255) NOT NULL,
+    option_price INT NOT NULL,
     quantity INT NOT NULL,
     message VARCHAR(1000),
     order_date_time DATETIME NOT NULL,

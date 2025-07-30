@@ -70,7 +70,17 @@ public class JwtUtil {
     }
 
     public String getKakaoAccessToken(String token) {
-        return getClaims(token).get("kakaoAccessToken", String.class);
+        try {
+            Claims claims = getClaims(token);
+            Map<String, Object> tokenInfo = (Map<String, Object>) claims.get("token");
+            if (tokenInfo != null) {
+                return (String) tokenInfo.get("kakaoAccessToken");
+            }
+            return null;
+        } catch (Exception e) {
+            logger.warn("kakao access token이 없습니다.: {}", e.getMessage());
+            return null;
+        }
     }
 
     public String getKakaoRefreshToken(String token) {

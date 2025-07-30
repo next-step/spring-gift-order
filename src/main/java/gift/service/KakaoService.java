@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.auth.JwtUtil;
 import gift.dto.KakaoAccessTokenDTO;
+import gift.dto.KakaoMessageDTO;
 import gift.dto.KakaoTokenResponseDTO;
 import gift.dto.TokenResponseDTO;
 import gift.entity.LoginType;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,5 +98,34 @@ public class KakaoService {
 
         String jwtToken = jwtUtil.createToken(member.getEmail(), claims);
         return new TokenResponseDTO(jwtToken);
+    }
+
+    public void sendMessage(String accessToken, String messageText) {
+        final String url = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+
+        try {
+            KakaoMessageDTO messageDTO = new KakaoMessageDTO(messageText);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String templateObject = objectMapper.writeValueAsString(messageDTO);
+
+            var body = new LinkedMultiValueMap<String, String>();
+            body.add("template_object", templateObject);
+
+            restClient.post()
+                .uri(url)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+                    throw new IllegalArgumentException("카카오톡 메시지 전송에 실패했습니다.");
+                })
+                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                    throw new IllegalStateException("카카오 서버에 문제가 발생했습니다.");
+                })
+                .body(Map.class);
+        } catch (Exception e) {
+            throw new RuntimeException("카카오톡 메시지 전송 중 오류가 발생했습니다.", e);
+        }
     }
 }

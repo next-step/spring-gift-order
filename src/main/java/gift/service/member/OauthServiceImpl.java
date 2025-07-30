@@ -3,7 +3,7 @@ package gift.service.member;
 import gift.client.KakaoClient;
 import gift.dto.login.KakaoProfileDto;
 import gift.dto.login.KakaoTokenDto;
-import gift.exception.KakaoTokenFetchException;
+import gift.exception.KakaoException;
 import gift.repository.member.MemberRepository;
 import gift.util.JwtUtil;
 import gift.util.Sha256Util;
@@ -28,7 +28,7 @@ public class OauthServiceImpl implements OauthService {
         KakaoTokenDto kakaoTokenDto = kakaoClient.fetchToken(code);
 
         if (kakaoTokenDto == null || kakaoTokenDto.accessToken() == null) {
-            throw new KakaoTokenFetchException("카카오 토큰 발급에 문제가 발생했습니다.");
+            throw new KakaoException("카카오 토큰 발급에 문제가 발생했습니다.");
         }
 
         return kakaoTokenDto;

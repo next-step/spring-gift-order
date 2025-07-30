@@ -10,7 +10,9 @@ import gift.dto.order.KakaoOrderResponseDto;
 import gift.dto.order.KakaoOrderTemplateMessageDto;
 import gift.dto.order.KakaoOrderTemplateMessageDto.KakaoOrderTemplateMessageContentDto;
 import gift.dto.order.KakaoOrderTemplateMessageDto.KakaoOrderTemplateMessageLinkDto;
-import gift.exception.KakaoTokenFetchException;
+import gift.exception.KakaoClientException;
+import gift.exception.KakaoException;
+import gift.exception.KakaoServerException;
 import java.io.IOException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -51,13 +53,22 @@ public class KakaoClient {
             .headers(h -> h.addAll(headers))
             .body(body)
             .retrieve()
-            .onStatus(HttpStatusCode::isError, (request, httpResponse) -> {
+            .onStatus(HttpStatusCode::is4xxClientError, (request, httpResponse) -> {
                 try {
                     KakaoErrorDto errorDto = objectMapper.readValue(httpResponse.getBody(),
                         KakaoErrorDto.class);
-                    throw new KakaoTokenFetchException(errorDto.code(), errorDto.message());
+                    throw new KakaoClientException(errorDto.code(), errorDto.message());
                 } catch (IOException exception) {
-                    throw new KakaoTokenFetchException("카카오 오류 응답을 파싱하지 못하였습니다.");
+                    throw new KakaoException("카카오 오류 응답을 파싱하지 못하였습니다.");
+                }
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (request, httpResponse) -> {
+                try {
+                    KakaoErrorDto errorDto = objectMapper.readValue(httpResponse.getBody(),
+                        KakaoErrorDto.class);
+                    throw new KakaoServerException(errorDto.code(), errorDto.message());
+                } catch (IOException exception) {
+                    throw new KakaoException("카카오 오류 응답을 파싱하지 못하였습니다.");
                 }
             })
             .toEntity(KakaoTokenDto.class);
@@ -76,6 +87,24 @@ public class KakaoClient {
             .uri(kakaoProperties.profileUri())
             .headers(h -> h.addAll(headers))
             .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, (request, httpResponse) -> {
+                try {
+                    KakaoErrorDto errorDto = objectMapper.readValue(httpResponse.getBody(),
+                        KakaoErrorDto.class);
+                    throw new KakaoClientException(errorDto.code(), errorDto.message());
+                } catch (IOException exception) {
+                    throw new KakaoException("카카오 오류 응답을 파싱하지 못하였습니다.");
+                }
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (request, httpResponse) -> {
+                try {
+                    KakaoErrorDto errorDto = objectMapper.readValue(httpResponse.getBody(),
+                        KakaoErrorDto.class);
+                    throw new KakaoServerException(errorDto.code(), errorDto.message());
+                } catch (IOException exception) {
+                    throw new KakaoException("카카오 오류 응답을 파싱하지 못하였습니다.");
+                }
+            })
             .toEntity(KakaoProfileDto.class);
 
         return response.getBody();
@@ -111,6 +140,24 @@ public class KakaoClient {
             .headers(h -> h.addAll(headers))
             .body(body)
             .retrieve()
+            .onStatus(HttpStatusCode::is4xxClientError, (request, httpResponse) -> {
+                try {
+                    KakaoErrorDto errorDto = objectMapper.readValue(httpResponse.getBody(),
+                        KakaoErrorDto.class);
+                    throw new KakaoClientException(errorDto.code(), errorDto.message());
+                } catch (IOException exception) {
+                    throw new KakaoException("카카오 오류 응답을 파싱하지 못하였습니다.");
+                }
+            })
+            .onStatus(HttpStatusCode::is5xxServerError, (request, httpResponse) -> {
+                try {
+                    KakaoErrorDto errorDto = objectMapper.readValue(httpResponse.getBody(),
+                        KakaoErrorDto.class);
+                    throw new KakaoServerException(errorDto.code(), errorDto.message());
+                } catch (IOException exception) {
+                    throw new KakaoException("카카오 오류 응답을 파싱하지 못하였습니다.");
+                }
+            })
             .toEntity(KakaoOrderResponseDto.class);
 
         return response.getBody();

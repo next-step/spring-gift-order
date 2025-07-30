@@ -13,9 +13,9 @@ public class KakaoExceptionHandler {
         return new ResponseEntity<>(ErrorResponse.of(kakaoErrorCode), status);
     }
 
-    @ExceptionHandler(KakaoTokenFetchException.class)
-    public ResponseEntity<ErrorResponse> handleKakaoTokenFetchException(
-        KakaoTokenFetchException exception
+    @ExceptionHandler(KakaoClientException.class)
+    public ResponseEntity<ErrorResponse> handleKakaoClientException(
+        KakaoClientException exception
     ) {
         return switch (exception.getCode()) {
             case -1 -> responseEntityBuild(KakaoErrorCode.SERVER_INTERNAL_ERROR,
@@ -54,8 +54,6 @@ public class KakaoExceptionHandler {
                 HttpStatus.BAD_REQUEST);
             case -999 -> responseEntityBuild(KakaoErrorCode.EMPTY_ACCESS_TOKEN,
                 HttpStatus.BAD_GATEWAY);
-            case -9798 -> responseEntityBuild(KakaoErrorCode.SERVICE_CHECK,
-                HttpStatus.SERVICE_UNAVAILABLE);
 
             case -101 -> responseEntityBuild(KakaoErrorCode.UNCONNECTED_ACCOUNT,
                 HttpStatus.BAD_REQUEST);
@@ -69,6 +67,19 @@ public class KakaoExceptionHandler {
                 HttpStatus.FORBIDDEN);
             case -406 -> responseEntityBuild(KakaoErrorCode.UNDER_14_RESTRICTED,
                 HttpStatus.UNAUTHORIZED);
+
+            default -> responseEntityBuild(KakaoErrorCode.UNKNOWN_ERROR,
+                HttpStatus.INTERNAL_SERVER_ERROR);
+        };
+    }
+
+    @ExceptionHandler(KakaoServerException.class)
+    public ResponseEntity<ErrorResponse> handleKakaoServerException(
+        KakaoServerException exception
+    ) {
+        return switch (exception.getCode()) {
+            case -9798 -> responseEntityBuild(KakaoErrorCode.SERVICE_CHECK,
+                HttpStatus.SERVICE_UNAVAILABLE);
 
             default -> responseEntityBuild(KakaoErrorCode.UNKNOWN_ERROR,
                 HttpStatus.INTERNAL_SERVER_ERROR);

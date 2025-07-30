@@ -13,3 +13,9 @@ KakaoAuth용 RestTemplate 정의
 @JsonProperty를 사용하여 Camel case 코드 컨벤션 유지
 
 외부 API 호출 레이어 service → repository(infrastructure) 변경
+
+# 주문하기
+1. Wish, Product, Option, ProductOption 테이블 간의 연관관계 재정립
+2. KakaoToken 테이블 생성 후 User와 1:1 참조하도록 추가
+3. User가 자신의 위시리스트를 볼 수 있도록 Wish와 연관관계 형성
+4. 주문하기 로직 및 카카오 메세지 전송 기능 구현

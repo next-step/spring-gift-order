@@ -91,4 +91,11 @@ public class KakaoExceptionHandler {
         return responseEntityBuild(KakaoErrorCode.KAKAO_MESSAGE_ERROR,
             HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(KakaoTimeoutException.class)
+    public ResponseEntity<ErrorResponse> handleKakaoTimeoutException(
+        KakaoTimeoutException exception
+    ) {
+        return responseEntityBuild(KakaoErrorCode.KAKAO_TIMEOUT, HttpStatus.GATEWAY_TIMEOUT);
+    }
 }

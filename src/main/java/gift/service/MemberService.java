@@ -1,6 +1,6 @@
 package gift.service;
 
-import gift.dto.KakaoUserInfoResponse;
+import gift.dto.KakaoUserInfoResponseDto;
 import gift.dto.MemberRequestDto;
 import gift.dto.MemberResponseDto;
 import gift.entity.Member;
@@ -55,8 +55,8 @@ public class MemberService {
     }
 
     @Transactional
-    public Member processKakaoLogin(KakaoUserInfoResponse kakaoUserInfoResponse, String kakaoAccessToken) {
-        String email = kakaoUserInfoResponse.getEmail();
+    public Member processKakaoLogin(KakaoUserInfoResponseDto kakaoUserInfoResponseDto, String kakaoAccessToken) {
+        String email = kakaoUserInfoResponseDto.getEmail();
 
         Member member = memberRepository.findByEmail(email)
                 .orElseGet(() -> {

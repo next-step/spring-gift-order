@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gift.exception.ResourceNotFoundException;
 import java.util.Map;
 
-public record KakaoUserInfoResponse (
+public record KakaoUserInfoResponseDto(
         Long id,
         @JsonProperty("kakao_account")
         Map<String, Object> kakaoAccount

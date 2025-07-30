@@ -1,6 +1,6 @@
 package gift.controller.kakao;
 
-import gift.dto.KakaoUserInfoResponse;
+import gift.dto.KakaoUserInfoResponseDto;
 import gift.dto.MemberResponseDto;
 import gift.entity.Member;
 import gift.security.JwtTokenProvider;
@@ -29,8 +29,8 @@ public class KakaoAuthController {
     @GetMapping("/callback")
     public MemberResponseDto kakaoCallback(@RequestParam("code") String authorizeCode) {
         String accessToken = kakaoAuthService.getAccessToken(authorizeCode);
-        KakaoUserInfoResponse kakaoUserInfoResponse = kakaoAuthService.getUserInfo(accessToken);
-        Member member = memberService.processKakaoLogin(kakaoUserInfoResponse, accessToken);
+        KakaoUserInfoResponseDto kakaoUserInfoResponseDto = kakaoAuthService.getUserInfo(accessToken);
+        Member member = memberService.processKakaoLogin(kakaoUserInfoResponseDto, accessToken);
         return new MemberResponseDto(jwtTokenProvider.generateToken(member));
     }
 }

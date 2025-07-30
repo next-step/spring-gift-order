@@ -3,7 +3,7 @@ package gift.service;
 import gift.config.KakaoProperties;
 import gift.dto.KakaoTokenRequestDto;
 import gift.dto.KakaoTokenResponseDto;
-import gift.dto.KakaoUserInfoResponse;
+import gift.dto.KakaoUserInfoResponseDto;
 import gift.exception.KakaoAuthenticationException;
 import gift.exception.KakaoApiError;
 import gift.exception.KakaoConnectionException;
@@ -73,7 +73,7 @@ public class KakaoAuthService {
         }
     }
 
-    public KakaoUserInfoResponse getUserInfo(String accessToken) {
+    public KakaoUserInfoResponseDto getUserInfo(String accessToken) {
         try {
             return apiClient.get()
                     .uri("/v2/user/me")
@@ -89,7 +89,7 @@ public class KakaoAuthService {
                         String errorMessage = error.getMessage();
                         throw new KakaoConnectionException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
-                    .body(KakaoUserInfoResponse.class);
+                    .body(KakaoUserInfoResponseDto.class);
         } catch (ResourceAccessException e) {
             throw new KakaoConnectionException("카카오 서버와 통신이 원활하지 않습니다.", e);
         }

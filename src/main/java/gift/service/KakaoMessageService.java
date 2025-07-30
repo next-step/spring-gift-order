@@ -15,22 +15,24 @@ public class KakaoMessageService {
     private final RestClient restClient = RestClient.create();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String buildFeedTemplate(OrderResponseDto order) {
-        ObjectNode content = objectMapper.createObjectNode();
-        content.put("title", "주문 정보 일람");
-        content.put("description", "주문 ID: " + order.id() + "\n"
-                + "옵션 ID: " + order.optionId() + "\n"
-                + "수량: " + order.quantity() + "\n"
-                + "주문 시간: " + order.orderDateTime() + "\n"
-                + "메시지: " + order.message());
+    public String buildTextTemplate(OrderResponseDto order) {
+        ObjectNode templateObject = objectMapper.createObjectNode();
+        templateObject.put("object_type", "text");
+
+        String message = "🧾 주문 정보\n"
+                + "• 주문 ID: " + order.id() + "\n"
+                + "• 옵션 ID: " + order.optionId() + "\n"
+                + "• 수량: " + order.quantity() + "\n"
+                + "• 주문 시간: " + order.orderDateTime() + "\n"
+                + "• 메시지: " + order.message();
+
+        templateObject.put("text", message);
 
         ObjectNode link = objectMapper.createObjectNode();
         link.put("web_url", "http://localhost:8080/orders/" + order.id());
-        content.set("link", link);
+        link.put("mobile_web_url", "http://localhost:8080/orders/" + order.id());
 
-        ObjectNode templateObject = objectMapper.createObjectNode();
-        templateObject.put("object_type", "feed");
-        templateObject.set("content", content);
+        templateObject.set("link", link);
 
         try {
             return objectMapper.writeValueAsString(templateObject);
@@ -39,8 +41,9 @@ public class KakaoMessageService {
         }
     }
 
+
     public void sendKakaoMessage(String accessToken, OrderResponseDto order) {
-        String templateJson = buildFeedTemplate(order);
+        String templateJson = buildTextTemplate(order);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("template_object", templateJson);

@@ -114,4 +114,11 @@ public class WishlistService {
             .orElseThrow(() -> new WishlistNotFoundException(wishlistId));
         wishlistRepository.deleteById(wishlistEntity.getId());
     }
+
+    @Transactional
+    public void deleteWishlistByItemId(Long itemId, Long memberId) {
+        wishlistRepository.findByMemberIdAndItemId(memberId, itemId)
+            .ifPresent(wishlistRepository::delete);
+
+    }
 }

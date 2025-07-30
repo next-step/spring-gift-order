@@ -27,12 +27,9 @@ public class User {
     protected User() {
     }
 
-    public User(Email email, Password password) {
+    public User(Email email, Password password, UserType type) {
         this.email = email;
         this.password = password;
-    }
-
-    public void setType(UserType type) {
         this.type = type;
     }
 

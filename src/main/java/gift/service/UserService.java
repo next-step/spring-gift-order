@@ -35,8 +35,7 @@ public class UserService {
         if (userRepository.findByEmail(userRequest.email()).isPresent())
             throw new EmailAlreadyExistsException("이미 사용 중인 이메일입니다. " + userRequest.email());
 
-        User user = userRequest.toEntity();
-        user.setType(UserType.LOCAL);
+        User user = userRequest.toEntityWithType(UserType.LOCAL);
 
         userRepository.save(user);
         return jwtProvider.generateToken(user);
@@ -62,8 +61,7 @@ public class UserService {
 
         if (optionalUser.isEmpty()) {
             Password password = new Password("12345678");
-            User user = new User(email, password);
-            user.setType(UserType.KAKAO);
+            User user = new User(email, password, UserType.KAKAO);
             userRepository.save(user);
 
             return jwtProvider.generateToken(user);

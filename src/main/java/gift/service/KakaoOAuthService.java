@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.dto.KakaoTokenRefreshResponse;
 import gift.dto.KakaoTokenResponse;
 import gift.dto.KakaoUserInfo;
 import gift.entity.Member;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -37,6 +39,8 @@ public class KakaoOAuthService {
     private final String authUrl = "https://kauth.kakao.com/oauth/authorize";
     private final String tokenUrl = "https://kauth.kakao.com/oauth/token";
     private final String UserInfoUrl = "https://kapi.kakao.com/v2/user/me";
+    private final String AccessTokenInfoUrl = "https://kapi.kakao.com/v1/user/access_token_info";
+    private final String RefreshAccessTokenUrl = "https://kauth.kakao.com/oauth/token";
 
     public URI buildKakaoAuthUri() {
         return UriComponentsBuilder.fromUriString(authUrl)
@@ -48,7 +52,7 @@ public class KakaoOAuthService {
                 .toUri();
     }
 
-    public KakaoTokenResponse exchangeCodeForToken(String code) {
+    private KakaoTokenResponse exchangeCodeForToken(String code) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", clientId);
@@ -63,7 +67,7 @@ public class KakaoOAuthService {
                 .body(KakaoTokenResponse.class);
     }
 
-    public KakaoUserInfo getUserInfo(String accessToken) {
+    private KakaoUserInfo getUserInfo(String accessToken) {
         return restClient.get()
                 .uri(UserInfoUrl)
                 .header("Authorization", "Bearer " + accessToken)
@@ -98,4 +102,31 @@ public class KakaoOAuthService {
         return jwtUtil.generateTokenForKakao(member);
     }
 
+    public boolean isAccessTokenValid(String accessToken) {
+        try {
+            restClient.get()
+                    .uri(AccessTokenInfoUrl)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
+                    .retrieve()
+                    .toEntity(String.class);
+            return true;
+        } catch (RestClientResponseException e) {
+            return false;
+        }
+    }
+
+    public KakaoTokenRefreshResponse refreshKakaoAccessToken(String refreshToken, String kakaoClientId) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("client_id", kakaoClientId);
+        body.add("refresh_token", refreshToken);
+
+        return restClient.post()
+                .uri(RefreshAccessTokenUrl)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(body)
+                .retrieve()
+                .body(KakaoTokenRefreshResponse.class);
+    }
 }

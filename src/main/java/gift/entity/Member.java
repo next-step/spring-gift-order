@@ -100,4 +100,8 @@ public class Member {
     public void setEmail(String s) {
         this.email = new Email(s);
     }
+
+    public String getKakaoRefreshToken() {
+        return kakaoRefreshToken;
+    }
 }

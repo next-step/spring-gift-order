@@ -37,6 +37,10 @@ public class JwtInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        if (authResult.getJwtToken() != null) {
+            response.setHeader("X-New-JWT", authResult.getJwtToken());
+        }
+
         request.setAttribute("memberId", authResult.getMemberId());
         request.setAttribute("email", authResult.getEmail());
         request.setAttribute("role", authResult.getRole());

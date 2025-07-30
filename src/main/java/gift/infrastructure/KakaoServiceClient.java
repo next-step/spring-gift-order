@@ -33,7 +33,6 @@ public class KakaoServiceClient {
             json = objectMapper
                     .writerWithDefaultPrettyPrinter()      // 보기 좋게 포맷팅
                     .writeValueAsString(feedMessageDto);
-            System.out.println("▶ feedMessageDto JSON =\n" + json); // 디버그용
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -44,8 +43,5 @@ public class KakaoServiceClient {
         var httpentity = new HttpEntity<>(body, headers);
 
         var response = kakaoKapiRestTemplate.exchange(url, HttpMethod.POST, httpentity, String.class);
-
-        System.out.println(response.getBody()); // 디버그용
-        System.out.println(response.getStatusCode()); // 디버그용
     }
 }

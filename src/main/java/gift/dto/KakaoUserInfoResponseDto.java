@@ -10,8 +10,9 @@ public record KakaoUserInfoResponseDto(
         Map<String, Object> kakaoAccount
 ) {
     public String getEmail() {
-        if (kakaoAccount != null && kakaoAccount.containsKey("email")) {
-            return kakaoAccount.get("email").toString();
-        } throw new ResourceNotFoundException("카카오 계정에서 이메일 정보를 찾을 수 없습니다.");
+        if (kakaoAccount == null || !kakaoAccount.containsKey("email")) {
+            throw new ResourceNotFoundException("카카오 계정에서 이메일 정보를 찾을 수 없습니다.");
+        }
+        return kakaoAccount.get("email").toString();
     }
 }

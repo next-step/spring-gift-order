@@ -28,7 +28,7 @@ public class OrderService {
     @Transactional
     public Order createOrder(Long userId, OrderRequest orderRequest) {
         Option option = optionService.subtractOptionQuantity(orderRequest.optionId(), orderRequest.quantity());
-        Long price = (long) (option.getProduct().getPrice() * orderRequest.quantity());
+        Long price = (long) option.getProduct().getPrice() * orderRequest.quantity();
         Order order = new Order(option, orderRequest.quantity(), price, Instant.now(), orderRequest.message());
 
         wishService.deleteWish(userId, option.getProduct().getId());

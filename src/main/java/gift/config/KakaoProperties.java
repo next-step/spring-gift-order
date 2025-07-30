@@ -9,6 +9,7 @@ public class KakaoProperties {
     private String clientId;
     private String redirectUri;
     private String oauthTokenUrlHost;
+    private String messageUrl;
 
     public String getClientId() {
         return clientId;
@@ -32,6 +33,14 @@ public class KakaoProperties {
 
     public void setOauthTokenUrlHost(String oauthTokenUrlHost) {
         this.oauthTokenUrlHost = oauthTokenUrlHost;
+    }
+
+    public String getMessageUrl() {
+        return messageUrl;
+    }
+
+    public void setMessageUrl(String messageUrl) {
+        this.messageUrl = messageUrl;
     }
 
     public String buildAuthorizationUrl() {

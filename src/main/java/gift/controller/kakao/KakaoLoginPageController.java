@@ -1,4 +1,4 @@
-package gift.controller;
+package gift.controller.kakao;
 
 import gift.config.KakaoProperties;
 import org.springframework.stereotype.Controller;

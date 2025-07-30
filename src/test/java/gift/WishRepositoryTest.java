@@ -42,7 +42,7 @@ public class WishRepositoryTest {
 
     @BeforeEach
     void Setup() {
-        member = memberRepository.saveAndFlush(new Member("test@naver.com", "qwe123"));
+        member = memberRepository.saveAndFlush(new Member("test@naver.com", "qwe123", "LOCAL"));
         product = productRepository.saveAndFlush(new Product("test 상품", BigDecimal.valueOf(3000), "testurl@naver.com", options));
     }
 

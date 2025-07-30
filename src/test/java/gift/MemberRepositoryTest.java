@@ -16,7 +16,7 @@ public class MemberRepositoryTest {
 
     @Test
     void 멤버_생성() {
-        Member savedMember = memberRepository.save(new Member("test@example.com", "password"));
+        Member savedMember = memberRepository.save(new Member("test@example.com", "password", "LOCAL"));
 
         assertAll(
                 () -> assertThat(savedMember.getId()).isNotNull(),
@@ -27,7 +27,7 @@ public class MemberRepositoryTest {
     @Test
     void 이메일로_멤버_조회() {
         String email = "test@example.com";
-        memberRepository.save(new Member(email, "password"));
+        memberRepository.save(new Member(email, "password", "LOCAL"));
 
         Member foundMember = memberRepository.findByEmail(email).orElseThrow();
 
@@ -36,7 +36,7 @@ public class MemberRepositoryTest {
 
     @Test
     void 멤버_삭제() {
-        Member savedMember = memberRepository.save(new Member("test@example.com", "password"));
+        Member savedMember = memberRepository.save(new Member("test@example.com", "password", "LOCAL"));
         Long memberId = savedMember.getId();
 
         memberRepository.deleteById(memberId);

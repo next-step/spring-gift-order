@@ -1,14 +1,16 @@
 package gift.config;
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-@Component
 @ConfigurationProperties(prefix = "kakao")
 public class KakaoProperties {
-    private String clientId;
-    private String redirectUri;
+    private final String clientId;
+    private final String redirectUri;
+
+    public KakaoProperties(String clientId, String redirectUri) {
+        this.clientId = clientId;
+        this.redirectUri = redirectUri;
+    }
 
     public String getClientId() {
         return clientId;
@@ -16,13 +18,5 @@ public class KakaoProperties {
 
     public String getRedirectUri() {
         return redirectUri;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public void setRedirectUri(String redirectUri) {
-        this.redirectUri = redirectUri;
     }
 }

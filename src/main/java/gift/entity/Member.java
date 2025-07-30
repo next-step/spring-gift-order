@@ -21,20 +21,22 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String provider; // 회원 가입 경로 (LOCAL, KAKAO)
+
+    private String kakaoAccessToken;
+
     protected Member() {}
 
-    public Member(Long id, String email, String password) {
+    public Member(Long id, String email, String password, String provider) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.provider = provider;
     }
 
-    public Member(MemberRequestDto memberRequestDto) {
-        this(null, memberRequestDto.email(), memberRequestDto.password());
-    }
-
-    public Member(String email, String password) {
-        this(null, email, password);
+    public Member(String email, String password, String provider) {
+        this(null, email, password,  provider);
     }
 
     public Long getId() {
@@ -47,5 +49,17 @@ public class Member {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public String getKakaoAccessToken() {
+        return kakaoAccessToken;
+    }
+
+    public void setKakaoAccessToken(String kakaoAccessToken) {
+        this.kakaoAccessToken = kakaoAccessToken;
     }
 }

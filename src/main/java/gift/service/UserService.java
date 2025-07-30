@@ -60,7 +60,7 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
         if (optionalUser.isEmpty()) {
-            Password password = new Password("12345678");
+            Password password = Password.forKakaoUser();
             User user = new User(email, password, UserType.KAKAO);
             userRepository.save(user);
 

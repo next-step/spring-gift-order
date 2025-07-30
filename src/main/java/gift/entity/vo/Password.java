@@ -29,4 +29,10 @@ public class Password {
     public String value() {
         return value;
     }
+
+    public static Password forKakaoUser() {
+        Password password = new Password();
+        password.value = "";
+        return password;
+    }
 }

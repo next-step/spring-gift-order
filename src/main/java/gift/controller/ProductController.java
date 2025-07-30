@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -94,13 +96,12 @@ public class ProductController {
     /**
      * 제품 옵션 추가
      * @param id 제품 id
-     * @param name 옵션 이름
-     * @param value 옵션 값
+     * @param body 옵션 이름, 재고 수량
      * @return Void
      */
     @PostMapping("/{id}/option")
-    public ResponseEntity<Void> addProductOption(@PathVariable Long id, @RequestBody String name, @RequestBody Long value) {
-        productService.addProductOption(id, name, value);
+    public ResponseEntity<Void> addProductOption(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        productService.addProductOption(id, body.get("name"), Long.parseLong(body.get("quantity")));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

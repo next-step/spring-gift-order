@@ -5,6 +5,8 @@ import gift.dto.KakaoOrderRequestDto;
 import gift.dto.UserInfoDto;
 import gift.service.KakaoOrderService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +18,8 @@ public class KakaoOrderController {
         this.kakaoOrderService = kakaoOrderService;
     }
 
-    public ResponseEntity<Void> order(@UserValid UserInfoDto userInfoDto, KakaoOrderRequestDto kakaoOrderRequestDto) {
+    @PostMapping
+    public ResponseEntity<Void> order(@UserValid UserInfoDto userInfoDto, @RequestBody KakaoOrderRequestDto kakaoOrderRequestDto) {
         kakaoOrderService.orderProduct(userInfoDto, kakaoOrderRequestDto);
         return ResponseEntity.noContent().build();
     }

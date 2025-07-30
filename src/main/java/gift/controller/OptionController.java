@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/options")
 public class OptionController {
@@ -42,23 +44,23 @@ public class OptionController {
 
     /**
      * 옵션 생성
-     * @param name 옵션 이름
+     * @param body 옵션 이름
      * @return Option JSON
      */
     @PostMapping()
-    public ResponseEntity<Option> create(@RequestBody String name){
-        return new ResponseEntity<>(optionService.addOption(name), HttpStatus.CREATED);
+    public ResponseEntity<Option> create(@RequestBody Map<String, String> body){
+        return new ResponseEntity<>(optionService.addOption(body.get("name")), HttpStatus.CREATED);
     }
 
     /**
      * 옵션 이름 수정
      * @param id 옵션 아이디
-     * @param name 바꿀 이름
+     * @param body 바꿀 이름
      * @return Option JSON
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<Option> update(@PathVariable Long id, @RequestBody String name){
-        return new ResponseEntity<>(optionService.updateOption(id, name), HttpStatus.OK);
+    public ResponseEntity<Option> update(@PathVariable Long id, @RequestBody Map<String, String> body){
+        return new ResponseEntity<>(optionService.updateOption(id, body.get("name")), HttpStatus.OK);
     }
 
     /**

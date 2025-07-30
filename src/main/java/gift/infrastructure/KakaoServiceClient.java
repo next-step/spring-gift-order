@@ -1,7 +1,10 @@
 package gift.infrastructure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.KakaoFeedMessageDto;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -9,28 +12,40 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class KakaoServiceClient {
+    private final ObjectMapper objectMapper;
+
     private final RestTemplate kakaoKapiRestTemplate;
 
-    public KakaoServiceClient(RestTemplate kakaoKapiRestTemplate) {
+    public KakaoServiceClient(RestTemplate kakaoKapiRestTemplate, ObjectMapper objectMapper) {
         this.kakaoKapiRestTemplate = kakaoKapiRestTemplate;
+        this.objectMapper = objectMapper;
     }
 
     public void sendFeedMessageToMe (String accessToken, KakaoFeedMessageDto feedMessageDto) {
         final String url = "/v2/api/talk/memo/default/send";
+        String json;
 
         var headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        var body = new LinkedMultiValueMap<String, KakaoFeedMessageDto>();
-        body.add("template_object", feedMessageDto);
+        try {
+            json = objectMapper
+                    .writerWithDefaultPrettyPrinter()      // 보기 좋게 포맷팅
+                    .writeValueAsString(feedMessageDto);
+            System.out.println("▶ feedMessageDto JSON =\n" + json); // 디버그용
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        var response = kakaoKapiRestTemplate.postForEntity(url, body, Integer.class, headers);
+        var body = new LinkedMultiValueMap<String, String>();
+        body.add("template_object", json);
+
+        var httpentity = new HttpEntity<>(body, headers);
+
+        var response = kakaoKapiRestTemplate.exchange(url, HttpMethod.POST, httpentity, String.class);
 
         System.out.println(response.getBody()); // 디버그용
         System.out.println(response.getStatusCode()); // 디버그용
-
-        if (response.getBody() != 0)
-            throw new RuntimeException("메세지가 전송되지 않았습니다.");
     }
 }

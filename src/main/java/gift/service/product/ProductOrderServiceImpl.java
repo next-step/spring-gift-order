@@ -37,7 +37,7 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
     @Override
     @Transactional
-    public KakaoOrderResponseDto sendOrderMessage(Long productId, Long productOptionId,
+    public KakaoOrderResponseDto placeOrderAndSendMessage(Long productId, Long productOptionId,
         Long memberId, String message,
         int quantity) {
         Product product = productRepository.findById(productId)

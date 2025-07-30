@@ -22,7 +22,7 @@ public class ProductOrderViewController {
 
 
     @PostMapping("/{productId}")
-    public String sendOrderMessage(
+    public String placeOrderAndSendMessage(
         @PathVariable Long productId,
         @RequestParam String message,
         @RequestParam(value = "optionId") Long productOptionId,
@@ -30,7 +30,7 @@ public class ProductOrderViewController {
         @LoginMember Member member
     ) {
 
-        KakaoOrderResponseDto kakaoOrderResponseDto = productOrderService.sendOrderMessage(
+        KakaoOrderResponseDto kakaoOrderResponseDto = productOrderService.placeOrderAndSendMessage(
             productId, productOptionId,
             member.getId(), message, quantity);
 

@@ -41,14 +41,17 @@ public class KakaoMessageService {
     }
 
     public void sendOrderMessage(String accessToken, Order order) {
+        String templateJson;
         try {
             Map<String, Object> template = createTemplate(order);
+            templateJson = objectMapper.writeValueAsString(template);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("템플릿 직렬화에 실패했습니다.", e);
+        }
 
-            String templateJson = objectMapper.writeValueAsString(template);
-
-            MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-            formData.add("template_object", templateJson);
-
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("template_object", templateJson);
+        try {
             restClient.post()
                     .uri("/v2/api/talk/memo/default/send")
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -66,9 +69,6 @@ public class KakaoMessageService {
                         throw new KakaoServerException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .toBodilessEntity();
-
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("템플릿 직렬화에 실패했습니다.", e);
         } catch (ResourceAccessException e) {
             throw new KakaoServerException("카카오 서버와 통신이 원활하지 않습니다.", e);
         }

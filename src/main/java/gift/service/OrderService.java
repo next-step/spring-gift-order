@@ -48,14 +48,7 @@ public class OrderService {
         Order order = new Order(member, option.getId(), request.getQuantity(), request.getMessage());
         Order saved = orderRepository.save(order);
 
-        String message = """
-            주문이 완료되었어요!
-            - 옵션: %s
-            - 수량: %d개
-            - 메시지: %s
-            """.formatted(option.getName(), request.getQuantity(), request.getMessage());
-
-        kakaoMessageService.sendOrderMessageToMe(member.getAccessToken(), message);
+        kakaoMessageService.sendOrderMessageToMe(member.getAccessToken(), saved);
 
         return new OrderResponse(
                 saved.getId(),

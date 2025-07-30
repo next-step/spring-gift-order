@@ -1,6 +1,7 @@
 package gift.config;
 
 import gift.Jwt.TokenUtils;
+import gift.config.Interceptor.AuthURl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,8 +9,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
+import java.util.List;
 
 public class AuthFilter implements Filter {
+
+
 
     private final TokenUtils tokenUtils;
 
@@ -26,9 +30,8 @@ public class AuthFilter implements Filter {
 
         String uri = httpRequest.getRequestURI();
 
-        boolean isPublic = uri.equals("/api/users/register") || uri.equals("/api/users/login");
-
-        boolean requiresAuth = uri.startsWith("/wish/") || uri.startsWith("/admin/products") || uri.startsWith("/api/products") || uri.startsWith("/api/wish") || uri.startsWith("/api/orders") || uri.startsWith("/api/options") || uri.startsWith("/api/users");
+        boolean isPublic = AuthURl.PUBLIC_PATHS.contains(uri);
+        boolean requiresAuth = AuthURl.AUTH_REQUIRED_PREFIXES.stream().anyMatch(uri::startsWith);
 
         if (isPublic || !requiresAuth) {
             chain.doFilter(request, response);

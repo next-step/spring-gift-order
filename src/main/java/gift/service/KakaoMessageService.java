@@ -1,9 +1,10 @@
 package gift.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import gift.domain.Order;
 import gift.domain.ProductOption;
+import gift.dto.KakaoTextResponse;
 import gift.repository.ProductOptionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,22 +42,26 @@ public class KakaoMessageService {
             - 메시지: %s
             """.formatted(option.getName(), order.getQuantity(), order.getMessage());
 
-        ObjectNode templateObject = objectMapper.createObjectNode();
-        templateObject.put("object_type", "text");
-        templateObject.put("text", messageText);
+        KakaoTextResponse template = new KakaoTextResponse(
+                messageText,
+                "http://localhost:8080/api/orders",
+                "http://localhost:8080/api/orders",
+                "주문 확인하기"
+        );
 
-        ObjectNode link = templateObject.putObject("link");
-        link.put("web_url", "http://localhost:8080/api/orders");
-        link.put("mobile_web_url", "http://localhost:8080/api/orders");
-
-        templateObject.put("button_title", "주문 확인하기");
+        String templateJson;
+        try {
+            templateJson = objectMapper.writeValueAsString(template);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("템플릿 직렬화 실패", e);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("template_object", templateObject.toString());
+        params.add("template_object", templateJson);
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
 
@@ -73,5 +78,6 @@ public class KakaoMessageService {
         }
     }
 }
+
 
 

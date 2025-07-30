@@ -4,9 +4,11 @@ import gift.config.KakaoProperties;
 import gift.dto.KakaoTokenRequestDto;
 import gift.dto.KakaoTokenResponseDto;
 import gift.dto.KakaoUserInfoResponseDto;
-import gift.exception.KakaoAuthenticationException;
+import gift.entity.Member;
+import gift.exception.KakaoClientException;
 import gift.exception.KakaoApiError;
-import gift.exception.KakaoConnectionException;
+import gift.exception.KakaoServerException;
+import gift.security.JwtTokenProvider;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -23,8 +25,11 @@ public class KakaoAuthService {
     private final RestClient authClient;
     private final RestClient apiClient;
     private final KakaoProperties kakaoProperties;
+    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public KakaoAuthService(KakaoProperties kakaoProperties) {
+    public KakaoAuthService(KakaoProperties kakaoProperties, MemberService memberService,
+            JwtTokenProvider jwtTokenProvider) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(CONNECTION_TIMEOUT_MILLISECONDS);
         requestFactory.setReadTimeout(READ_TIMEOUT_MILLISECONDS);
@@ -40,6 +45,10 @@ public class KakaoAuthService {
                 .build();
 
         this.kakaoProperties = kakaoProperties;
+
+        this.memberService = memberService;
+
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String getAccessToken(String authorizeCode) {
@@ -58,18 +67,18 @@ public class KakaoAuthService {
                     .onStatus(HttpStatusCode::is4xxClientError, (request, res) -> {
                         KakaoApiError error = KakaoApiError.from(res.getStatusCode());
                         String errorMessage = error.getMessage();
-                        throw new KakaoAuthenticationException(errorMessage + "응답 코드: " + res.getStatusCode());
+                        throw new KakaoClientException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .onStatus(HttpStatusCode::is5xxServerError, (request, res) -> {
                         KakaoApiError error = KakaoApiError.from(res.getStatusCode());
                         String errorMessage = error.getMessage();
-                        throw new KakaoConnectionException(errorMessage + "응답 코드: " + res.getStatusCode());
+                        throw new KakaoServerException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .body(KakaoTokenResponseDto.class);
 
             return response.accessToken();
         } catch (ResourceAccessException e) {
-            throw new KakaoConnectionException("카카오 서버와 통신이 원활하지 않습니다.", e);
+            throw new KakaoServerException("카카오 서버와 통신이 원활하지 않습니다.", e);
         }
     }
 
@@ -82,16 +91,23 @@ public class KakaoAuthService {
                     .onStatus(HttpStatusCode::is4xxClientError, (request, res) -> {
                         KakaoApiError error = KakaoApiError.from(res.getStatusCode());
                         String errorMessage = error.getMessage();
-                        throw new KakaoAuthenticationException(errorMessage + "응답 코드: " + res.getStatusCode());
+                        throw new KakaoClientException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .onStatus(HttpStatusCode::is5xxServerError, (request, res) -> {
                         KakaoApiError error = KakaoApiError.from(res.getStatusCode());
                         String errorMessage = error.getMessage();
-                        throw new KakaoConnectionException(errorMessage + "응답 코드: " + res.getStatusCode());
+                        throw new KakaoServerException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .body(KakaoUserInfoResponseDto.class);
         } catch (ResourceAccessException e) {
-            throw new KakaoConnectionException("카카오 서버와 통신이 원활하지 않습니다.", e);
+            throw new KakaoServerException("카카오 서버와 통신이 원활하지 않습니다.", e);
         }
+    }
+
+    public String kakaoLogin(String authorizeCode) {
+        String accessToken = getAccessToken(authorizeCode);
+        KakaoUserInfoResponseDto kakaoUserInfoResponseDto = getUserInfo(accessToken);
+        Member member = memberService.processKakaoLogin(kakaoUserInfoResponseDto, accessToken);
+        return jwtTokenProvider.generateToken(member);
     }
 }

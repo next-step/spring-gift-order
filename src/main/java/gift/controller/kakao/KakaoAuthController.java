@@ -13,24 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class KakaoAuthController {
     private final KakaoAuthService kakaoAuthService;
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     public KakaoAuthController (
-            KakaoAuthService kakaoAuthService,
-            MemberService memberService,
-            JwtTokenProvider jwtTokenProvider
+            KakaoAuthService kakaoAuthService
     ) {
         this.kakaoAuthService = kakaoAuthService;
-        this.memberService = memberService;
-        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @GetMapping("/callback")
-    public MemberResponseDto kakaoCallback(@RequestParam("code") String authorizeCode) {
-        String accessToken = kakaoAuthService.getAccessToken(authorizeCode);
-        KakaoUserInfoResponseDto kakaoUserInfoResponseDto = kakaoAuthService.getUserInfo(accessToken);
-        Member member = memberService.processKakaoLogin(kakaoUserInfoResponseDto, accessToken);
-        return new MemberResponseDto(jwtTokenProvider.generateToken(member));
+    public MemberResponseDto kakaoLogin(@RequestParam("code") String authorizeCode) {
+        String jwtToken = kakaoAuthService.kakaoLogin(authorizeCode);
+        return new MemberResponseDto(jwtToken);
     }
 }

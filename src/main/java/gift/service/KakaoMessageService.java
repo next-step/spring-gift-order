@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.entity.Order;
 import gift.exception.KakaoApiError;
-import gift.exception.KakaoAuthenticationException;
-import gift.exception.KakaoConnectionException;
+import gift.exception.KakaoClientException;
+import gift.exception.KakaoServerException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -58,19 +58,19 @@ public class KakaoMessageService {
                     .onStatus(HttpStatusCode::is4xxClientError, (request, res) -> {
                         KakaoApiError error = KakaoApiError.from(res.getStatusCode());
                         String errorMessage = error.getMessage();
-                        throw new KakaoAuthenticationException(errorMessage + "응답 코드: " + res.getStatusCode());
+                        throw new KakaoClientException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .onStatus(HttpStatusCode::is5xxServerError, (request, res) -> {
                         KakaoApiError error = KakaoApiError.from(res.getStatusCode());
                         String errorMessage = error.getMessage();
-                        throw new KakaoConnectionException(errorMessage + "응답 코드: " + res.getStatusCode());
+                        throw new KakaoServerException(errorMessage + "응답 코드: " + res.getStatusCode());
                     })
                     .toBodilessEntity();
 
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("템플릿 직렬화에 실패했습니다.", e);
         } catch (ResourceAccessException e) {
-            throw new KakaoConnectionException("카카오 서버와 통신이 원활하지 않습니다.", e);
+            throw new KakaoServerException("카카오 서버와 통신이 원활하지 않습니다.", e);
         }
     }
 

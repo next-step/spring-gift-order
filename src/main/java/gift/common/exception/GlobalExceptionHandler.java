@@ -28,6 +28,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ProductOptionException.class)
+    public ResponseEntity<ErrorResponse> handleProductOptionException(ProductOptionException e) {
+        return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotEnoughQuantityException.class)
+    public ResponseEntity<ErrorResponse> handleNotEnoughQuantityException(NotEnoughQuantityException e) {
+        return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
         return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), HttpStatus.FORBIDDEN);
@@ -56,5 +66,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateOptionNameException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateOptionNameException(DuplicateOptionNameException e) {
         return new ResponseEntity<>(ErrorResponse.of(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(LoginStrategyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleLoginStrategyNotFoundException(LoginStrategyNotFoundException e) {
+        return ResponseEntity.internalServerError().body(ErrorResponse.of(e.getMessage()));
     }
 }

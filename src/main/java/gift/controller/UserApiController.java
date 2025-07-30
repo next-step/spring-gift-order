@@ -5,7 +5,7 @@ import gift.dto.jwt.JwtTokenResponse;
 import gift.dto.user.ChangePasswordRequest;
 import gift.dto.user.ChangeRoleRequest;
 import gift.dto.user.CreateUserRequest;
-import gift.dto.user.LoginRequest;
+import gift.dto.login.BasicLoginRequest;
 import gift.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class UserApiController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtTokenResponse> login(@RequestBody @Valid LoginRequest request) {
+    public ResponseEntity<JwtTokenResponse> login(@RequestBody @Valid BasicLoginRequest request) {
         JwtTokenResponse tokenResponse = userService.login(request);
         return ResponseEntity.ok(tokenResponse);
     }

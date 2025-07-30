@@ -1,7 +1,8 @@
 package gift.common.config;
 
 import gift.domain.Role;
-import gift.domain.User;
+import gift.domain.user.BasicUser;
+import gift.domain.user.User;
 import gift.repository.UserRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -17,6 +18,6 @@ public class AdminUserInitializer implements ApplicationRunner {
     }
     @Override
     public void run(ApplicationArguments args) {
-        userRepository.save(new User("admin@admin.com", "1234", Role.ADMIN));
+        userRepository.save(User.createBasicUser("admin@admin.com", "1234", Role.ADMIN));
     }
 }

@@ -6,4 +6,8 @@ public class ProductOptionException extends RuntimeException {
     public ProductOptionException() {
         super(DEFAULT_MESSAGE);
     }
+
+    public ProductOptionException(String message) {
+        super(message);
+    }
 }

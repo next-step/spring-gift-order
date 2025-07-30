@@ -1,7 +1,8 @@
-package gift.service;
+package gift.service.api;
 
 import gift.common.exception.KakaoLoginException;
 import gift.dto.kakao.KakaoTokenResponse;
+import gift.dto.kakao.KakaoUserIdResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 @Component
-public class KakaoTokenProvider {
+public class KakaoLoginApi {
 
     private final String clientId;
 
@@ -19,17 +20,17 @@ public class KakaoTokenProvider {
 
     private final RestClient restClient;
 
-    public KakaoTokenProvider(
+    public KakaoLoginApi(
             @Value("${spring.kakao.client_id}") String clientId,
             @Value("${spring.kakao.client_secret}") String clientSecret,
             RestClient.Builder builder
     ) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.restClient = builder.baseUrl("https://kauth.kakao.com/oauth/token").build();
+        this.restClient = builder.build();
     }
 
-    public KakaoTokenResponse getAccessToken(String code) {
+    public String getAccessToken(String code) {
         try {
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("grant_type", "authorization_code");
@@ -39,10 +40,29 @@ public class KakaoTokenProvider {
 
             ResponseEntity<KakaoTokenResponse> entity = restClient
                     .post()
+                    .uri("https://kauth.kakao.com/oauth/token")
                     .body(body)
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                     .retrieve()
                     .toEntity(KakaoTokenResponse.class);
+
+            KakaoTokenResponse response = entity.getBody();
+            return response.accessToken();
+
+        } catch (Exception e) {
+            throw new KakaoLoginException(e);
+        }
+    }
+
+    public KakaoUserIdResponse getUserInfo(String accessToken) {
+        try {
+            ResponseEntity<KakaoUserIdResponse> entity = restClient
+                    .get()
+                    .uri("https://kapi.kakao.com/v2/user/me")
+                    .header("Authorization", "Bearer " + accessToken)
+                    .header("Content_Type", "application/x-www-form-urlencoded;charset=utf-8")
+                    .retrieve()
+                    .toEntity(KakaoUserIdResponse.class);
 
             return entity.getBody();
 

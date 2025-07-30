@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.jwt.JwtTokenResponse;
 import gift.dto.user.ChangePasswordRequest;
 import gift.dto.user.CreateUserRequest;
-import gift.dto.user.LoginRequest;
+import gift.dto.login.BasicLoginRequest;
 import gift.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ class UserApiControllerTest {
         userService.saveUser(new CreateUserRequest("tkddnr@thanks.com", "1234"));
 
         String login = mapper.writeValueAsString(
-                new LoginRequest("tkddnr@thanks.com", "1234")
+                new BasicLoginRequest("tkddnr@thanks.com", "1234")
         );
 
         mvc.perform(post("/api/users/login")
@@ -70,7 +70,7 @@ class UserApiControllerTest {
         userService.saveUser(new CreateUserRequest("tkddnr@thanks.com", "1234"));
 
         String login1 = mapper.writeValueAsString(
-                new LoginRequest("tkddnr@thanks.com", "1234")
+                new BasicLoginRequest("tkddnr@thanks.com", "1234")
         );
 
         MvcResult result = mvc.perform(post("/api/users/login")
@@ -94,7 +94,7 @@ class UserApiControllerTest {
                 .andExpect(status().isNoContent());
 
         String login2 = mapper.writeValueAsString(
-                new LoginRequest("tkddnr@thanks.com", "12345")
+                new BasicLoginRequest("tkddnr@thanks.com", "12345")
         );
 
         mvc.perform(post("/api/users/login")

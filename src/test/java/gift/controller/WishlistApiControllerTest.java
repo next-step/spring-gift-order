@@ -2,12 +2,12 @@ package gift.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.domain.product.Product;
-import gift.domain.User;
+import gift.domain.user.User;
 import gift.domain.Wishlist;
 import gift.dto.product.CreateProductOptionRequest;
 import gift.dto.product.CreateProductRequest;
 import gift.dto.user.CreateUserRequest;
-import gift.dto.user.LoginRequest;
+import gift.dto.login.BasicLoginRequest;
 import gift.dto.wishlist.CreateWishlistRequest;
 import gift.service.ProductService;
 import gift.service.UserService;
@@ -56,7 +56,7 @@ class WishlistApiControllerTest {
     @BeforeEach
     void setUp() {
         user = userService.saveUser(new CreateUserRequest("tkddnr@thanks.com", "1234"));
-        accessToken = "Bearer " + userService.login(new LoginRequest("tkddnr@thanks.com", "1234")).accessToken();
+        accessToken = "Bearer " + userService.login(new BasicLoginRequest("tkddnr@thanks.com", "1234")).accessToken();
 
         product = productService.saveProduct(new CreateProductRequest("연필", "image", List.of(new CreateProductOptionRequest("튼튼한 샤프", 10000, 10))));
     }

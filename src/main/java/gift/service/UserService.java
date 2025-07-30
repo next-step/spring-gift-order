@@ -1,16 +1,17 @@
 package gift.service;
 
-import gift.common.exception.InvalidUserException;
 import gift.common.exception.UserAlreadyExistsException;
 import gift.common.exception.UserNotFoundException;
 import gift.domain.Role;
-import gift.domain.User;
+import gift.domain.user.User;
 import gift.dto.jwt.JwtTokenResponse;
+import gift.dto.login.LoginRequest;
 import gift.dto.user.ChangePasswordRequest;
 import gift.dto.user.ChangeRoleRequest;
 import gift.dto.user.CreateUserRequest;
-import gift.dto.user.LoginRequest;
 import gift.repository.UserRepository;
+import gift.service.login.LoginService;
+import gift.service.login.LoginServiceSelector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,39 +22,34 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final LoginServiceSelector loginServiceSelector;
 
-    public UserService(UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
+    public UserService(UserRepository userRepository, LoginServiceSelector loginServiceSelector) {
         this.userRepository = userRepository;
-        this.jwtTokenProvider = jwtTokenProvider;
+        this.loginServiceSelector = loginServiceSelector;
     }
 
     public User saveUser(CreateUserRequest request) {
-        Optional<User> getUser = userRepository.findByEmail(request.email());
+        Optional<User> getUser = userRepository.findBasicUserByEmail(request.email());
         if (getUser.isPresent()) {
             throw new UserAlreadyExistsException();
         }
-        User user = new User(request.email(), request.password(), Role.USER);
+        User user = User.createBasicUser(request.email(), request.password(), Role.USER);
         return userRepository.save(user);
     }
 
     public JwtTokenResponse login(LoginRequest request) {
-        User user = getUserByEmail(request.email());
-        if (!request.password().equals(user.getPassword())) {
-            throw new InvalidUserException();
-        }
-        return JwtTokenResponse.from(jwtTokenProvider.createToken(user));
+        LoginService service = loginServiceSelector.getService(request);
+        return service.login(request);
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+        return userRepository.findBasicUserByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
     public void changePassword(ChangePasswordRequest request) {
         User user = getUserByEmail(request.email());
-        if (!request.oldPassword().equals(user.getPassword())) {
-            throw new InvalidUserException();
-        }
+        user.comparePassword(request.oldPassword());
         user.changePassword(request.newPassword());
     }
 

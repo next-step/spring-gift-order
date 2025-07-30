@@ -1,9 +1,9 @@
 package gift.repository;
 
-import gift.domain.product.Product;
 import gift.domain.Role;
-import gift.domain.User;
 import gift.domain.Wishlist;
+import gift.domain.product.Product;
+import gift.domain.user.User;
 import gift.dto.product.CreateProductOptionRequest;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ public class WishlistRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        user = userRepository.save(new User("tkddnr@tkddnr.com", "1234", Role.USER));
+        user = userRepository.save(User.createBasicUser("tkddnr@tkddnr.com", "1234", Role.USER));
         product = productRepository.save(new Product("감자칩", "image", List.of(new CreateProductOptionRequest("양파맛", 1000, 10))));
     }
 

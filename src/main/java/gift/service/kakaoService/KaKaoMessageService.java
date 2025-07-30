@@ -20,9 +20,8 @@ public class KaKaoMessageService {
     private final SocialUserService socialUserService;
     private final RestClient restClient;
 
-    public KaKaoMessageService(SocialUserService socialUserService, ObjectMapper objectMapper, RestClient restClient) {
+    public KaKaoMessageService(SocialUserService socialUserService, RestClient restClient) {
         this.socialUserService = socialUserService;
-        this.objectMapper = objectMapper;
         this.restClient = restClient;
     }
 

@@ -51,5 +51,4 @@ public enum KakaoApiError {
         }
         return UNKNOWN_SERVER_ERROR;
     }
-
 }

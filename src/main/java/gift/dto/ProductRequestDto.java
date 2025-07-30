@@ -19,7 +19,8 @@ public class ProductRequestDto {
     @NotNull
     private Long price;
 
-    public ProductRequestDto() {}
+    public ProductRequestDto() {
+    }
 
     public Long getId() {
         return id;
@@ -35,5 +36,22 @@ public class ProductRequestDto {
 
     public Long getPrice() {
         return price;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(
+            @NotNull @Size(max = 15, message = "공백 포함 최대 15자까지만 입력 가능합니다.") @Pattern(regexp = "^[a-zA-Z0-9가-힣 ()\\[\\]+\\-&/_]*$", message = "특수문자는 (), [], +, -, &, /, _ 만 가능합니다.") String name) {
+        this.name = name;
+    }
+
+    public void setImageUrl(@NotNull String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void setPrice(@NotNull Long price) {
+        this.price = price;
     }
 }

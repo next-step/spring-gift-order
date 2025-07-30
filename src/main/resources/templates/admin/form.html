@@ -31,6 +31,12 @@
   </div>
 
   <div>
+    <label for="price">가격:</label>
+    <input type="number" id="price" th:field="*{price}">
+    <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+  </div>
+
+  <div>
     <button type="submit">저장</button>
     <a th:href="@{/admin/products}">목록으로</a>
   </div>

@@ -13,14 +13,21 @@ public class SocialUser {
     private String kakaoAccessToken;
 
     @Column(nullable = false, unique = true, length = 255)
-    private String userEmail;
+    private String kakaoEmail;
 
-    protected SocialUser() {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
+
+    protected SocialUser() {}
+
+    public SocialUser(String kakaoEmail, String kakaoAccessToken) {
+        this.kakaoEmail = kakaoEmail;
+        this.kakaoAccessToken = kakaoAccessToken;
     }
 
-    public SocialUser(String userEmail, String kakaoAccessToken) {
-        this.userEmail = userEmail;
-        this.kakaoAccessToken = kakaoAccessToken;
+    public void AddUser(User user) {
+        this.user = user;
     }
 
     public Long getId() {
@@ -31,8 +38,12 @@ public class SocialUser {
         return kakaoAccessToken;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public String getKakaoEmail() {
+        return kakaoEmail;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public void updateToken(String kakaoAccessToken) {

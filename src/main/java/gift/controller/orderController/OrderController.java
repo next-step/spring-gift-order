@@ -7,7 +7,6 @@ import gift.dto.orderDto.OrderRequestDto;
 import gift.dto.orderDto.OrderResponseDto;
 import gift.entity.Order;
 import gift.event.OrderEvent;
-import gift.service.kakaoService.KaKaoMessageService;
 import gift.service.order.OrderService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,9 @@ public class OrderController {
 
     public OrderController(OrderService orderService, ApplicationEventPublisher eventPublisher) {
         this.orderService = orderService;
-        this.eventPublisher = eventPublisher;}
+        this.eventPublisher = eventPublisher;
+    }
+
 
     @UserOnly
     @PostMapping

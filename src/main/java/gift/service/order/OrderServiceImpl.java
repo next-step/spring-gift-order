@@ -4,10 +4,12 @@ import gift.entity.Item;
 import gift.entity.ItemOption;
 import gift.entity.Order;
 import gift.entity.User;
+import gift.event.OrderEvent;
 import gift.repository.orderRepository.OrderRepository;
 import gift.service.optionService.OptionService;
 import gift.service.userService.UserService;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,11 +18,13 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final OptionService optionService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public OrderServiceImpl(OrderRepository orderRepository, UserService userService, OptionService optionService) {
+    public OrderServiceImpl(OrderRepository orderRepository, UserService userService, OptionService optionService, ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.optionService = optionService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -32,8 +36,9 @@ public class OrderServiceImpl implements OrderService {
 
         itemOption.decreaseStock(quantity);
         Order order = Order.save(quantity, user, itemOption, item, message);
-
-        return orderRepository.save(order);
+        Order saveOrder = orderRepository.save(order);
+        eventPublisher.publishEvent(new OrderEvent(userEmail, message));
+        return saveOrder;
 
     }
 }

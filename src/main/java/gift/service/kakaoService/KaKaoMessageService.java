@@ -12,11 +12,12 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.util.Map;
+
 @Service
 public class KaKaoMessageService {
 
     private final SocialUserService socialUserService;
-    private final ObjectMapper objectMapper;
     private final RestClient restClient;
 
     public KaKaoMessageService(SocialUserService socialUserService, ObjectMapper objectMapper, RestClient restClient) {
@@ -32,30 +33,25 @@ public class KaKaoMessageService {
         }
 
         String kakaoAccessToken = user.getKakaoAccessToken();
-
-        String templateJson;
-        try {
-            KakaoMessageDto template = new KakaoMessageDto(message);
-            templateJson = objectMapper.writeValueAsString(template);
-        } catch (Exception e) {
-            throw new RuntimeException("KakaoMessageDto -> JSON 직렬화에 실패했습니다.", e);
-        }
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("template_object", templateJson);
-        System.out.println("이거 실행된거임2?");
+        KakaoMessageDto template = new KakaoMessageDto(message);
 
         try {
-            restClient.post().uri("https://kapi.kakao.com/v2/api/talk/memo/default/send").contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + kakaoAccessToken).body(body).retrieve()
+            restClient.post()
+                    .uri("https://kapi.kakao.com/v2/api/talk/memo/default/send")
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + kakaoAccessToken)
+                    .body(Map.of("template_object", template))
+                    .retrieve()
                     .onStatus(HttpStatusCode::isError, (req, res) -> {
-                throw new RuntimeException("카카오 메시지 전송 실패 - 상태 코드: " + res.getStatusCode());}).toBodilessEntity();
+                        throw new RuntimeException("카카오 메시지 전송 실패 - 상태 코드: " + res.getStatusCode());
+                    })
+                    .toBodilessEntity();
         } catch (ResourceAccessException timeoutEx) {
             throw new RuntimeException("네트워크 문제로 카카오 메시지 전송에 실패했습니다.", timeoutEx);
         } catch (RestClientException clientEx) {
             throw new RuntimeException("클라이언트로 카카오 메시지 전송에 실패했습니다", clientEx);
         } catch (Exception e) {
-            throw new RuntimeException("알수없는 오류로 카카오 메시지 전송에 실패했습니다.", e);
+            throw new RuntimeException("알 수 없는 오류로 카카오 메시지 전송에 실패했습니다.", e);
         }
     }
 }

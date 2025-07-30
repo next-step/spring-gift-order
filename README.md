@@ -402,6 +402,78 @@ HTTP/1.1 204 No Content
     
 </details>
 
+# 🚚 주문 API
+
+---
+
+<details>
+<summary>🔎 완료한 주문 보기</summary>
+
+### Request
+- Header: Authorization: Bearer {JWT}
+
+```json
+GET /api/orders?page=0&size=5&sort=orderDateTime,desc HTTP/1.1
+Host: localhost:8080
+```
+
+### Response
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+    {
+        "id": 1,
+            "optionId": 1,
+            "quantity": 2,
+            "orderDateTime": "2025-07-29T12:00:00",
+            "message": "생일 축하해!"
+    },
+    {
+        "id": 2,
+        "optionId": 2,
+        "quantity": 1,
+        "orderDateTime": "2025-07-30T14:30:00",
+        "message": "추가 주문"
+    }
+]
+```
+    
+</details>
+<details>
+<summary>➕ 주문 생성</summary>
+
+### Request
+- Header: Authorization: Bearer {JWT}
+
+```json
+POST /api/orders HTTP/1.1
+Content-Type: application/json
+host: localhost:8080
+
+{
+    "optionId": 1,
+    "quantity": 2,
+    "message": "생일 축하해!"
+}
+```
+
+### Response
+
+```json
+{
+    "id": 1,
+    "optionId": 1,
+    "quantity": 2,
+    "orderDateTime": "2025-07-29T12:00:00",
+    "message": "생일 축하해!"
+}
+```
+    
+</details>
+
 # 👤 유저 화면
 
 ---
@@ -589,66 +661,107 @@ HTTP/1.1 204 No Content
 <summary>📌 DB 초기화</summary>
 
 ```sql
-drop table if exists member
-drop table if exists option
-drop table if exists product
-drop table if exists wish
-
-create table member (
-    id bigint not null auto_increment,
-    email varchar(255) not null,
-    password varchar(255) not null,
-    role enum ('ADMIN','USER') not null,
-    primary key (id)
-)
-
-create table option (
+Hibernate: 
+    drop table if exists member
+Hibernate: 
+    drop table if exists option
+Hibernate: 
+    drop table if exists orders
+Hibernate: 
+    drop table if exists product
+Hibernate: 
+    drop table if exists token
+Hibernate: 
+    drop table if exists wish
+Hibernate: 
+    create table member (
+        id bigint not null auto_increment,
+        email varchar(255) not null,
+        password varchar(255) not null,
+        role enum ('ADMIN','USER') not null,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    create table option (
         quantity integer not null,
         id bigint not null auto_increment,
         product_id bigint not null,
         name varchar(50) not null,
         primary key (id)
-)
-
-create table product (
-    id bigint not null auto_increment,
-    price bigint not null,
-    image_url varchar(255) not null,
-    name varchar(255) not null,
-    primary key (id)
-)
-
-create table wish (
-    created_date datetime(6) not null,
-    id bigint not null auto_increment,
-    member_id bigint not null,
-    product_id bigint not null,
-    primary key (id)
-)
-
-alter table member 
-   add constraint UKmbmcqelty0fbrvxp1q58dn57t unique (email)
-
-alter table option 
+    ) engine=InnoDB
+Hibernate: 
+    create table orders (
+        quantity integer not null,
+        id bigint not null auto_increment,
+        member_id bigint not null,
+        option_id bigint not null,
+        order_date_time datetime(6) not null,
+        message TEXT,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    create table product (
+        id bigint not null auto_increment,
+        price bigint not null,
+        image_url varchar(255) not null,
+        name varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    create table token (
+        id bigint not null auto_increment,
+        member_id bigint not null,
+        access_token varchar(512) not null,
+        provider varchar(255) not null,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    create table wish (
+        created_date datetime(6) not null,
+        id bigint not null auto_increment,
+        member_id bigint not null,
+        product_id bigint not null,
+        primary key (id)
+    ) engine=InnoDB
+Hibernate: 
+    alter table member 
+       add constraint UKmbmcqelty0fbrvxp1q58dn57t unique (email)
+Hibernate: 
+    alter table option 
        add constraint UKe78vjnqbmknqwm7d6k2blhhnj unique (product_id, name)
-
-alter table wish 
-   add constraint UKimrh37c61jscdegh9fi3jbpix unique (member_id, product_id)
-
-alter table option 
+Hibernate: 
+    alter table wish 
+       add constraint UKimrh37c61jscdegh9fi3jbpix unique (member_id, product_id)
+Hibernate: 
+    alter table option 
        add constraint FK5t6etuqa4wl7lyn0ysxnts7q4 
        foreign key (product_id) 
        references product (id)
-
-alter table wish 
-   add constraint FK70nrc4a6uvljrtemsn80eq1gd 
-   foreign key (member_id) 
-   references member (id)
-       
-alter table wish 
-   add constraint FKh3bvkvkslnehbxqma1x2eynqb 
-   foreign key (product_id) 
-   references product (id)
+Hibernate: 
+    alter table orders 
+       add constraint FKpktxwhj3x9m4gth5ff6bkqgeb 
+       foreign key (member_id) 
+       references member (id)
+Hibernate: 
+    alter table orders 
+       add constraint FK4nmdwvy9x1gghgpsnj8mlm974 
+       foreign key (option_id) 
+       references option (id)
+Hibernate: 
+    alter table token 
+       add constraint FK8a0sdl451qcw4ishfaxpdog0p 
+       foreign key (member_id) 
+       references member (id)
+Hibernate: 
+    alter table wish 
+       add constraint FK70nrc4a6uvljrtemsn80eq1gd 
+       foreign key (member_id) 
+       references member (id)
+Hibernate: 
+    alter table wish 
+       add constraint FKh3bvkvkslnehbxqma1x2eynqb 
+       foreign key (product_id) 
+       references product (id)
 ```
 
 </details>
@@ -747,6 +860,8 @@ alter table wish
   - 관리자/일반 사용자 로그인, 페이지 접근 권한 등 인증/인가 테스트
 - PaginationE2ETest
   - 관리자/사용자 상품 목록, 위시리스트의 페이지네이션 및 정렬 기능 테스트
+- OrderE2ETest
+  - 상품 주문 성공 테스트
 </details>
 <details>
 <summary>Domain 테스트</summary>
@@ -773,4 +888,10 @@ alter table wish
   - 상품 생성, 조회, 수정, 삭제 기능 테스트
 - WishServiceTest
   - 위시리스트 추가, 삭제 및 예외(중복, 권한 없음) 처리 테스트
+- OrderServiceTest
+  - 상품 주문 성공 및 실패(재고 부족, 존재하지 않는 회원) 테스트
+- KakaoServiceTest
+  -  카카오 로그인 성공 테스트
+- KakaoMessageTemplateGeneratorTest
+  - 카카오 메시지 템플릿 생성 테스트
 </details>

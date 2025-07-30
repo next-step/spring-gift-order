@@ -13,6 +13,7 @@ import gift.api.member.domain.MemberRole;
 import gift.api.member.repository.MemberRepository;
 import gift.oauth.dto.KakaoTokenResponseDto;
 import gift.oauth.dto.KakaoUserInfoResponseDto;
+import gift.oauth.repository.TokenRepository;
 import gift.util.JwtUtil;
 import java.io.IOException;
 import java.util.Optional;
@@ -28,17 +29,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 @ExtendWith(MockitoExtension.class)
 class KakaoServiceTest {
 
     private MockWebServer mockWebServer;
     private KakaoService kakaoService;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private TokenRepository tokenRepository;
 
     @Mock
     private JwtUtil jwtUtil;
@@ -48,11 +53,12 @@ class KakaoServiceTest {
         mockWebServer = new MockWebServer();
         mockWebServer.start();
 
-        WebClient webClient = WebClient.builder()
+        RestClient restClient = RestClient.builder()
                 .baseUrl(mockWebServer.url("/").toString())
                 .build();
 
-        kakaoService = new KakaoService(memberRepository, webClient, jwtUtil);
+        kakaoService = new KakaoService(memberRepository, tokenRepository, restClient, jwtUtil);
+        ReflectionTestUtils.setField(kakaoService, "restClient", restClient);
 
         // @Value 필드 값 주입
         ReflectionTestUtils.setField(kakaoService, "clientId", "test-client-id");

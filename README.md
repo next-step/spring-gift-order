@@ -155,7 +155,8 @@ Status: 201 Created
 
 # Step3 배포하기
 
-http://3.15.222.68:8080 주소
+http://3.15.222.68:8080 주소  
+
 http://3.15.222.68:8080/login 카카오톡 로그인 
 ## 요구사항
 
@@ -176,11 +177,11 @@ OpenJDK 21 설치됨
 
 포트 8080 인바운드 허용 (보안 그룹 설정)
 
-1. 로컬에서 JAR 파일 생성
+1. 로컬에서 JAR 파일 생성  
    ./gradlew clean bootJar
-2. EC2로 JAR 파일 전송
+3. EC2로 JAR 파일 전송  
    scp -i /path/to/final-key.pem build/libs/spring-gift-0.0.1-SNAPSHOT.jar ubuntu@<EC2_PUBLIC_IP>:/home/ubuntu/
-3. EC2에 배포 스크립트 작성 (deploy.sh)
-4. EC2에서 배포 스크립트 실행
+4. EC2에 배포 스크립트 작성 (deploy.sh)
+5. EC2에서 배포 스크립트 실행  
    ./deploy.sh
 

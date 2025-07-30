@@ -30,6 +30,12 @@ public class KakaoApiService {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
+    @Value("${kakao.kauth-host}")
+    private String kauthHost;
+
+    @Value("${kakao.kapi-host}")
+    private String kapiHost;
+
     private ObjectMapper objectMapper;
 
     private final RestClient restClient;
@@ -41,7 +47,7 @@ public class KakaoApiService {
 
     public String getAuthUrl() {
         return UriComponentsBuilder
-                .fromUriString("https://kauth.kakao.com")
+                .fromUriString(kauthHost)
                 .path("/oauth/authorize")
                 .queryParam("client_id", clientId)
                 .queryParam("redirect_uri", redirectUri)
@@ -59,7 +65,7 @@ public class KakaoApiService {
         request.add("code", code);
 
         return restClient.post()
-                .uri("https://kauth.kakao.com/oauth/token")
+                .uri(kauthHost + "/oauth/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(request)
                 .retrieve()
@@ -68,7 +74,7 @@ public class KakaoApiService {
 
     public Email getEmail(String accessToken) {
         String jsonResponse = restClient.post()
-                .uri("https://kapi.kakao.com/v2/user/me")
+                .uri(kapiHost + "/v2/user/me")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .retrieve()
@@ -109,7 +115,7 @@ public class KakaoApiService {
         request.add("template_args", getTemplateArgs(order));
 
         restClient.post()
-                .uri("https://kapi.kakao.com/v2/api/talk/memo/send")
+                .uri(kapiHost + "/v2/api/talk/memo/send")
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(request)

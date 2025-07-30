@@ -890,4 +890,8 @@ Hibernate:
   - 위시리스트 추가, 삭제 및 예외(중복, 권한 없음) 처리 테스트
 - OrderServiceTest
   - 상품 주문 성공 및 실패(재고 부족, 존재하지 않는 회원) 테스트
+- KakaoServiceTest
+  -  카카오 로그인 성공 테스트
+- KakaoMessageTemplateGeneratorTest
+  - 카카오 메시지 템플릿 생성 테스트
 </details>

@@ -55,9 +55,8 @@ public class ProductOrderServiceImpl implements ProductOrderService {
 
         productOption.decreaseQuantity(quantity);
 
-        wishListRepository.delete(wish);
-
         publisher.publishEvent(new OrderPlacedEvent(
+            wish.getId(),
             member.getAccessToken(),
             message,
             product.getImageUrl()

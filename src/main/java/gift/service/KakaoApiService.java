@@ -1,5 +1,6 @@
 package gift.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.KakaoTokenResponse;
@@ -77,7 +78,7 @@ public class KakaoApiService {
             JsonNode root = objectMapper.readTree(jsonResponse);
             String email = root.path("kakao_account").path("email").asText();
             return new Email(email);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new ExternalApiException("카카오 사용자 조회에 실패했습니다.");
         }
     }
@@ -94,7 +95,7 @@ public class KakaoApiService {
 
         try {
             return objectMapper.writeValueAsString(templateArgs);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new IllegalStateException("문자열로 변환 실패");
         }
     }

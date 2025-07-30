@@ -42,12 +42,12 @@ public class Product {
     }
 
     public void updateFromProductRequestDTO(ProductRequestDTO dto) {
-        this.name = dto.getName();
-        this.price = dto.getPrice();
-        this.imageUrl = dto.getImageUrl();
+        this.name = dto.name();
+        this.price = dto.price();
+        this.imageUrl = dto.imageUrl();
 
         this.options.clear();
-        for (var optionDTO : dto.getOptions()) {
+        for (var optionDTO : dto.options()) {
             Option option = new Option(optionDTO.name(), optionDTO.quantity(), this);
             this.options.add(option);
         }

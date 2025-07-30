@@ -77,11 +77,7 @@ class WishControllerTest {
   }
 
   private Long createTestProduct(String name, Long price) {
-    ProductRequestDTO request = new ProductRequestDTO();
-    request.setName(name);
-    request.setPrice(price);
-    request.setImageUrl("https://test.jpg");
-    request.setOptions(List.of(new OptionRequestDTO("기본 옵션", 1)));
+    ProductRequestDTO request = new ProductRequestDTO(name, price, "https://test.jpg", List.of(new OptionRequestDTO("기본 옵션", 1)));
 
     ResponseEntity<ProductResponseDTO> response = productClient.post()
         .uri("")
@@ -91,7 +87,7 @@ class WishControllerTest {
         .toEntity(ProductResponseDTO.class);
 
     assertNotNull(response.getBody());
-    return response.getBody().getId();
+    return response.getBody().id();
   }
 
   @Test
@@ -111,7 +107,7 @@ class WishControllerTest {
     assertNotNull(response);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().product().getId()).isEqualTo(productId);
+    assertThat(response.getBody().product().id()).isEqualTo(productId);
     assertThat(response.getBody().quantity()).isEqualTo(2);
   }
 

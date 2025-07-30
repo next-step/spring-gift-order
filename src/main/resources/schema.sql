@@ -8,10 +8,11 @@ CREATE TABLE product (
 CREATE TABLE member (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         email VARCHAR(255) NOT NULL UNIQUE,
-                        password VARCHAR(255) NOT NULL
+                        password VARCHAR(255) NOT NULL,
+                        login_type VARCHAR(20) NOT NULL DEFAULT 'REGULAR',
+                        type_id VARCHAR(255) NULL
 );
 
--- id 컬럼 삭제, member_id와 product_id를 복합 기본 키�� 설정
 CREATE TABLE wish (
                       member_id BIGINT NOT NULL,
                       product_id BIGINT NOT NULL,

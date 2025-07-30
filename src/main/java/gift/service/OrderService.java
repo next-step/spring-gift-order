@@ -41,7 +41,6 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 옵션이 존재하지 않습니다."));
 
         option.subtractQuantity(request.getQuantity());
-        productOptionRepository.save(option);
 
         wishRepository.deleteByMemberIdAndProductOptionId(member.getId(), option.getId());
 

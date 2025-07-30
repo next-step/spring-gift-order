@@ -49,11 +49,7 @@ public class AuthService {
         String kakaoId = String.valueOf(kakaoUser.id());
 
         Member member = memberRepository.findBySocialIdAndLoginType(kakaoId, LoginType.KAKAO)
-                .orElse(null);
-
-        if (member == null) {
-            member = Member.createKakaoMember(kakaoId);
-        }
+                .orElse(Member.createKakaoMember(kakaoId));
 
         member.updateAccessToken(accessToken);
         memberRepository.save(member);

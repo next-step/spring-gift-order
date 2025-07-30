@@ -47,5 +47,5 @@ jwt:
   expiration: 3600000
 
 kakao:
-  client-id: {카카오-rest-api-key}
+  client-id: test-client-id
   redirect-uri: http://localhost:8080/oauth/callback/kakao

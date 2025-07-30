@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.domain.Order;
 import gift.domain.ProductOption;
+import gift.dto.KakaoMessageResponse;
 import gift.dto.KakaoTextResponse;
 import gift.repository.ProductOptionRepository;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ public class KakaoMessageService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ProductOptionRepository productOptionRepository;
+    private static final String KAKAO_SEND_URL = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
 
     public KakaoMessageService(ProductOptionRepository productOptionRepository) {
         this.productOptionRepository = productOptionRepository;
@@ -66,18 +68,27 @@ public class KakaoMessageService {
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    "https://kapi.kakao.com/v2/api/talk/memo/default/send",
+            ResponseEntity<KakaoMessageResponse> response = restTemplate.postForEntity(
+                    KAKAO_SEND_URL,
                     entity,
-                    String.class
+                    KakaoMessageResponse.class
             );
-            log.info("카카오톡 메시지 전송 성공: {}", response.getBody());
+            KakaoMessageResponse body = response.getBody();
+
+            if (body == null || body.getResultCode() != 0) {
+                throw new RuntimeException("카카오 응답 실패: " + (body != null ? body.getResultCode() : "null"));
+            }
+
+            log.info("카카오톡 메시지 전송 성공: resultCode={}, templateId={}",
+                    body.getResultCode(), body.getTemplateId());
+
         } catch (Exception e) {
             log.error("카카오톡 메시지 전송 실패", e);
             throw new RuntimeException("카카오톡 메시지 전송 실패: " + e.getMessage(), e);
         }
     }
 }
+
 
 
 

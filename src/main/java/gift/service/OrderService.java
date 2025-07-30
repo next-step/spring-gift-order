@@ -38,30 +38,30 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDTO createOrder(OrderRequestDTO orderRequestDTO, Long memberId, String jwtToken) {
-        Product product = productRepository.findById(orderRequestDTO.getProductId())
+        Product product = productRepository.findById(orderRequestDTO.productId())
             .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-        Option option = optionRepository.findById(orderRequestDTO.getOptionId())
+        Option option = optionRepository.findById(orderRequestDTO.optionId())
             .orElseThrow(() -> new IllegalArgumentException("옵션을 찾을 수 없습니다."));
 
-        if (!option.getProduct().getId().equals(orderRequestDTO.getProductId())) {
+        if (!option.getProduct().getId().equals(orderRequestDTO.productId())) {
             throw new IllegalArgumentException("해당 상품에 속하지 않는 옵션입니다.");
         }
 
-        optionService.subtractQuantity(orderRequestDTO.getOptionId(), orderRequestDTO.getQuantity());
+        optionService.subtractQuantity(orderRequestDTO.optionId(), orderRequestDTO.quantity());
 
         Order order = new Order(
-            orderRequestDTO.getProductId(),
-            orderRequestDTO.getOptionId(),
-            orderRequestDTO.getQuantity(),
-            orderRequestDTO.getMessage()
+            orderRequestDTO.productId(),
+            orderRequestDTO.optionId(),
+            orderRequestDTO.quantity(),
+            orderRequestDTO.message()
         );
         Order savedOrder = orderRepository.save(order);
 
-        wishRepository.deleteByMemberIdAndProductId(memberId, orderRequestDTO.getProductId());
+        wishRepository.deleteByMemberIdAndProductId(memberId, orderRequestDTO.productId());
 
         try {
-            sendKakaoMessage(jwtToken, product, option, orderRequestDTO.getQuantity(), orderRequestDTO.getMessage());
+            sendKakaoMessage(jwtToken, product, option, orderRequestDTO.quantity(), orderRequestDTO.message());
         } catch (Exception e) {
             System.err.println("카카오톡 메시지 전송 실패: " + e.getMessage());
         }

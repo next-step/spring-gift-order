@@ -88,11 +88,9 @@ class OrderControllerTest {
     @Test
     @DisplayName("주문 생성 - 성공")
     void createOrder_Success() {
-        ProductRequestDTO productRequest = new ProductRequestDTO();
-        productRequest.setName("테스트 상품");
-        productRequest.setPrice(10000L);
-        productRequest.setImageUrl("https://test.jpg");
-        productRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 100)));
+        ProductRequestDTO productRequest = new ProductRequestDTO("테스트 상품", 10000L,
+            "https://test.jpg",
+            List.of(new OptionRequestDTO("기본 옵션", 100)));
 
         ResponseEntity<ProductResponseDTO> productResponse = productClient.post()
             .uri("")
@@ -105,10 +103,10 @@ class OrderControllerTest {
         ProductResponseDTO product = productResponse.getBody();
         assertNotNull(product);
 
-        Long optionId = getFirstOptionId(product.getId());
+        Long optionId = getFirstOptionId(product.id());
 
         OrderRequestDTO orderRequest = new OrderRequestDTO(
-            product.getId(),
+            product.id(),
             optionId,
             2,
             "선물 메시지입니다."
@@ -124,12 +122,12 @@ class OrderControllerTest {
         assertThat(orderResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OrderResponseDTO order = orderResponse.getBody();
         assertNotNull(order);
-        assertThat(order.getId()).isNotNull();
-        assertThat(order.getProductId()).isEqualTo(product.getId());
-        assertThat(order.getOptionId()).isEqualTo(optionId);
-        assertThat(order.getQuantity()).isEqualTo(2);
-        assertThat(order.getMessage()).isEqualTo("선물 메시지입니다.");
-        assertThat(order.getOrderDateTime()).isNotNull();
+        assertThat(order.id()).isNotNull();
+        assertThat(order.productId()).isEqualTo(product.id());
+        assertThat(order.optionId()).isEqualTo(optionId);
+        assertThat(order.quantity()).isEqualTo(2);
+        assertThat(order.message()).isEqualTo("선물 메시지입니다.");
+        assertThat(order.orderDateTime()).isNotNull();
     }
 
     @Test
@@ -155,11 +153,8 @@ class OrderControllerTest {
     @Test
     @DisplayName("주문 생성 - 존재하지 않는 옵션으로 실패")
     void createOrder_OptionNotFound() {
-        ProductRequestDTO productRequest = new ProductRequestDTO();
-        productRequest.setName("테스트 상품");
-        productRequest.setPrice(10000L);
-        productRequest.setImageUrl("https://test.jpg");
-        productRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 100)));
+        ProductRequestDTO productRequest = new ProductRequestDTO("테스트 상품", 10000L,
+            "https://test.jpg", List.of(new OptionRequestDTO("기본 옵션", 100)));
 
         ResponseEntity<ProductResponseDTO> productResponse = productClient.post()
             .uri("")
@@ -172,7 +167,7 @@ class OrderControllerTest {
         assertNotNull(product);
 
         OrderRequestDTO orderRequest = new OrderRequestDTO(
-            product.getId(),
+            product.id(),
             999L,
             1,
             "메시지"
@@ -191,11 +186,8 @@ class OrderControllerTest {
     @Test
     @DisplayName("주문 생성 - 수량이 0인 경우 실패")
     void createOrder_InvalidQuantity() {
-        ProductRequestDTO productRequest = new ProductRequestDTO();
-        productRequest.setName("테스트 상품");
-        productRequest.setPrice(10000L);
-        productRequest.setImageUrl("https://test.jpg");
-        productRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 100)));
+        ProductRequestDTO productRequest = new ProductRequestDTO("테스트 상품", 10000L,
+            "https://test.jpg", List.of(new OptionRequestDTO("기본 옵션", 100)));
 
         ResponseEntity<ProductResponseDTO> productResponse = productClient.post()
             .uri("")
@@ -206,10 +198,10 @@ class OrderControllerTest {
 
         ProductResponseDTO product = productResponse.getBody();
         assertNotNull(product);
-        Long optionId = getFirstOptionId(product.getId());
+        Long optionId = getFirstOptionId(product.id());
 
         OrderRequestDTO orderRequest = new OrderRequestDTO(
-            product.getId(),
+            product.id(),
             optionId,
             0,
             "메시지"
@@ -228,11 +220,8 @@ class OrderControllerTest {
     @Test
     @DisplayName("주문 생성 - 메시지가 500자를 초과하는 경우 실패")
     void createOrder_MessageTooLong() {
-        ProductRequestDTO productRequest = new ProductRequestDTO();
-        productRequest.setName("테스트 상품");
-        productRequest.setPrice(10000L);
-        productRequest.setImageUrl("https://test.jpg");
-        productRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 100)));
+        ProductRequestDTO productRequest = new ProductRequestDTO("테스트 상품", 10000L,
+            "https://test.jpg", List.of(new OptionRequestDTO("기본 옵션", 100)));
 
         ResponseEntity<ProductResponseDTO> productResponse = productClient.post()
             .uri("")
@@ -243,11 +232,11 @@ class OrderControllerTest {
 
         ProductResponseDTO product = productResponse.getBody();
         assertNotNull(product);
-        Long optionId = getFirstOptionId(product.getId());
+        Long optionId = getFirstOptionId(product.id());
 
         String longMessage = "a".repeat(501);
         OrderRequestDTO orderRequest = new OrderRequestDTO(
-            product.getId(),
+            product.id(),
             optionId,
             1,
             longMessage
@@ -266,11 +255,8 @@ class OrderControllerTest {
     @Test
     @DisplayName("주문 생성 - 메시지가 null인 경우 성공")
     void createOrder_NullMessage() {
-        ProductRequestDTO productRequest = new ProductRequestDTO();
-        productRequest.setName("테스트 상품");
-        productRequest.setPrice(10000L);
-        productRequest.setImageUrl("https://test.jpg");
-        productRequest.setOptions(List.of(new OptionRequestDTO("기본 옵션", 100)));
+        ProductRequestDTO productRequest = new ProductRequestDTO("테스트 상품", 10000L,
+            "https://test.jpg", List.of(new OptionRequestDTO("기본 옵션", 100)));
 
         ResponseEntity<ProductResponseDTO> productResponse = productClient.post()
             .uri("")
@@ -281,10 +267,10 @@ class OrderControllerTest {
 
         ProductResponseDTO product = productResponse.getBody();
         assertNotNull(product);
-        Long optionId = getFirstOptionId(product.getId());
+        Long optionId = getFirstOptionId(product.id());
 
         OrderRequestDTO orderRequest = new OrderRequestDTO(
-            product.getId(),
+            product.id(),
             optionId,
             1,
             null
@@ -300,7 +286,7 @@ class OrderControllerTest {
         assertThat(orderResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         OrderResponseDTO order = orderResponse.getBody();
         assertNotNull(order);
-        assertThat(order.getMessage()).isNull();
+        assertThat(order.message()).isNull();
     }
 
     @Test

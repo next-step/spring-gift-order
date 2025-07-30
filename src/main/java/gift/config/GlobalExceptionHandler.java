@@ -109,4 +109,9 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ExternalApiException.class)
+    public ResponseEntity<String> handlerException(ExternalApiException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }

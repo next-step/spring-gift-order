@@ -3,6 +3,7 @@ package gift.dto;
 import gift.entity.User;
 import gift.entity.vo.Email;
 import gift.entity.vo.Password;
+import gift.enums.UserType;
 
 public class UserRequest {
 
@@ -22,7 +23,7 @@ public class UserRequest {
         return password;
     }
 
-    public User toEntity() {
-        return new User(email, password);
+    public User toEntityWithType(UserType userType) {
+        return new User(email, password, userType);
     }
 }

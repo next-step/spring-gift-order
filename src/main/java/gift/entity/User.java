@@ -2,6 +2,7 @@ package gift.entity;
 
 import gift.entity.vo.Email;
 import gift.entity.vo.Password;
+import gift.enums.UserType;
 import jakarta.persistence.*;
 
 @Entity
@@ -20,12 +21,16 @@ public class User {
     @AttributeOverride(name = "value", column = @Column(name = "password", nullable = false))
     private Password password;
 
+    @Enumerated(EnumType.STRING)
+    private UserType type;
+
     protected User() {
     }
 
-    public User(Email email, Password password) {
+    public User(Email email, Password password, UserType type) {
         this.email = email;
         this.password = password;
+        this.type = type;
     }
 
     public Long getId() {
@@ -38,5 +43,9 @@ public class User {
 
     public Password password() {
         return password;
+    }
+
+    public UserType getType() {
+        return type;
     }
 }

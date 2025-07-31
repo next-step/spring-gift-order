@@ -27,6 +27,10 @@ public interface WishJpaRepository extends JpaRepository<Wish, Long> {
     Optional<Wish> findByMemberAndProduct(Member member, Product product);
     
     @Modifying
+    @Query("DELETE FROM Wish w WHERE w.member = :member AND w.product = :product")
+    int deleteByMemberAndProduct(@Param("member") Member member, @Param("product") Product product);
+    
+    @Modifying
     @Query("DELETE FROM Wish w WHERE w.id = :id AND w.member.id = :memberId")
     int deleteByIdAndMemberId(@Param("id") Long id, @Param("memberId") Long memberId);
 }

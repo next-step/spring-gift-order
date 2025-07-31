@@ -2,6 +2,7 @@ package gift.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @ConfigurationProperties(prefix = "kakao")
@@ -9,6 +10,8 @@ public class KakaoProperties {
     private String clientId;
     private String redirectUri;
     private String oauthTokenUrlHost;
+    private String messageUrl;
+    private String baseUrl;
 
     public String getClientId() {
         return clientId;
@@ -34,8 +37,20 @@ public class KakaoProperties {
         this.oauthTokenUrlHost = oauthTokenUrlHost;
     }
 
+    public String getMessageUrl() {
+        return messageUrl;
+    }
+
+    public void setMessageUrl(String messageUrl) {
+        this.messageUrl = messageUrl;
+    }
+
     public String buildAuthorizationUrl() {
-        return "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=" 
-               + clientId + "&redirect_uri=" + redirectUri;
+        return UriComponentsBuilder.fromUriString(baseUrl)
+                .queryParam("response_type", "code")
+                .queryParam("client_id", clientId)
+                .queryParam("redirect_uri", redirectUri)
+                .build()
+                .toUriString();
     }
 }

@@ -46,9 +46,7 @@ public class OrderService {
         // 위시리스트에 있으면 삭제
         Optional<WishList> wishList = wishListRepository.findByMemberIdAndProductId(memberId,
             option.getProduct().getId());
-        if (wishList.isPresent()) {
-            wishListRepository.deleteById(wishList.get().getId());
-        }
+        wishList.ifPresent((each)-> wishListRepository.deleteById(each.getId()));
 
         Order savedOrder = orderRepository.save(
             new Order(

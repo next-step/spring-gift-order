@@ -1,7 +1,6 @@
 package gift.auth.resolver;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
+import gift.common.exception.UnauthorizedException;
 import gift.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
@@ -33,6 +32,6 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         Long memberId = ((Number) request.getAttribute("memberId")).longValue();
 
         return memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomException(CustomResponseCode.UNAUTHORIZED));
+            .orElseThrow(UnauthorizedException::new);
     }
 }

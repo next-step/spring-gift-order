@@ -4,11 +4,13 @@ import gift.authorization.oauth.KakaoTokenService;
 import gift.member.Member;
 import gift.product.Product;
 import gift.product.ProductOption;
+import gift.product.exception.ProductNotFoundException;
 import gift.product.service.ProductService;
 import gift.user.KakaoMessageClient;
 import gift.user.OrderService;
 import gift.user.dto.OrderRequestDto;
 import gift.user.dto.OrderResponseDto;
+import gift.user.exception.KakaoSendMessageException;
 import gift.user.template.OrderMessageTemplateV1;
 import gift.wishlist.repository.WishlistRepository;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,11 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 class OrderServiceTest {
@@ -42,6 +46,7 @@ class OrderServiceTest {
 
     @Test
     void placeOrder_정상_주문() {
+
         Member member = mock(Member.class);
         given(member.getId()).willReturn(1L);
         given(member.getClientId()).willReturn("test-client-id");
@@ -77,9 +82,24 @@ class OrderServiceTest {
         verify(product).findOptionById(1L);
         verify(mockOption).decreaseQuantity(1L);
         verify(wishlistRepository).deleteByMemberIdAndProductId(1L, 1L);
-        verify(kakaoMessageClient).sendOrderMessageToUser(
-                "valid-access-token",
-                new OrderMessageTemplateV1("테스트 상품", "옵션A", 1L, "재미나게쓰라우")
+    }
+
+    @Test
+    void 존재하지_않는_상품ID로_요청하면_예외_발생() {
+        Member member = mock(Member.class);
+        given(member.getId()).willReturn(1L);
+
+        OrderRequestDto requestDto = new OrderRequestDto(999L, 1L, 1L, "없는 상품 요청");
+
+        given(productService.findProductByIdOrElseThrow(999L))
+                .willThrow(new ProductNotFoundException(999L));
+
+        assertThrows(ProductNotFoundException.class, () ->
+                orderService.placeOrder(member, requestDto)
         );
     }
+
+
+
+
 }

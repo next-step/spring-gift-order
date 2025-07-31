@@ -40,4 +40,11 @@ public class MemberRepositoryTest {
 
         assertThat(deleted).isNotPresent();
     }
+
+    @Test
+    void 존재하지_않는_이메일로_회원조회_실패() {
+        Optional<Member> foundMember = memberRepository.findByEmail("non@kakao.com");
+
+        assertThat(foundMember).isNotPresent();
+    }
 }

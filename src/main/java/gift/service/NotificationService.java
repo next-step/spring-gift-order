@@ -3,10 +3,14 @@ package gift.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.client.KakaoClient;
+import gift.dto.kakao.template.ButtonDto;
+import gift.dto.kakao.template.CommerceContentDto;
+import gift.dto.kakao.template.CommerceDetailsDto;
+import gift.dto.kakao.template.KakaoCommerceTemplateDto;
+import gift.dto.kakao.template.LinkDto;
 import gift.entity.Order;
 import gift.entity.Product;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,40 +30,40 @@ public class NotificationService {
 
 
     public void sendOrderCompletionNotification(Order order, String kakaoAccessToken) {
+        KakaoCommerceTemplateDto templateDto = createKakaoCommerceTemplate(order);
         try {
-            String commerceTemplate = createKakaoCommerceTemplate(order);
-            kakaoClient.sendKakaoTalkMessage(kakaoAccessToken, commerceTemplate);
+            String templateJson = objectMapper.writeValueAsString(templateDto);
+            kakaoClient.sendKakaoTalkMessage(kakaoAccessToken, templateJson);
         } catch (JsonProcessingException e) {
-            // 메시지 전송 실패가 전체 주문 실패로 이어지지 않도록 예외를 로깅만 합니다.
-            log.error("카카오 메시지 템플릿 생성 또는 전송에 실패했습니다.", e);
+            log.error("카카오 메시지 템플릿 직렬화에 실패했습니다.", e);
         }
     }
 
-    private String createKakaoCommerceTemplate(Order order) throws JsonProcessingException {
+    private KakaoCommerceTemplateDto createKakaoCommerceTemplate(Order order) {
         Product product = order.getOption().getProduct();
-        Map<String, Object> commerceDetails = Map.of(
-                "product_name", product.getName() + " (" + order.getOption().getName() + ")",
-                "regular_price", product.getPrice() * order.getQuantity()
+
+        LinkDto productLink = new LinkDto("http://localhost:8080", "http://localhost:8080");
+        LinkDto buttonLink = new LinkDto("http://localhost:8080/wishes",
+                "http://localhost:8080/wishes");
+
+        CommerceContentDto content = new CommerceContentDto(
+                "주문이 성공적으로 완료되었습니다.",
+                product.getImageUrl(),
+                productLink
         );
-        Map<String, Object> content = Map.of(
-                "title", "주문이 성공적으로 완료되었습니다.",
-                "image_url", product.getImageUrl(),
-                "link", Map.of("web_url", "http://localhost:8080", "mobile_web_url",
-                        "http://localhost:8080")
+
+        CommerceDetailsDto commerceDetails = new CommerceDetailsDto(
+                product.getName() + " (" + order.getOption().getName() + ")",
+                product.getPrice() * order.getQuantity()
         );
-        List<Object> buttons = List.of(
-                Map.of(
-                        "title", "주문 상세 보기",
-                        "link", Map.of("web_url", "http://localhost:8080/wishes", "mobile_web_url",
-                                "http://localhost:8080/wishes")
-                )
+
+        ButtonDto viewOrderButton = new ButtonDto("주문 상세 보기", buttonLink);
+
+        return new KakaoCommerceTemplateDto(
+                "commerce",
+                content,
+                commerceDetails,
+                List.of(viewOrderButton)
         );
-        Map<String, Object> template = Map.of(
-                "object_type", "commerce",
-                "content", content,
-                "commerce", commerceDetails,
-                "buttons", buttons
-        );
-        return objectMapper.writeValueAsString(template);
     }
 }

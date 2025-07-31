@@ -1,6 +1,7 @@
 package gift.resolver;
 
 import gift.annotation.LoginMember;
+import gift.dto.MemberRequest;
 import gift.dto.MemberResponse;
 import gift.exception.BusinessException;
 import gift.exception.ErrorCode;
@@ -44,7 +45,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         }
         Claims claims = jwtProvider.parseClaims(token);
         String email = claims.getSubject();
-        return memberService.getByEmail(email);
+        MemberResponse response =  memberService.getByEmail(email);
+        return MemberRequest.of(response.id(), response.email());
     }
 
     private String extractToken(NativeWebRequest webRequest) {

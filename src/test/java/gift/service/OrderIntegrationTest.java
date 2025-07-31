@@ -21,21 +21,17 @@ import gift.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-@Import(OrderIntegrationTest.TestConfig.class)
 public class OrderIntegrationTest {
 
     @Autowired
@@ -50,7 +46,8 @@ public class OrderIntegrationTest {
     private OptionRepository optionRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-    @Autowired
+
+    @MockitoBean
     private KakaoClient kakaoClient;
 
     private Member testMember;
@@ -94,15 +91,5 @@ public class OrderIntegrationTest {
 
         // Mock 객체 행위 검증
         verify(kakaoClient).sendKakaoTalkMessage(anyString(), anyString());
-    }
-
-    // 테스트 설정을 위한 정적 내부 클래스
-    @TestConfiguration
-    static class TestConfig {
-
-        @Bean
-        public KakaoClient kakaoClient() {
-            return Mockito.mock(KakaoClient.class);
-        }
     }
 }

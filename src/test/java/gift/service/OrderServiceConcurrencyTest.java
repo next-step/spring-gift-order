@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 public class OrderServiceConcurrencyTest {
@@ -28,7 +28,7 @@ public class OrderServiceConcurrencyTest {
     private final OrderService orderService;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
-    @MockBean
+    @MockitoBean
     private final KakaoClient kakaoClient;
 
     @Autowired

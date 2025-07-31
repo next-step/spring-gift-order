@@ -56,6 +56,10 @@ public class Member {
         return kakaoAccessToken;
     }
 
+    public void updateKakaoAccessToken(String token) {
+        this.kakaoAccessToken = token;
+    }
+
     public void validatePassword(String password) throws IllegalAccessException {
         if (!this.password.equals(password)) {
             throw new IllegalAccessException("비밀번호가 일치하지 않습니다.");

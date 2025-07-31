@@ -32,6 +32,7 @@ public class MemberApiTest {
 
     @BeforeEach
     void setUp() {
+        jdbcTemplate.update("DELETE FROM orders");
         jdbcTemplate.update("DELETE FROM wishlists");
         jdbcTemplate.update("DELETE FROM members");
         jdbcTemplate.update("ALTER TABLE members ALTER COLUMN id RESTART WITH 1");

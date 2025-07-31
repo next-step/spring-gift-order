@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gift.api.option.domain.Option;
 import gift.api.order.domain.Order;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,13 +13,16 @@ public class KakaoMessageTemplateGenerator {
 
     private final ObjectMapper objectMapper;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     public KakaoMessageTemplateGenerator(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
     public String createOrderTemplateAsString(Order order) throws JsonProcessingException {
         ObjectNode linkNode = objectMapper.createObjectNode();
-        linkNode.put("web_url", "http://localhost:8080/members/products/"
+        linkNode.put("web_url", baseUrl + "/members/products/"
                 + order.getOption().getProduct().getId());
 
         ObjectNode templateNode = objectMapper.createObjectNode();

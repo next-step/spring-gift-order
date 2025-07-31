@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test") // H2 DB를 사용하기 위한 프로필 설정
+@ActiveProfiles("dev")
 public class OrderE2ETest {
 
     @LocalServerPort

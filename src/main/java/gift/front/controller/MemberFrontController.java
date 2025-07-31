@@ -29,6 +29,9 @@ public class MemberFrontController {
     @Value("${kakao.client-id}")
     private String clientId;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     public MemberFrontController(ProductService productService, WishService wishService) {
         this.productService = productService;
         this.wishService = wishService;
@@ -53,7 +56,7 @@ public class MemberFrontController {
         response.addCookie(cookie);
 
         String kakaoLogoutUrl = "https://kauth.kakao.com/oauth/logout?client_id=" + clientId +
-                "&logout_redirect_uri=http://localhost:8080/members/login";
+                "&logout_redirect_uri=" + baseUrl + "/members/login";
 
         return "redirect:" + kakaoLogoutUrl;
     }

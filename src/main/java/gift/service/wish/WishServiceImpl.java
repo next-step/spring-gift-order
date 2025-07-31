@@ -1,7 +1,7 @@
 package gift.service.wish;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
+import com.sun.jdi.request.DuplicateRequestException;
+import gift.common.exception.NotFoundException;
 import gift.common.util.SortUtil;
 import gift.dto.pagination.PageResponse;
 import gift.dto.pagination.Pagination;
@@ -36,11 +36,11 @@ public class WishServiceImpl implements WishService {
     @Transactional
     public WishResponse addWish(Member member, WishRequest request) {
         Product product = productRepository.findById(request.productId())
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+            .orElseThrow(NotFoundException::new);
 
         boolean exists = wishRepository.existsByMemberAndProduct(member, product);
         if (exists) {
-            throw new CustomException(CustomResponseCode.ALREADY_EXISTS);
+            throw new DuplicateRequestException();
         }
 
         Wish savedWish = wishRepository.save(
@@ -53,11 +53,11 @@ public class WishServiceImpl implements WishService {
     @Transactional
     public void deleteWish(Member member, Long productId) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+            .orElseThrow(NotFoundException::new);
 
         boolean exists = wishRepository.existsByMemberAndProduct(member, product);
         if (!exists) {
-            throw new CustomException(CustomResponseCode.NOT_FOUND);
+            throw new NotFoundException();
         }
 
         wishRepository.deleteByMemberAndProduct(member, product);

@@ -1,7 +1,6 @@
 package gift.service.member;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
+import gift.common.exception.MemberNotFoundException;
 import gift.dto.auth.AuthUser;
 import gift.entity.member.Member;
 import gift.repository.MemberRepository;
@@ -28,7 +27,6 @@ public class MemberServiceImpl implements MemberService {
     @Transactional(readOnly = true)
     public Member findByRefreshToken(String refreshToken) {
         return memberRepository.findByRefreshToken(refreshToken)
-            .orElseThrow(() -> new CustomException(
-                CustomResponseCode.NOT_FOUND));
+            .orElseThrow(MemberNotFoundException::new);
     }
 }

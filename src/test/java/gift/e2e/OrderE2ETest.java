@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.auth.jwt.JwtUtil;
-import gift.common.code.CustomResponseCode;
 import gift.dto.order.OrderRequest;
 import gift.entity.member.Member;
 import gift.entity.member.MemberBuilder;
@@ -168,7 +167,7 @@ class OrderE2ETest {
 
         assertAll("존재하지 않는 옵션 에러 검증",
             () -> Assertions.assertThat(response.getStatusCode().value())
-                .isEqualTo(CustomResponseCode.NOT_FOUND.getHttpStatus().value()),
+                .isEqualTo(HttpStatus.NOT_FOUND.value()),
             () -> Assertions.assertThat(response.getBody()).contains("리소스를 찾을 수 없습니다.")
         );
     }
@@ -190,7 +189,7 @@ class OrderE2ETest {
 
         assertAll("수량 유효성 검증",
             () -> Assertions.assertThat(response.getStatusCode().value())
-                .isEqualTo(CustomResponseCode.VALIDATION_FAILED.getHttpStatus().value()),
+                .isEqualTo(HttpStatus.BAD_REQUEST.value()),
             () -> Assertions.assertThat(response.getBody()).contains("수량은 1 이상이어야 합니다.")
         );
     }
@@ -213,7 +212,7 @@ class OrderE2ETest {
 
         assertAll("주문 메시지 길이 제한 검증",
             () -> Assertions.assertThat(response.getStatusCode().value())
-                .isEqualTo(CustomResponseCode.VALIDATION_FAILED.getHttpStatus().value()),
+                .isEqualTo(HttpStatus.BAD_REQUEST.value()),
             () -> Assertions.assertThat(response.getBody()).contains("메시지는 500자 이내로 입력해 주세요.")
         );
     }

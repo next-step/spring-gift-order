@@ -1,6 +1,5 @@
 package gift.auth.jwt;
 
-import gift.common.code.CustomResponseCode;
 import gift.common.exception.core.CustomException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -12,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -48,7 +48,7 @@ public class JwtFilter implements Filter {
             chain.doFilter(request, response);
 
         } catch (CustomException e) {
-            sendErrorResponse(httpResponse, e.getErrorCode());
+            sendErrorResponse(httpResponse, e.getStatus(), e.getMessage());
         }
     }
 
@@ -64,9 +64,10 @@ public class JwtFilter implements Filter {
         return ((Number) claims.get("memberId")).longValue();
     }
 
-    private void sendErrorResponse(HttpServletResponse response, CustomResponseCode code)
+    private void sendErrorResponse(HttpServletResponse response, HttpStatusCode statusCode,
+        String message)
         throws IOException {
-        response.setStatus(code.getCode());
+        response.setStatus(statusCode.value());
         response.setContentType("application/json; charset=UTF-8");
 
         String jsonResponse = String.format("""
@@ -75,7 +76,7 @@ public class JwtFilter implements Filter {
               "message": "%s",
               "data": null
             }
-            """, code.getCode(), code.getMessage());
+            """, statusCode.value(), message);
 
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();

@@ -1,7 +1,6 @@
 package gift.service.product;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
+import gift.common.exception.NotFoundException;
 import gift.common.util.SortUtil;
 import gift.dto.pagination.PageResponse;
 import gift.dto.pagination.Pagination;
@@ -65,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public ProductResponse getProduct(Long productId) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+            .orElseThrow(NotFoundException::new);
 
         return ProductResponse.from(product);
     }
@@ -74,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse update(Long productId, ProductUpdateRequest request) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+            .orElseThrow(NotFoundException::new);
 
         product.update(request.name(), request.price(), request.imageUrl());
         productRepository.save(product);
@@ -86,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void delete(Long productId) {
         if (!productRepository.existsById(productId)) {
-            throw new CustomException(CustomResponseCode.NOT_FOUND);
+            throw new NotFoundException();
         }
 
         productRepository.deleteById(productId);

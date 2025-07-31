@@ -1,7 +1,6 @@
 package gift.service.product.option;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
+import gift.common.exception.NotFoundException;
 import gift.dto.product.option.ProductOptionRequest;
 import gift.dto.product.option.ProductOptionResponse;
 import gift.entity.product.Product;
@@ -28,7 +27,7 @@ public class OptionServiceImpl implements OptionService {
     @Transactional
     public ProductOptionResponse add(Long productId, ProductOptionRequest request) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+            .orElseThrow(NotFoundException::new);
 
         ProductOption option = product.addUniqueOption(request.name(), request.quantity());
         ProductOption savedOption = optionRepository.save(option);
@@ -48,7 +47,7 @@ public class OptionServiceImpl implements OptionService {
     @Transactional
     public ProductOptionResponse update(Long optionId, ProductOptionRequest request) {
         ProductOption option = optionRepository.findById(optionId)
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+            .orElseThrow(NotFoundException::new);
 
         option.update(request.name(), request.quantity());
 

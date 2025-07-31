@@ -15,7 +15,8 @@ import gift.auth.jwt.JwtUtil;
 import gift.auth.resolver.CurrentUserArgumentResolver;
 import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
-import gift.common.exception.core.CustomException;
+import gift.common.exception.DuplicateResourceException;
+import gift.common.exception.NotFoundException;
 import gift.controller.api.WishController;
 import gift.dto.wish.WishRequest;
 import gift.dto.wish.WishResponse;
@@ -33,6 +34,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -114,7 +117,7 @@ class WishE2ETest {
         WishRequest request = new WishRequest(10L, 1);
 
         given(wishService.addWish(eq(testMember), any(WishRequest.class)))
-            .willThrow(new CustomException(CustomResponseCode.ALREADY_EXISTS));
+            .willThrow(new DuplicateResourceException());
 
         String token = jwtUtil.generateToken(testMember);
 
@@ -126,7 +129,7 @@ class WishE2ETest {
 
         String content = result.getResponse().getContentAsString();
         CustomResponseBody<?> response = objectMapper.readValue(content, CustomResponseBody.class);
-        assertErrorResponse(response, CustomResponseCode.ALREADY_EXISTS);
+        assertErrorResponse(response, HttpStatus.CONFLICT, "이미 존재하는 리소스입니다.");
     }
 
     @Test
@@ -151,7 +154,7 @@ class WishE2ETest {
 
         String content = result.getResponse().getContentAsString();
         CustomResponseBody<?> response = objectMapper.readValue(content, CustomResponseBody.class);
-        assertErrorResponse(response, CustomResponseCode.UNAUTHORIZED);
+        assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
     }
 
     @Test
@@ -172,7 +175,7 @@ class WishE2ETest {
     @Test
     @DisplayName("위시 삭제 실패 - 존재하지 않는 wish")
     void test6() throws Exception {
-        doThrow(new CustomException(CustomResponseCode.NOT_FOUND))
+        doThrow(new NotFoundException())
             .when(wishService).deleteWish(eq(testMember), eq(999L));
 
         String token = jwtUtil.generateToken(testMember);
@@ -184,7 +187,7 @@ class WishE2ETest {
 
         String content = result.getResponse().getContentAsString();
         CustomResponseBody<?> response = objectMapper.readValue(content, CustomResponseBody.class);
-        assertErrorResponse(response, CustomResponseCode.NOT_FOUND);
+        assertErrorResponse(response, HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다.");
     }
 
     private <T> void assertWishResponse(CustomResponseBody<T> response,
@@ -196,11 +199,11 @@ class WishE2ETest {
     }
 
     private void assertErrorResponse(CustomResponseBody<?> response,
-        CustomResponseCode expectedCode) {
+        HttpStatusCode statusCode, String message) {
         assertAll("응답 객체 검증",
             () -> assertThat(response).isNotNull(),
-            () -> assertThat(response.status()).isEqualTo(expectedCode.getCode()),
-            () -> assertThat(response.message()).isEqualTo(expectedCode.getMessage())
+            () -> assertThat(response.status()).isEqualTo(statusCode.value()),
+            () -> assertThat(response.message()).isEqualTo(message)
         );
     }
 

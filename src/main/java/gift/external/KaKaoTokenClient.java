@@ -1,8 +1,7 @@
 package gift.external;
 
-import gift.common.code.CustomResponseCode;
+import gift.common.exception.ExternalServerErrorException;
 import gift.common.exception.KaKaoClientException;
-import gift.common.exception.ServerErrorException;
 import gift.dto.auth.KaKaoTokenInfo;
 import gift.dto.auth.KaKaoUserInfo;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class KaKaoTokenClient {
                 throw new KaKaoClientException();
             })
             .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
-                throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
+                throw new ExternalServerErrorException();
             })
             .body(KaKaoTokenInfo.class);
     }
@@ -55,7 +54,7 @@ public class KaKaoTokenClient {
                 throw new KaKaoClientException();
             })
             .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
-                throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
+                throw new ExternalServerErrorException();
             })
             .body(KaKaoUserInfo.class);
     }

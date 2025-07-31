@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.auth.jwt.JwtUtil;
-import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
 import gift.dto.pagination.PageResponse;
 import gift.dto.product.ProductRequest;
@@ -25,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -364,7 +364,7 @@ public class PaginationE2ETest {
         assertAll("응답 객체 검증",
             () -> assertThat(response).isNotNull(),
             () -> assertThat(response.getStatusCode().value())
-                .isEqualTo(CustomResponseCode.VALIDATION_FAILED.getHttpStatus().value()),
+                .isEqualTo(HttpStatus.BAD_REQUEST.value()),
             () -> assertThat(response.getBody()).contains(expectedMessage)
         );
     }

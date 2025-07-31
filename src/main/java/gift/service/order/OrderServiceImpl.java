@@ -1,7 +1,6 @@
 package gift.service.order;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
+import gift.common.exception.NotFoundException;
 import gift.dto.order.OrderRequest;
 import gift.dto.order.OrderResponse;
 import gift.entity.member.Member;
@@ -35,7 +34,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponse create(Member member, OrderRequest request) {
         ProductOption option = optionRepository.findById(request.optionId())
-            .orElseThrow(() -> new CustomException(CustomResponseCode.NOT_FOUND));
+            .orElseThrow(NotFoundException::new);
 
         option.decreaseQuantity(request.quantity());
 

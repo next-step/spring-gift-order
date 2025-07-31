@@ -1,7 +1,7 @@
 package gift.auth.jwt;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.core.CustomException;
+import gift.common.exception.InvalidTokenException;
+import gift.common.exception.UnauthorizedException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class JwtProvider {
     public String extractToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
-            throw new CustomException(CustomResponseCode.UNAUTHORIZED);
+            throw new UnauthorizedException();
         }
         return header.substring(7);
     }
@@ -28,7 +28,7 @@ public class JwtProvider {
         try {
             return jwtUtil.getClaims(token);
         } catch (JwtException e) {
-            throw new CustomException(CustomResponseCode.INVALID_TOKEN);
+            throw new InvalidTokenException();
         }
     }
 

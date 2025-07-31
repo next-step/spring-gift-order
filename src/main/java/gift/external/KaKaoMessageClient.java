@@ -2,9 +2,8 @@ package gift.external;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gift.common.code.CustomResponseCode;
+import gift.common.exception.ExternalServerErrorException;
 import gift.common.exception.KaKaoClientException;
-import gift.common.exception.ServerErrorException;
 import gift.entity.member.Member;
 import gift.entity.order.Order;
 import gift.entity.product.Product;
@@ -47,7 +46,7 @@ public class KaKaoMessageClient {
 
         String newAccessToken = authService.refreshAccessToken(member.getRefreshToken());
         if (!trySendTemplate(template, newAccessToken)) {
-            throw new KaKaoClientException(CustomResponseCode.KAKAO_MESSAGE_SEND_FAILED);
+            throw new KaKaoClientException();
         }
     }
 
@@ -59,9 +58,9 @@ public class KaKaoMessageClient {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 return false;
             }
-            throw new KaKaoClientException(CustomResponseCode.KAKAO_MESSAGE_SEND_FAILED);
+            throw new KaKaoClientException();
         } catch (HttpServerErrorException e) {
-            throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
+            throw new ExternalServerErrorException();
         }
     }
 
@@ -111,7 +110,7 @@ public class KaKaoMessageClient {
         try {
             return objectMapper.writeValueAsString(template);
         } catch (JsonProcessingException e) {
-            throw new KaKaoClientException(CustomResponseCode.KAKAO_MESSAGE_SEND_FAILED);
+            throw new KaKaoClientException();
         }
     }
 }

@@ -3,23 +3,23 @@ package gift.common.exception;
 import gift.common.exception.core.CustomException;
 import org.springframework.http.HttpStatus;
 
-public class UnauthorizedException extends CustomException {
+public class NotFoundException extends CustomException {
 
-    public UnauthorizedException() {
+    public NotFoundException() {
         super();
     }
 
-    public UnauthorizedException(String message) {
+    public NotFoundException(String message) {
         super(message);
     }
 
     @Override
     public HttpStatus getStatus() {
-        return HttpStatus.UNAUTHORIZED;
+        return HttpStatus.NOT_FOUND;
     }
 
     @Override
     public String getDefaultMessage() {
-        return "인증이 필요합니다.";
+        return "요청한 리소스를 찾을 수 없습니다.";
     }
 }

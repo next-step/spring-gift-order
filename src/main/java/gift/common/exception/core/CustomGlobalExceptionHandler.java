@@ -4,6 +4,7 @@ import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
 import java.util.stream.Collectors;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,24 +15,12 @@ public class CustomGlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CustomResponseBody<Void>> handleCustomException(CustomException e) {
-        int code;
-        String message;
-        int status;
-
-        if (e.getErrorCode() != null) {
-            CustomResponseCode errorCode = e.getErrorCode();
-            code = errorCode.getHttpStatus().value();
-            message = errorCode.getMessage();
-            status = errorCode.getHttpStatus().value();
-        } else {
-            code = e.getStatusCode().value();
-            message = e.getMessage();
-            status = e.getStatusCode().value();
-        }
+        HttpStatus status = e.getStatus();
+        String message = e.getMessage();
 
         return ResponseEntity
             .status(status)
-            .body(new CustomResponseBody<>(code, message, null));
+            .body(new CustomResponseBody<>(status.value(), message, null));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

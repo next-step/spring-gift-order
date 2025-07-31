@@ -1,37 +1,25 @@
 package gift.common.exception.core;
 
-import gift.common.code.CustomResponseCode;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 
-public class CustomException extends RuntimeException {
+public abstract class CustomException extends RuntimeException {
 
-    private final CustomResponseCode errorCode;
-    private final HttpStatusCode statusCode;
-    private final String customMessage;
-
-    public CustomException(CustomResponseCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
-        this.statusCode = errorCode.getHttpStatus();
-        this.customMessage = null;
+    public CustomException() {
+        super();
     }
 
-    public CustomException(HttpStatusCode statusCode, String customMessage) {
-        super(customMessage);
-        this.errorCode = null;
-        this.statusCode = statusCode;
-        this.customMessage = customMessage;
+    public CustomException(String message) {
+        super(message);
     }
 
-    public CustomResponseCode getErrorCode() {
-        return errorCode;
+    public abstract HttpStatus getStatus();
+
+    public String getDefaultMessage() {
+        return "알 수 없는 오류가 발생했습니다.";
     }
 
-    public HttpStatusCode getStatusCode() {
-        return statusCode;
-    }
-
-    public String getCustomMessage() {
-        return customMessage;
+    @Override
+    public String getMessage() {
+        return super.getMessage() != null ? super.getMessage() : getDefaultMessage();
     }
 }

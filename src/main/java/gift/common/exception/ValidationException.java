@@ -1,20 +1,25 @@
 package gift.common.exception;
 
-import gift.common.code.CustomResponseCode;
 import gift.common.exception.core.CustomException;
 import org.springframework.http.HttpStatus;
 
 public class ValidationException extends CustomException {
 
     public ValidationException() {
-        super(CustomResponseCode.VALIDATION_FAILED);
+        super();
     }
 
-    public ValidationException(CustomResponseCode customCode) {
-        super(customCode);
+    public ValidationException(String message) {
+        super(message);
     }
 
-    public ValidationException(String customMessage) {
-        super(HttpStatus.BAD_REQUEST, customMessage);
+    @Override
+    public HttpStatus getStatus() {
+        return HttpStatus.BAD_REQUEST;
+    }
+
+    @Override
+    public String getDefaultMessage() {
+        return "유효성 검사에 실패했습니다.";
     }
 }

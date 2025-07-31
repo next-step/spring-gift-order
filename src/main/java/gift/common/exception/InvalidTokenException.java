@@ -3,13 +3,13 @@ package gift.common.exception;
 import gift.common.exception.core.CustomException;
 import org.springframework.http.HttpStatus;
 
-public class UnauthorizedException extends CustomException {
+public class InvalidTokenException extends CustomException {
 
-    public UnauthorizedException() {
+    public InvalidTokenException() {
         super();
     }
 
-    public UnauthorizedException(String message) {
+    public InvalidTokenException(String message) {
         super(message);
     }
 
@@ -20,6 +20,6 @@ public class UnauthorizedException extends CustomException {
 
     @Override
     public String getDefaultMessage() {
-        return "인증이 필요합니다.";
+        return "유효하지 않은 토큰입니다.";
     }
 }

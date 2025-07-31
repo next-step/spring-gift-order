@@ -3,23 +3,23 @@ package gift.common.exception;
 import gift.common.exception.core.CustomException;
 import org.springframework.http.HttpStatus;
 
-public class UnauthorizedException extends CustomException {
+public class DuplicateResourceException extends CustomException {
 
-    public UnauthorizedException() {
+    public DuplicateResourceException() {
         super();
     }
 
-    public UnauthorizedException(String message) {
+    public DuplicateResourceException(String message) {
         super(message);
     }
 
     @Override
     public HttpStatus getStatus() {
-        return HttpStatus.UNAUTHORIZED;
+        return HttpStatus.CONFLICT;
     }
 
     @Override
     public String getDefaultMessage() {
-        return "인증이 필요합니다.";
+        return "이미 존재하는 리소스입니다.";
     }
 }

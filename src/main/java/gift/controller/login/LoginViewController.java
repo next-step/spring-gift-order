@@ -36,7 +36,7 @@ public class LoginViewController {
         this.memberService = memberService;
     }
 
-    GetMapping("/")
+    @GetMapping("/")
     public String root() {
         return "redirect:/view/login";
     }

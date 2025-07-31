@@ -27,3 +27,4 @@ kakao:
     client-id: ${KAKAO_CLIENT_ID}
     redirect-uri: ${KAKAO_REDIRECT_URI}
     oauth-token-url-host: ${KAKAO_OAUTH_TOKEN_URL_HOST}
+    base-url: ${KAKAO_BASE_URL}

@@ -6,6 +6,7 @@ import gift.common.mapper.EntityToDtoMapper;
 import gift.common.mapper.ModelMapper;
 import gift.common.model.CustomAuth;
 import gift.common.model.CustomPage;
+import gift.common.model.TokenInfo;
 import gift.common.validation.annotation.AllowedSortFields;
 import gift.dto.CustomPageRequest;
 import gift.dto.order.OrderCreateRequest;
@@ -61,12 +62,12 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(
             @Valid @RequestBody OrderCreateRequest request,
-            @RequestAttribute(value = "X-Access-Token", required = false) String accessToken,
-            CustomAuth auth
-    ) {
+            CustomAuth auth,
+            @RequestAttribute("tokenInfo") TokenInfo tokenInfo
+            ) {
         Order order;
-        if (auth.provider() == Provider.KAKAO && accessToken != null) {
-            order = orderService.createWithNotification(DtoToEntityMapper.toEntity(request), auth, accessToken);
+        if (auth.provider() == Provider.KAKAO) {
+            order = orderService.createWithNotification(DtoToEntityMapper.toEntity(request), auth, tokenInfo);
         } else {
             order = orderService.create(DtoToEntityMapper.toEntity(request), auth);
         }

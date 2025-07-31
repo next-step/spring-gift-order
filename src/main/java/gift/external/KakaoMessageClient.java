@@ -16,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -94,6 +95,6 @@ public class KakaoMessageClient {
 
     private String formatInstant(Instant instant) {
         return DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")
-                .format(instant);
+                .format(instant.atZone(ZoneId.systemDefault()));
     }
 }

@@ -3,9 +3,10 @@ package gift.service.auth;
 import gift.common.exception.KakaoAuthorizationException;
 import gift.common.exception.UnauthorizedException;
 import gift.common.model.TokenInfo;
+import gift.common.model.TokenValue;
+import gift.common.util.ExternalTokenManager;
 import gift.common.util.PasswordEncoder;
 import gift.common.util.TokenProvider;
-import gift.dto.auth.KakaoResponse;
 import gift.dto.external.KakaoTokenResponse;
 import gift.entity.User;
 import gift.entity.type.Provider;
@@ -24,17 +25,20 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final KakaoTokenClient kakaoOauth2Client;
     private final TokenProvider tokenProvider;
+    private final ExternalTokenManager externalTokenManager;
     private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImpl(
             UserService userService,
             KakaoTokenClient kakaoOauth2Client,
             TokenProvider tokenProvider,
+            ExternalTokenManager externalTokenManager,
             PasswordEncoder passwordEncoder
         ) {
         this.userService = userService;
         this.kakaoOauth2Client = kakaoOauth2Client;
         this.tokenProvider = tokenProvider;
+        this.externalTokenManager = externalTokenManager;
         this.passwordEncoder = passwordEncoder;
 
     }
@@ -75,21 +79,32 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public KakaoResponse kakaoLogin(String code, String error, String errorDescription) {
+    public String kakaoLogin(String code, String error, String errorDescription) {
         if (code == null || code.isBlank()) {
             HttpStatus status = mapErrorCodeToStatus(error);
             throw new KakaoAuthorizationException(status, error, errorDescription);
         }
         KakaoTokenResponse tokenResponse = kakaoOauth2Client.getTokenResponse(code);
         TokenInfo tokenInfo = tokenProvider.getTokenInfo(tokenResponse.idToken());
+
         try {
             String encodedId = passwordEncoder.encode(tokenInfo.id());
             User user = userService.findByClientIdAndProvider(encodedId, Provider.KAKAO);
-            return new KakaoResponse(
-                    tokenProvider.generateToken(user.getId(), user.getUserRoles(), user.getProvider(),
-                            tokenResponse.expiresIn()),
-                    tokenResponse.accessToken()
+
+            String generatedToken = tokenProvider.generateToken(
+                    user.getId(),
+                    user.getUserRoles(),
+                    user.getProvider(),
+                    tokenResponse.expiresIn()
             );
+
+            externalTokenManager.storeAccessToken(generatedToken, new TokenValue(
+                    tokenResponse.accessToken(),
+                    tokenResponse.expiresIn() * 1000L + System.currentTimeMillis(),
+                    Provider.KAKAO
+            ));
+
+            return generatedToken;
 
         } catch (NoSuchElementException e) {
             throw new UnauthorizedException("카카오 계정으로 가입된 사용자가 아닙니다.");

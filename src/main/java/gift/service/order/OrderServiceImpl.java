@@ -4,6 +4,9 @@ import gift.common.exception.AccessDeniedException;
 import gift.common.mapper.ModelMapper;
 import gift.common.model.CustomAuth;
 import gift.common.model.CustomPage;
+import gift.common.model.TokenInfo;
+import gift.common.model.TokenValue;
+import gift.common.util.ExternalTokenManager;
 import gift.entity.Option;
 import gift.entity.Order;
 import gift.entity.User;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -27,17 +31,20 @@ public class OrderServiceImpl implements OrderService {
     private final UserService userService;
     private final OptionService optionService;
     private final KakaoMessageClient kakaoMessageClient;
+    private final ExternalTokenManager externalTokenManager;
 
     public OrderServiceImpl(
             OrderRepository orderRepository,
             UserService userService,
             OptionService optionService,
-            KakaoMessageClient kakaoMessageClient
+            KakaoMessageClient kakaoMessageClient,
+            ExternalTokenManager externalTokenManager
     ) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.optionService = optionService;
         this.kakaoMessageClient = kakaoMessageClient;
+        this.externalTokenManager = externalTokenManager;
     }
 
     private void changeOptionQuantity(Option option, Long userId, Integer amount) {
@@ -96,13 +103,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public Order createWithNotification(Order order, CustomAuth auth, String accessToken) {
-        create(order, auth);
+    public Order createWithNotification(Order order, CustomAuth auth, TokenInfo tokenInfo) {
 
+        order = create(order, auth);
         // 현재는 KakaoProvider 에 대한 알림 처리만을 구현 합니다.
         if (auth.provider() == Provider.KAKAO) {
-            // 카카오톡 메시지 전송
-            kakaoMessageClient.sendMessage(order, accessToken);
+            Optional<TokenValue> accessToken = externalTokenManager.getAccessToken(tokenInfo.value());
+            if (accessToken.isEmpty() || accessToken.get().isExpired()) {
+                throw new AccessDeniedException("외부 토큰이 만료되었습니다. 다시 로그인 해주세요.");
+            }
+            kakaoMessageClient.sendMessage(order, accessToken.get().value());
         }
         return order;
     }

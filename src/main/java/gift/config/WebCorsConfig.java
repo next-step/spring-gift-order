@@ -1,6 +1,7 @@
 package gift.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,6 +21,7 @@ public class WebCorsConfig implements WebMvcConfigurer {
                 HttpMethod.HEAD.name(),
                 HttpMethod.OPTIONS.name())
             .allowedHeaders("*")
+            .exposedHeaders(HttpHeaders.LOCATION)
             .allowCredentials(true)
             .maxAge(1800);
     }

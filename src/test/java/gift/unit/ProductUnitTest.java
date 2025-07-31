@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import gift.common.exception.core.CustomException;
-import gift.entity.Product.Option.ProductOption;
-import gift.entity.Product.Product;
+import gift.entity.product.Product;
+import gift.entity.product.option.ProductOption;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

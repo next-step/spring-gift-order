@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.auth.jwt.JwtUtil;
 import gift.common.code.CustomResponseCode;
-import gift.dto.Order.OrderRequest;
-import gift.entity.Member.Member;
-import gift.entity.Product.Option.ProductOption;
-import gift.entity.Product.Product;
-import gift.entity.Wish.Wish;
+import gift.dto.order.OrderRequest;
+import gift.entity.member.Member;
+import gift.entity.product.Product;
+import gift.entity.product.option.ProductOption;
+import gift.entity.wish.Wish;
 import gift.external.KaKaoMessageClient;
 import gift.repository.MemberRepository;
 import gift.repository.OptionRepository;

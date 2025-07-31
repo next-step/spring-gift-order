@@ -3,7 +3,7 @@ package gift.controller.api;
 import gift.auth.cookie.CookieUtil;
 import gift.dto.auth.AuthUser;
 import gift.dto.auth.TokenResponse;
-import gift.service.Auth.AuthService;
+import gift.service.auth.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;

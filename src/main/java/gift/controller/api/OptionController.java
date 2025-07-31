@@ -2,9 +2,9 @@ package gift.controller.api;
 
 import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
-import gift.dto.Product.Option.ProductOptionRequest;
-import gift.dto.Product.Option.ProductOptionResponse;
-import gift.service.Product.Option.OptionService;
+import gift.dto.product.option.ProductOptionRequest;
+import gift.dto.product.option.ProductOptionResponse;
+import gift.service.product.option.OptionService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;

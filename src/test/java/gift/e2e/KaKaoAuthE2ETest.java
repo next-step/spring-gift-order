@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import gift.dto.auth.AuthUser;
 import gift.dto.auth.TokenResponse;
-import gift.service.Auth.AuthService;
+import gift.service.auth.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

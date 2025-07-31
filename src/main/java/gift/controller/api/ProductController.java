@@ -2,12 +2,12 @@ package gift.controller.api;
 
 import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
-import gift.dto.Pagination.PageResponse;
-import gift.dto.Pagination.Pagination;
-import gift.dto.Product.ProductRequest;
-import gift.dto.Product.ProductResponse;
-import gift.dto.Product.ProductUpdateRequest;
-import gift.service.Product.ProductService;
+import gift.dto.pagination.PageResponse;
+import gift.dto.pagination.Pagination;
+import gift.dto.product.ProductRequest;
+import gift.dto.product.ProductResponse;
+import gift.dto.product.ProductUpdateRequest;
+import gift.service.product.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

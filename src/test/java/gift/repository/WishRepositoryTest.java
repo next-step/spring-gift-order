@@ -3,9 +3,9 @@ package gift.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import gift.entity.Member.Member;
-import gift.entity.Product.Product;
-import gift.entity.Wish.Wish;
+import gift.entity.member.Member;
+import gift.entity.product.Product;
+import gift.entity.wish.Wish;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

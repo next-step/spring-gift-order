@@ -36,7 +36,7 @@ public class ProductController {
         ProductResponse response = productService.create(request);
 
         return ResponseEntity
-            .status(CustomResponseCode.CREATED.getHttpStatus())
+            .status(201)
             .body(CustomResponseBody.of(CustomResponseCode.CREATED, response));
     }
 
@@ -47,7 +47,7 @@ public class ProductController {
         PageResponse<ProductResponse> responses = productService.getAllProducts(pagination);
 
         return ResponseEntity
-            .status(CustomResponseCode.LIST_RETRIEVED.getHttpStatus())
+            .status(200)
             .body(CustomResponseBody.of(CustomResponseCode.LIST_RETRIEVED, responses));
     }
 
@@ -57,7 +57,7 @@ public class ProductController {
         ProductResponse response = productService.getProduct(productId);
 
         return ResponseEntity
-            .status(CustomResponseCode.RETRIEVED.getHttpStatus())
+            .status(200)
             .body(CustomResponseBody.of(CustomResponseCode.RETRIEVED, response));
     }
 
@@ -69,7 +69,7 @@ public class ProductController {
         ProductResponse response = productService.update(productId, request);
 
         return ResponseEntity
-            .status(CustomResponseCode.UPDATED.getHttpStatus())
+            .status(200)
             .body(CustomResponseBody.of(CustomResponseCode.UPDATED, response));
     }
 
@@ -78,7 +78,7 @@ public class ProductController {
         productService.delete(productId);
 
         return ResponseEntity
-            .status(CustomResponseCode.DELETED.getHttpStatus())
+            .status(204)
             .body(CustomResponseBody.of(CustomResponseCode.DELETED));
     }
 }

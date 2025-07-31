@@ -37,7 +37,7 @@ public class WishController {
     ) {
         WishResponse response = wishService.addWish(member, request);
         return ResponseEntity
-            .status(CustomResponseCode.CREATED.getHttpStatus())
+            .status(201)
             .body(CustomResponseBody.of(CustomResponseCode.CREATED, response));
     }
 
@@ -49,7 +49,8 @@ public class WishController {
         PageResponse<WishResponse> wishes = wishService.getWishes(member, pagination);
 
         return ResponseEntity
-            .ok(CustomResponseBody.of(CustomResponseCode.RETRIEVED, wishes));
+            .status(200)
+            .body(CustomResponseBody.of(CustomResponseCode.RETRIEVED, wishes));
     }
 
     @DeleteMapping("/{productId}")
@@ -59,7 +60,7 @@ public class WishController {
     ) {
         wishService.deleteWish(member, productId);
         return ResponseEntity
-            .status(CustomResponseCode.DELETED.getHttpStatus())
+            .status(204)
             .body(CustomResponseBody.of(CustomResponseCode.DELETED));
     }
 }

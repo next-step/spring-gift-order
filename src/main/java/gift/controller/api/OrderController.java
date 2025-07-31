@@ -32,7 +32,7 @@ public class OrderController {
         OrderResponse response = orderService.create(member, request);
 
         return ResponseEntity
-            .status(CustomResponseCode.CREATED.getHttpStatus())
+            .status(201)
             .body(CustomResponseBody.of(CustomResponseCode.CREATED, response));
     }
 }

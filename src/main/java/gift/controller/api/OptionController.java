@@ -34,7 +34,7 @@ public class OptionController {
         ProductOptionResponse response = optionService.add(productId, request);
 
         return ResponseEntity
-            .status(CustomResponseCode.CREATED.getHttpStatus())
+            .status(201)
             .body(CustomResponseBody.of(CustomResponseCode.CREATED, response));
     }
 
@@ -46,7 +46,7 @@ public class OptionController {
         List<ProductOptionResponse> responses = optionService.getOptionsByProductId(productId);
 
         return ResponseEntity
-            .status(CustomResponseCode.RETRIEVED.getHttpStatus())
+            .status(200)
             .body(CustomResponseBody.of(CustomResponseCode.RETRIEVED, responses));
     }
 
@@ -58,7 +58,7 @@ public class OptionController {
         ProductOptionResponse response = optionService.update(optionId, request);
 
         return ResponseEntity
-            .status(CustomResponseCode.UPDATED.getHttpStatus())
+            .status(200)
             .body(CustomResponseBody.of(CustomResponseCode.UPDATED, response));
     }
 }

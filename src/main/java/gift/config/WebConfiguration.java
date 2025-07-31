@@ -1,5 +1,6 @@
-package gift.jwt;
+package gift.config;
 
+import gift.jwt.AuthenticatedArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

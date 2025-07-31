@@ -43,5 +43,4 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PEM_KEY }}
           script:
-            chmod +x /home/${{ secrets.EC2_USERNAME }}/deploy.sh
             /home/${{ secrets.EC2_USERNAME }}/deploy.sh

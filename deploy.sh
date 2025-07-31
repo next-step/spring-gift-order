@@ -4,7 +4,7 @@ PROJECT_PATH=/home/ubuntu/spring-gift-order
 GIT_BRANCH=step3
 EXTERNAL_CONFIG_PATH="/home/ubuntu/config/application-prod.properties"
 
-BUILD_PATH=$(ls $PROJECT_PATH/build/libs/*.jar)
+BUILD_PATH=$(ls $PROJECT_PATH/build/libs/spring-gift-0.0.1-SNAPSHOT.jar)
 JAR_NAME=$(basename $BUILD_PATH)
 
 CURRENT_PID=$(pgrep -f $JAR_NAME)
@@ -31,6 +31,6 @@ mkdir -p $LOG_PATH
 
 echo "🚀 애플리케이션 시작!"
 
-nohup java -Xms256m -Xmx512m -jar $BUILD_PATH --spring.profiles.active=prod --spring.config.location=classpath:/application.properties,$EXTERNAL_CONFIG_PATH > $LOG_PATH/app.log 2>&1 &
+nohup java -jar $BUILD_PATH --spring.profiles.active=prod --spring.config.location=classpath:/application.properties,$EXTERNAL_CONFIG_PATH > $LOG_PATH/app.log 2>&1 &
 
 echo "🎉 배포가 완료되었습니다 🎉"

@@ -82,4 +82,11 @@ public class Product {
         this.options.clear();
         this.options.addAll(newOptions);
     }
+
+    public ProductOption findOptionById(Long optionId) {
+        return options.stream()
+                .filter(opt -> opt.getId().equals(optionId))
+                .findFirst()
+                .orElseThrow(() -> new InvalidProductOptionException("optionError", "해당 옵션을 찾을 수 없습니다."));
+    }
 }

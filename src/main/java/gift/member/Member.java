@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Member{
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,18 +21,32 @@ public class Member{
     private String name;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private String clientId;
+    @Enumerated(EnumType.STRING)
+    private AuthType authType;
 
     public MemberResponseDto toMemberResponseDto() {
         return new MemberResponseDto(this);
     }
 
-    protected Member(){}
+    protected Member() {
+    }
 
-    public Member(String email, String password, String name, Role role) {
+    public Member(String email, String password, String name, Role role, String clientId, AuthType authType) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.role = role;
+        this.clientId = clientId;
+        this.authType = authType;
+    }
+
+    public static Member createEmailMember(String email, String hashedPassword, String name) {
+        return new Member(email, hashedPassword, name, Role.USER, "", AuthType.EMAIL);
+    }
+
+    public static Member createKakaoMember(String clientId) {
+        return new Member("", "", "", Role.USER, clientId, AuthType.KAKAO);
     }
 
     public void update(MemberUpdateRequestDto requestDto) {
@@ -59,5 +73,13 @@ public class Member{
 
     public Role getRole() {
         return role;
+    }
+
+    public AuthType getAuthType() {
+        return authType;
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 }

@@ -2,6 +2,7 @@ package gift.authorization.oauth;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @ConfigurationProperties(prefix = "kakao")
@@ -15,6 +16,18 @@ public class KakaoOAuthProperties {
     public void setRedirectUri(String redirectUri) { this.redirectUri = redirectUri; }
     public void setTokenUri(String tokenUri) { this.tokenUri = tokenUri; }
     public void setUserInfoUri(String userInfoUri) { this.userInfoUri = userInfoUri; }
+
+
+    public String getKakaoLoginUrl() {
+        return UriComponentsBuilder
+                .fromUriString("https://kauth.kakao.com/oauth/authorize")
+                .queryParam("response_type", "code")
+                .queryParam("client_id", this.clientId)
+                .queryParam("redirect_uri", this.redirectUri)
+                .queryParam("scope", "talk_message")
+                .build()
+                .toUriString();
+    }
 
     public String getClientId() {
         return clientId;

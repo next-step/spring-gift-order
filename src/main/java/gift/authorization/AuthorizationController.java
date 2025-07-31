@@ -1,8 +1,8 @@
 package gift.authorization;
 
-import gift.authorization.dto.LoginRequestDto;
+import gift.authorization.dto.LoginRequestByEmailDto;
 import gift.authorization.dto.TokenResponseDto;
-import gift.authorization.dto.UserRegisterRequestDto;
+import gift.authorization.dto.UserRegisterRequestByEmailDto;
 import gift.authorization.service.AuthorizationService;
 import gift.member.exception.InvalidMemberException;
 import jakarta.validation.Valid;
@@ -28,23 +28,23 @@ public class AuthorizationController {
     //유저를 추가하고 토큰을 반환하는 api
     @PostMapping("/register")
     public ResponseEntity<TokenResponseDto> registerMember(
-            @Valid @RequestBody UserRegisterRequestDto requestDto, BindingResult bindingResult
+            @Valid @RequestBody UserRegisterRequestByEmailDto requestDto, BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
             throwInvalidMemberException(bindingResult);
         }
-        TokenResponseDto responseDto = AuthorizationService.registerMember(requestDto);
+        TokenResponseDto responseDto = AuthorizationService.registerMemberByEmail(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> loginMember(
-            @Valid @RequestBody LoginRequestDto requestDto, BindingResult bindingResult
+            @Valid @RequestBody LoginRequestByEmailDto requestDto, BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
             throwInvalidMemberException(bindingResult);
         }
-        TokenResponseDto responseDto = AuthorizationService.loginMember(requestDto);
+        TokenResponseDto responseDto = AuthorizationService.loginMemberByEmail(requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 

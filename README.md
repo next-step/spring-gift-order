@@ -1,3 +1,17 @@
+# spring-gift-order
+
+## 1단계 구현
+### 요구사항
+- kakao 로그인을 위한 준비
+- 카카오 로그인을 통해 인가 코드를 받고, 인가 코드를 사용해 토큰을 받은 후 향후 카카오 API 사용을 준비한다.
+
+### 파일 추가
+- kakao : KakaoProperties, KakaoController, KakaoService 추가
+- 이후 http://localhost:8080/kakao/token?code= GET 수행
+
+### 작동
+- application.yml에 각자의 api code를 넣는다.
+
 # spring-gift-enhancement
 
 ## 1단계 구현

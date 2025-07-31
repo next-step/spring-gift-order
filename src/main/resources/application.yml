@@ -11,3 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+kakao:
+  client-id: your-token-id
+  redirect-uri: http://localhost:8080
+

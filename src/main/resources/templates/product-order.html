@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 주문 페이지</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/wishlist.css" type="text/css">
+  <link rel="stylesheet" href="/css/order.css" type="text/css">
+</head>
+<body>
+
+<div class="page-header">
+  <a th:href="@{/products}" class="header-button align-left">← 뒤로가기</a>
+  <h1 class="page-title">상품 <b>주문하기</b></h1>
+</div>
+
+<div class="order-container" th:if="${productResponseDto != null}">
+
+  <img th:src="${productResponseDto.imageUrl}" alt="상품 이미지" class="order-product-image"/>
+  <h2 class="order-product-name" th:text="${productResponseDto.name}">상품 이름</h2>
+  <p class="order-product-price" th:text="|${#numbers.formatInteger(productResponseDto.price, 3, 'COMMA')}원|">가격</p>
+
+  <form th:action="@{/view/products/order/{productId}(productId=${productResponseDto.id})}" method="post">
+    <div class="order-form-group">
+      <label for="quantity">주문 수량:</label>
+      <input type="number" id="quantity" name="quantity" value="1" min="1"
+             th:max="${productResponseDto.quantity}" required>
+    </div>
+    <div class="order-form-group">
+      <label for="option-select">옵션 선택:</label>
+      <select id="option-select" name="optionId" class="order-option-select" required>
+
+        <option value="" selected disabled>옵션을 선택해주세요.</option>
+
+        <option th:each="option : ${productOptionList}"
+                th:value="${option.id}"
+                th:text="|${option.name} (재고: ${option.quantity}개)|"
+                th:disabled="${option.quantity == 0}">
+        </option>
+      </select>
+    </div>
+
+    <div class="order-form-group" style="margin-top: 20px;">
+      <label for="message">배송 메시지:</label>
+      <input type="text" id="message" name="message" placeholder="수령인에게 보낼 메시지 (선택)" style="width: 250px; padding: 8px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+
+    <button type="submit" class="wish-order-button" style="margin-top: 20px;">주문 확정</button>
+  </form>
+</div>
+
+<div class="order-container" th:if="${productResponseDto == null}">
+  <p>주문할 상품 정보를 불러올 수 없습니다.</p>
+</div>
+
+</body>
+</html>

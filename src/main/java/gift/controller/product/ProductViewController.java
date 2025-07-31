@@ -1,14 +1,21 @@
 package gift.controller.product;
 
+import gift.dto.product.ProductOptionResponseDto;
 import gift.dto.product.ProductRequestDto;
 import gift.dto.product.ProductResponseDto;
+import gift.service.product.ProductOptionService;
 import gift.service.product.ProductService;
+import gift.service.wishlist.WishListService;
+import gift.util.JwtUtil;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,10 +28,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/view")
 public class ProductViewController {
 
+    private final JwtUtil jwtUtil;
     private final ProductService productService;
+    private final ProductOptionService productOptionService;
+    private final WishListService wishListService;
 
-    public ProductViewController(ProductService productService) {
+    public ProductViewController(JwtUtil jwtUtil, ProductService productService,
+        ProductOptionService productOptionService,
+        WishListService wishListService) {
+        this.jwtUtil = jwtUtil;
         this.productService = productService;
+        this.productOptionService = productOptionService;
+        this.wishListService = wishListService;
     }
 
     @GetMapping("/products")
@@ -119,4 +134,38 @@ public class ProductViewController {
         return "home";
     }
 
+    @GetMapping("/wishlist/select")
+    public String showWishListSelectPage(
+        @CookieValue("token") String jwtToken,
+        Model model
+    ) {
+        Page<ProductResponseDto> productList = productService.findAll(0, 10);
+
+        Long memberId = jwtUtil.getMemberIdFromToken(jwtToken);
+        Page<ProductResponseDto> wishPage = wishListService.findAll(memberId, 0, 10);
+        Set<Long> wishedProductIds = wishPage.getContent().stream()
+            .map(ProductResponseDto::id)
+            .collect(Collectors.toSet());
+
+        model.addAttribute("productList", productList);
+        model.addAttribute("wishedProductIds", wishedProductIds);
+
+        return "wishlist-add";
+    }
+
+    @GetMapping("/wishlist/order/{id}")
+    public String showWishListOrderPage(
+        @CookieValue("token") String jwtToken,
+        @PathVariable Long id,
+        Model model
+    ) {
+        ProductResponseDto productResponseDto = productService.findById(id);
+        model.addAttribute("productResponseDto", productResponseDto);
+
+        List<ProductOptionResponseDto> productOptionList = productOptionService.findAllById(
+            productResponseDto.id());
+        model.addAttribute("productOptionList", productOptionList);
+
+        return "product-order";
+    }
 }

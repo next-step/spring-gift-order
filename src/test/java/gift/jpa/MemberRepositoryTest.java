@@ -3,6 +3,7 @@ package gift.jpa;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import gift.entity.LoginType;
 import gift.entity.Member;
 import gift.repository.member.MemberRepository;
 import gift.util.Sha256Util;
@@ -23,7 +24,7 @@ public class MemberRepositoryTest {
 
     @Test
     void save() {
-        Member expected = new Member("test@naver.com", "qwer");
+        Member expected = new Member("test@naver.com", "qwer", LoginType.LOCAL);
         Member actual = memberRepository.save(expected);
         assertAll(
             () -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
@@ -34,7 +35,7 @@ public class MemberRepositoryTest {
     @Test
     void findById() {
         Member expected = new Member("example@naver.com",
-            "f6f2ea8f45d8a057c9566a33f99474da2e5c6a6604d736121650e2730c6fb0a3");
+            "f6f2ea8f45d8a057c9566a33f99474da2e5c6a6604d736121650e2730c6fb0a3", LoginType.LOCAL);
         Member actual = memberRepository.findById(1L).get();
         assertAll(
             () -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
@@ -44,7 +45,7 @@ public class MemberRepositoryTest {
 
     @Test
     void existsByEmail() {
-        Member expected = new Member("test@naver.com", "qwer");
+        Member expected = new Member("test@naver.com", "qwer", LoginType.LOCAL);
         memberRepository.save(expected);
         String actual = memberRepository.save(expected).getEmail();
         assertThat(actual).isEqualTo(expected.getEmail());
@@ -52,24 +53,24 @@ public class MemberRepositoryTest {
 
     @Test
     void changePassword() {
-        Member expected = new Member("test@naver.com", "qwer");
+        Member expected = new Member("test@naver.com", "qwer", LoginType.LOCAL);
         String newPassword = sha256Util.encrypt("qwer1234");
 
         Member beforeMember = memberRepository.save(expected);
         beforeMember.changePassword(newPassword);
-        Member afterMember = memberRepository.findByEmail(expected.getEmail()).get();
+        Member afterMember = memberRepository.findByEmailAndLoginType(expected.getEmail(), expected.getLoginType()).get();
 
         assertThat(afterMember.getPassword()).isEqualTo(newPassword);
     }
 
     @Test
     void resetPassword() {
-        Member expected = new Member("test@naver.com", "qwer");
+        Member expected = new Member("test@naver.com", "qwer", LoginType.LOCAL);
         String newPassword = sha256Util.encrypt("qwer1234");
 
         Member beforeMember = memberRepository.save(expected);
         beforeMember.changePassword(newPassword);
-        Member afterMember = memberRepository.findByEmail(expected.getEmail()).get();
+        Member afterMember = memberRepository.findByEmailAndLoginType(expected.getEmail(), expected.getLoginType()).get();
 
         assertThat(afterMember.getPassword()).isEqualTo(newPassword);
     }

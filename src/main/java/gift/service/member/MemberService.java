@@ -1,5 +1,6 @@
 package gift.service.member;
 
+import gift.dto.member.KakaoMemberRequestDto;
 import gift.dto.member.MemberCredentialDto;
 import gift.dto.member.MemberPasswordChangeDto;
 import gift.dto.member.MemberRequestDto;
@@ -8,6 +9,8 @@ import gift.dto.member.MemberResponseDto;
 public interface MemberService {
 
     public MemberResponseDto create(MemberRequestDto requestDto);
+
+    public MemberResponseDto createOrLoginForKakao(KakaoMemberRequestDto requestDto);
 
     public MemberResponseDto login(MemberRequestDto requestDto);
 

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import gift.dto.member.MemberPasswordChangeDto;
 import gift.dto.member.MemberRequestDto;
+import gift.entity.LoginType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("회원 등록 - 성공")
     void createMember_success() {
-        var requestDto = new MemberRequestDto("example1@naver.com", "qwer");
+        var requestDto = new MemberRequestDto("example1@naver.com", "qwer", LoginType.LOCAL);
 
         var response = client.post()
             .uri(BASE_URL + "/register")
@@ -47,7 +48,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("회원 등록 - 실패")
     void createMember_fail() {
-        var requestDto = new MemberRequestDto("example@naver.com", "qwer");
+        var requestDto = new MemberRequestDto("example@naver.com", "qwer", LoginType.LOCAL);
 
         assertThatExceptionOfType(HttpClientErrorException.Conflict.class).isThrownBy(() ->
             client.post()
@@ -61,7 +62,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("회원 로그인 - 성공")
     void loginMember_success() {
-        var requestDto = new MemberRequestDto("example@naver.com", "qwer");
+        var requestDto = new MemberRequestDto("example@naver.com", "qwer", LoginType.LOCAL);
 
         var response = client.post()
             .uri(BASE_URL + "/login")
@@ -75,7 +76,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("회원 로그인 - 실패")
     void loginMember_fail() {
-        var requestDto = new MemberRequestDto("example1@naver.com", "qwer1");
+        var requestDto = new MemberRequestDto("example1@naver.com", "qwer1", LoginType.LOCAL);
 
         assertThatExceptionOfType(HttpClientErrorException.Forbidden.class)
             .isThrownBy(() ->
@@ -90,7 +91,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("비밀번호 변경 - 성공")
     void changePassword_success() {
-        var requestDto = new MemberPasswordChangeDto("example@naver.com", "qwer", "qwer1234");
+        var requestDto = new MemberPasswordChangeDto("example@naver.com", "qwer", "qwer1234", LoginType.LOCAL);
 
         var response = client.put()
             .uri(BASE_URL + "/password/change")
@@ -104,7 +105,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("비밀번호 변경 - 실패1 (아이디만 틀린 경우)")
     void changePassword_fail1() {
-        var requestDto = new MemberPasswordChangeDto("test@naver.com", "qwer", "qwer1234");
+        var requestDto = new MemberPasswordChangeDto("test@naver.com", "qwer", "qwer1234", LoginType.LOCAL);
 
         assertThatExceptionOfType(HttpClientErrorException.Forbidden.class)
             .isThrownBy(() ->
@@ -119,7 +120,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("비밀번호 변경 - 실패2 (비밀번호만 틀린 경우)")
     void changePassword_fail2() {
-        var requestDto = new MemberPasswordChangeDto("example@naver.com", "qwer1234", "qwer");
+        var requestDto = new MemberPasswordChangeDto("example@naver.com", "qwer1234", "qwer", LoginType.LOCAL);
 
         assertThatExceptionOfType(HttpClientErrorException.Forbidden.class)
             .isThrownBy(() ->
@@ -134,7 +135,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("비밀번호 재설정 - 성공")
     void resetPassword_success() {
-        var requestDto = new MemberRequestDto("example@naver.com", "qwer");
+        var requestDto = new MemberRequestDto("example@naver.com", "qwer", LoginType.LOCAL);
 
         var response = client.post()
             .uri(BASE_URL + "/password/reset")
@@ -148,7 +149,7 @@ public class MemberControllerTest {
     @Test
     @DisplayName("비밀번호 재설정 - 실패 (아이디가 틀린 경우)")
     void resetPassword_fail() {
-        var requestDto = new MemberRequestDto("test@naver.com", "qwer12");
+        var requestDto = new MemberRequestDto("test@naver.com", "qwer12", LoginType.LOCAL);
 
         assertThatExceptionOfType(HttpClientErrorException.Forbidden.class)
             .isThrownBy(() ->

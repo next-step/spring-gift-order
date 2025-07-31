@@ -2,10 +2,12 @@ package gift.resolver;
 
 import gift.dto.member.MemberCredentialDto;
 import gift.entity.LoginMember;
+import gift.entity.LoginType;
 import gift.entity.Member;
 import gift.exception.UnAuthenicatedException;
 import gift.service.member.MemberService;
 import gift.util.JwtUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -36,16 +38,25 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         HttpServletRequest request
             = (HttpServletRequest) webRequest.getNativeRequest();
 
+        String token = null;
         String authenicatedHeader = request.getHeader("Authorization");
 
-        if (authenicatedHeader == null || !authenicatedHeader.startsWith("Bearer ")) {
-            throw new UnAuthenicatedException("요청 헤더에 Authorization이 없습니다.");
+        if (authenicatedHeader != null && authenicatedHeader.startsWith("Bearer ")) {
+            token = authenicatedHeader.substring(7);
+        } else {
+            if (request.getCookies() != null) {
+                for (Cookie cookie : request.getCookies()) {
+                    if ("token".equals(cookie.getName())) {
+                        token = cookie.getValue();
+                    }
+                }
+            }
         }
 
-        String token = authenicatedHeader.substring(7);
         Long memberId = jwtUtil.getMemberIdFromToken(token);
         MemberCredentialDto responseDto = memberService.findById(memberId);
 
-        return new Member(responseDto.id(), responseDto.email(), responseDto.password());
+        return new Member(responseDto.id(), responseDto.email(), responseDto.password(),
+            LoginType.LOCAL);
     }
 }

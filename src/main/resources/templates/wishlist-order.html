@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 주문 페이지</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/wishlist.css" type="text/css">
+</head>
+<body>
+<div class="page-header">
+  <a th:href="@{/view/wishlist/select}" class="header-button align-left">← 상품 목록</a>
+
+  <h1 class="page-title">내 위시리스트 목록</h1>
+</div>
+
+<table class="product-table">
+  <thead>
+  <tr>
+    <th>아이디</th>
+    <th>상품명</th>
+    <th>가격</th>
+    <th>이미지 URL</th>
+    <th>현재 상품 수량</th>
+    <th>상품 주문하기</th>
+  </tr>
+  </thead>
+
+  <tbody th:if="${productList == null or productList.isEmpty()}">
+  <tr>
+    <td colspan="6">위시리스트가 비어있습니다.</td>
+  </tr>
+  </tbody>
+
+  <tbody th:if="${productList != null and !productList.isEmpty()}">
+  <tr th:each="product : ${productList}">
+    <td th:text="${product.id}"></td>
+    <td th:text="${product.name}"></td>
+    <td th:text="${product.price}"></td>
+
+    <td>
+      <a th:href="${product.imageUrl}" target="_blank" th:text="${product.imageUrl}"></a>
+    </td>
+    <td th:text="${product.quantity}"></td>
+
+    <td>
+      <form th:action="@{/view/wishlist/order/{productId}(productId=${product.id})}" method="get">
+        <button type="submit" class="wish-order-button">상품 주문하기</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

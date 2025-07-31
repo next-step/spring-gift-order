@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "orders")
@@ -31,7 +31,7 @@ public class Order {
     private int quantity;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime orderDateTime;
+    private ZonedDateTime orderDateTime;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
@@ -45,7 +45,7 @@ public class Order {
         this.option = option;
         this.quantity = quantity;
         this.message = message;
-        this.orderDateTime = LocalDateTime.now();
+        this.orderDateTime = ZonedDateTime.now();
     }
 
     public Long getId() {
@@ -64,7 +64,7 @@ public class Order {
         return quantity;
     }
 
-    public LocalDateTime getOrderDateTime() {
+    public ZonedDateTime getOrderDateTime() {
         return orderDateTime;
     }
 

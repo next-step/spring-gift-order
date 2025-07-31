@@ -11,6 +11,7 @@ public class KakaoProperties {
     private String redirectUri;
     private String oauthTokenUrlHost;
     private String messageUrl;
+    private String baseUrl;
 
     public String getClientId() {
         return clientId;
@@ -45,7 +46,7 @@ public class KakaoProperties {
     }
 
     public String buildAuthorizationUrl() {
-        return UriComponentsBuilder.fromUriString("https://kauth.kakao.com/oauth/authorize")
+        return UriComponentsBuilder.fromUriString(baseUrl)
                 .queryParam("response_type", "code")
                 .queryParam("client_id", clientId)
                 .queryParam("redirect_uri", redirectUri)

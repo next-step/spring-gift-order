@@ -47,10 +47,9 @@ public class KakaoMessageClient {
             productName, quantity, customMessage);
 
         try {
-            return objectMapper.writeValueAsString(
-                new TextTemplate("text", text,
-                    new Link("http://localhost:8080/orders", "http://localhost:8080/mobile/orders",
-                        null, null)));
+            Link link = new Link("http://localhost:8080/orders", "http://localhost:8080/mobile/orders", null, null);
+            TextTemplate textTemplate = new TextTemplate("text", text, link);
+            return objectMapper.writeValueAsString(textTemplate);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("메시지 템플릿 JSON 변환 실패", e);
         }

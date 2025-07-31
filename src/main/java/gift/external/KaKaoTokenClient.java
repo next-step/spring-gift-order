@@ -1,11 +1,8 @@
 package gift.external;
 
 import gift.common.code.CustomResponseCode;
-import gift.common.exception.ForbiddenException;
 import gift.common.exception.KaKaoClientException;
 import gift.common.exception.ServerErrorException;
-import gift.common.exception.UnauthorizedException;
-import gift.common.exception.ValidationException;
 import gift.dto.auth.KaKaoTokenInfo;
 import gift.dto.auth.KaKaoUserInfo;
 import java.util.Map;
@@ -40,15 +37,6 @@ public class KaKaoTokenClient {
             .headers(h -> h.setContentType(MediaType.APPLICATION_FORM_URLENCODED))
             .body(body)
             .retrieve()
-            .onStatus(status -> status.value() == 400, (req, res) -> {
-                throw new ValidationException();
-            })
-            .onStatus(status -> status.value() == 401, (req, res) -> {
-                throw new UnauthorizedException();
-            })
-            .onStatus(status -> status.value() == 403, (req, res) -> {
-                throw new ForbiddenException();
-            })
             .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                 throw new KaKaoClientException();
             })
@@ -63,15 +51,6 @@ public class KaKaoTokenClient {
             .uri(userInfoUrl)
             .header("Authorization", "Bearer " + accessToken)
             .retrieve()
-            .onStatus(status -> status.value() == 400, (req, res) -> {
-                throw new ValidationException();
-            })
-            .onStatus(status -> status.value() == 401, (req, res) -> {
-                throw new UnauthorizedException();
-            })
-            .onStatus(status -> status.value() == 403, (req, res) -> {
-                throw new ForbiddenException();
-            })
             .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
                 throw new KaKaoClientException();
             })

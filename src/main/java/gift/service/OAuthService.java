@@ -32,23 +32,24 @@ public class OAuthService {
 
     @Transactional
     public TokenResponse loginWithKakao(String code) {
-        KakaoTokenResponse kakaoToken = kakaoClient.getKakaoToken(
+        KakaoTokenResponse kakaoAccessToken = kakaoClient.getKakaoToken(
                 "authorization_code",
                 kakaoOauthProperties.clientId(),
                 kakaoOauthProperties.redirectUri(),
                 code,
                 kakaoOauthProperties.clientSecret()
         );
-        log.info("✅ 카카오 액세스 토큰, ('X-Kakao-Token' 헤더용): {}", kakaoToken.accessToken());
+        log.info("✅ 카카오 액세스 토큰, ('X-Kakao-Token' 헤더용): {}", kakaoAccessToken.accessToken());
 
-        KakaoUserInfoResponse userInfo = kakaoClient.getKakaoUserInfo(kakaoToken.accessToken());
+        KakaoUserInfoResponse userInfo = kakaoClient.getKakaoUserInfo(
+                kakaoAccessToken.accessToken());
 
         Member member = memberService.findOrCreateMemberByKakaoId(userInfo.id());
 
-        String accessToken = jwtTokenProvider.createToken(member.getId().toString());
+        String jwtToken = jwtTokenProvider.createToken(member.getId().toString());
 
-        log.info("✅ Application JWT ('Authorization' 헤더용): {}", accessToken);
+        log.info("✅ Application JWT ('Authorization' 헤더용): {}", jwtToken);
 
-        return new TokenResponse(accessToken);
+        return new TokenResponse(jwtToken);
     }
 }

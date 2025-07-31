@@ -125,7 +125,7 @@ public class PaginationE2ETest {
                 });
 
         assertThat(firstPage).hasSize(5);
-        assertThat(firstPage.get(0).name()).isEqualTo("테스트 상품");
+        assertThat(firstPage.get(0).name()).isEqualTo("Test Product 1");
 
         // 두 번째 페이지
         List<ProductResponseDto> secondPage = restClient.get()
@@ -136,7 +136,7 @@ public class PaginationE2ETest {
                 });
 
         assertThat(secondPage).hasSize(5);
-        assertThat(secondPage.get(0).name()).isEqualTo("Test Product 5");
+        assertThat(secondPage.get(0).name()).isEqualTo("Test Product 6");
     }
 
     @Test

@@ -19,9 +19,11 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("dev")
 public class PaginationE2ETest {
 
     @LocalServerPort
@@ -123,7 +125,7 @@ public class PaginationE2ETest {
                 });
 
         assertThat(firstPage).hasSize(5);
-        assertThat(firstPage.get(0).name()).isEqualTo("Test Product 1");
+        assertThat(firstPage.get(0).name()).isEqualTo("테스트 상품");
 
         // 두 번째 페이지
         List<ProductResponseDto> secondPage = restClient.get()
@@ -134,7 +136,7 @@ public class PaginationE2ETest {
                 });
 
         assertThat(secondPage).hasSize(5);
-        assertThat(secondPage.get(0).name()).isEqualTo("Test Product 6");
+        assertThat(secondPage.get(0).name()).isEqualTo("Test Product 5");
     }
 
     @Test

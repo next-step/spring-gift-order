@@ -3,9 +3,10 @@ package gift.controller;
 import gift.dto.LoginMember;
 import gift.dto.OrderRequest;
 import gift.dto.OrderResponse;
+import gift.entity.Member;
 import gift.jwt.Authenticated;
+import gift.service.MemberService;
 import gift.service.OrderService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,16 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
+    private final MemberService memberService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, MemberService memberService) {
         this.orderService = orderService;
+        this.memberService = memberService;
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@Authenticated
-    LoginMember loginMember, @Valid @RequestBody OrderRequest request) {
+    public ResponseEntity<OrderResponse> createOrder(@Authenticated LoginMember loginMember, @RequestBody OrderRequest request) {
 
-        OrderResponse response = orderService.createOrder(request, loginMember.getId());
+        Member member = memberService.findByEmail(loginMember.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("이메일이 유효하지 않습니다."));
+
+        OrderResponse response = orderService.createOrder(request, member);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

@@ -47,7 +47,7 @@ public class OrderServiceTest {
         OrderRequest request = new OrderRequest(product.getId(), option.getId(), 2, "추카해");
 
         // when
-        orderService.createOrder(request, member.getId());
+        orderService.createOrder(request, member);
 
         // then
         Option updated = optionRepository.findById(option.getId()).get();

@@ -8,11 +8,11 @@ import org.springframework.http.HttpStatus;
 @Embeddable
 public record WishQuantity(
     @Column(name = "quantity", nullable = false)
-    Integer quantity
+    Integer value
 ) {
 
     public WishQuantity {
-        if (quantity == null || quantity < 0) {
+        if (value == null || value < 0) {
             throw new ValidationException(HttpStatus.BAD_REQUEST, "수량은 0 이상이어야 합니다.");
         }
     }

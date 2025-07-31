@@ -82,14 +82,14 @@ public class Product {
     }
 
     public String getName() {
-        return name.name();
+        return name.value();
     }
 
     public Integer getPrice() {
-        return price.price();
+        return price.value();
     }
 
     public String getImageUrl() {
-        return imageUrl.imageUrl();
+        return imageUrl.value();
     }
 }

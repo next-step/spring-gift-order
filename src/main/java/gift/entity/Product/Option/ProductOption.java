@@ -59,15 +59,15 @@ public class ProductOption {
     }
 
     public String getName() {
-        return name.name();
+        return name.value();
     }
 
     public Long getQuantity() {
-        return quantity.quantity();
+        return quantity.value();
     }
 
     public Product getProduct() {
         return product;
     }
-    
+
 }

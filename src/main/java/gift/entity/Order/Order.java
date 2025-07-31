@@ -63,10 +63,10 @@ public class Order {
     }
 
     public int getQuantity() {
-        return quantity.quantity();
+        return quantity.value();
     }
 
     public String getMessage() {
-        return message.message();
+        return message.value();
     }
 }

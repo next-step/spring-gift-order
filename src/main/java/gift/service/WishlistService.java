@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 public class WishlistService {
 
@@ -20,25 +19,14 @@ public class WishlistService {
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
 
-    public WishlistService(WishlistRepository wishlistRepository, MemberRepository memberRepository,
-            ProductRepository productRepository) {
+    public WishlistService(WishlistRepository wishlistRepository, MemberRepository memberRepository, ProductRepository productRepository) {
         this.wishlistRepository = wishlistRepository;
         this.memberRepository = memberRepository;
         this.productRepository = productRepository;
     }
 
-    @Transactional(readOnly = true)
-    public Page<WishlistResponseDto> getWishlists(String userEmail, Pageable pageable) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        Page<Wishlist> wishlists = wishlistRepository.findByMember(member, pageable);
-
-        return wishlists.map(
-                wishlist -> new WishlistResponseDto(wishlist.getId(), wishlist.getProduct()));
-    }
     @Transactional
-    public void addWishlist(String userEmail, Long productId) {
+    public void addWish(String userEmail, Long productId) {
         Member member = memberRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         Product product = productRepository.findById(productId)
@@ -51,19 +39,24 @@ public class WishlistService {
         wishlistRepository.save(new Wishlist(member, product));
     }
 
-    @Transactional
-    public void deleteWishlist(String userEmail, Long wishlistId) {
+    @Transactional(readOnly = true)
+    public Page<WishlistResponseDto> getWishes(String userEmail, Pageable pageable) {
         Member member = memberRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        return wishlistRepository.findByMember(member, pageable)
+                .map(wish -> new WishlistResponseDto(
+                        wish.getId(),
+                        wish.getProduct()
+                ));
+    }
 
-        Wishlist wishlist = wishlistRepository.findById(wishlistId)
-                .orElseThrow(() -> new IllegalArgumentException("위시리스트 아이템을 찾을 수 없습니다."));
+    @Transactional
+    public void removeWish(String userEmail, Long productId) {
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
-
-        if (!wishlist.getMember().getId().equals(member.getId())) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
-        }
-
-        wishlistRepository.deleteById(wishlistId);
+        wishlistRepository.deleteByMemberAndProduct(member, product);
     }
 }

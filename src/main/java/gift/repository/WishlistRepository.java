@@ -18,4 +18,7 @@ public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 
     // 특정 회원이 소유한 위시리스트 아이템만 삭제
     void deleteByIdAndMember(Long id, Member member);
+
+    void deleteByMemberAndProduct(Member member, Product product);
+
 }

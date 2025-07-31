@@ -6,6 +6,16 @@ public class AuthenticationResult {
     private final Long memberId;
     private final String email;
     private final String role;
+    private final String newJwtToken;
+
+    private AuthenticationResult(boolean success, String errorMessage, Long memberId, String email, String role, String newJwtToken) {
+        this.success = success;
+        this.errorMessage = errorMessage;
+        this.memberId = memberId;
+        this.email = email;
+        this.role = role;
+        this.newJwtToken = newJwtToken;
+    }
 
     private AuthenticationResult(boolean success, String errorMessage, Long memberId, String email, String role) {
         this.success = success;
@@ -13,10 +23,15 @@ public class AuthenticationResult {
         this.memberId = memberId;
         this.email = email;
         this.role = role;
+        this.newJwtToken = null;
     }
 
     public static AuthenticationResult success(Long memberId, String email, String role) {
         return new AuthenticationResult(true, null, memberId, email, role);
+    }
+
+    public static AuthenticationResult success(Long memberId, String email, String role, String newJwtToken) {
+        return new AuthenticationResult(true, null, memberId, email, role, newJwtToken);
     }
 
     public static AuthenticationResult failure(String errorMessage) {
@@ -28,4 +43,8 @@ public class AuthenticationResult {
     public Long getMemberId() { return memberId; }
     public String getEmail() { return email; }
     public String getRole() { return role; }
+
+    public String getJwtToken() {
+        return newJwtToken;
+    }
 }

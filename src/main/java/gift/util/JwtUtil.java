@@ -1,5 +1,6 @@
 package gift.util;
 
+import gift.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -38,6 +39,23 @@ public class JwtUtil {
                 .signWith(getSigningKey())
                 .compact();
     }
+
+    public String generateTokenForKakao(Member member) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiration);
+
+        return Jwts.builder()
+                .setSubject(member.getKakaoId().toString())
+                .claim("memberId", member.getId())
+                .claim("provider", "kakao")
+                .claim("role", "USER")
+                .claim("email", member.getEmail().toString())
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getSigningKey())
+                .compact();
+    }
+
 
     public Claims extractAllClaims(String token) {
         return Jwts.parser()

@@ -1,6 +1,8 @@
 package gift.interceptor;
 
 import gift.auth.*;
+import gift.entity.Member;
+import gift.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -11,13 +13,16 @@ public class JwtInterceptor implements HandlerInterceptor {
     private final AuthenticationService authenticationService;
     private final AuthorizationService authorizationService;
     private final AuthErrorResponseHandler errorResponseHandler;
+    private final MemberRepository memberRepository;
 
     public JwtInterceptor(AuthenticationService authenticationService,
                           AuthorizationService authorizationService,
-                          AuthErrorResponseHandler errorResponseHandler) {
+                          AuthErrorResponseHandler errorResponseHandler,
+                          MemberRepository memberRepository) {
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
         this.errorResponseHandler = errorResponseHandler;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -30,6 +35,10 @@ public class JwtInterceptor implements HandlerInterceptor {
         if (!authResult.isSuccess()) {
             errorResponseHandler.handleAuthenticationError(response, authResult.getErrorMessage());
             return false;
+        }
+
+        if (authResult.getJwtToken() != null) {
+            response.setHeader("X-New-JWT", authResult.getJwtToken());
         }
 
         request.setAttribute("memberId", authResult.getMemberId());

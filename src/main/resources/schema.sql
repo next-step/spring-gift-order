@@ -33,6 +33,15 @@ create table options
     quantity   int
 );
 
+create table orders
+(
+    id          bigint auto_increment primary key,
+    quantity    int          NOT NULL,
+    member_id   bigint       NOT NULL,
+    option_id   bigint       NOT NULL,
+    message     varchar(200)
+);
+
 alter table if exists wishlists
     add constraint fk_wish_member_id_ref_member_id
     foreign key (member_id)
@@ -47,3 +56,13 @@ alter table if exists options
     add constraint fk_option_product_id_ref_product_id
     foreign key (product_id)
     references products;
+
+alter table if exists orders
+    add constraint fk_order_member_id_ref_member_id
+    foreign key (member_id)
+    references members;
+
+alter table if exists orders
+    add constraint fk_order_option_id_ref_option_id
+    foreign key (option_id)
+    references options;

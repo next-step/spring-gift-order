@@ -48,21 +48,6 @@
     sudo nano /home/ubuntu/config/application.yaml
     ```
 
-2. **환경 변수 설정**
-
-    - `KAKAO_CLIENT_ID`: 카카오 클라이언트 ID
-    - `KAKAO_REDIRECT_URI`: 카카오 리다이렉트 URI
-    - `JWT_SECRET_KEY`: JWT 시크릿 키
-    - `DATABASE_URL`: 데이터베이스 연결 URL (선택사항)
-
-3. **데이터베이스 설정 (MySQL 사용시)**
-    ```sql
-    CREATE DATABASE gift_db;
-    CREATE USER 'gift_user'@'localhost' IDENTIFIED BY 'your_password';
-    GRANT ALL PRIVILEGES ON gift_db.* TO 'gift_user'@'localhost';
-    FLUSH PRIVILEGES;
-    ```
-
 ### 배포 실행
 
 ```bash

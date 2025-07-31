@@ -4,7 +4,9 @@ import gift.config.KakaoProperties;
 import gift.service.kakaoService.KakaoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class KakaoLoginController {
@@ -15,13 +17,13 @@ public class KakaoLoginController {
     public KakaoLoginController(KakaoService kakaoService, KakaoProperties kakaoProperties) {
         this.kakaoService = kakaoService;
         this.kakaoProperties = kakaoProperties;
+
     }
 
 
     @GetMapping("/login/page")
     public ResponseEntity<Void> redirectToKakao() {
         String location = "https://kauth.kakao.com/oauth/authorize" + "?response_type=code" + "&client_id=" + kakaoProperties.clientId() + "&redirect_uri=" + kakaoProperties.redirectUri();
-
         return ResponseEntity.status(302).header("Location", location).build();
     }
 

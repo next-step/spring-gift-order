@@ -45,6 +45,13 @@ public class ItemOption {
         return quantity;
     }
 
+    public void decreaseStock(int quantity) {
+        if (this.quantity < quantity) {
+            throw new ItemQuantityException();
+        }
+        this.quantity -= quantity;
+    }
+
     public ItemOption(Item item, String optionName, Integer quantity) {
         setItem(item);
         if (!PATTERN.matcher(optionName).matches()) {

@@ -1,5 +1,6 @@
 package gift.controller.optionController;
 
+import gift.config.Interceptor.AdminOnly;
 import gift.dto.optionDto.OptionDtoList;
 import gift.dto.optionDto.OptionRequestDto;
 import gift.dto.optionDto.OptionResponseDto;
@@ -21,8 +22,9 @@ public class OptionController {
         this.optionService = optionService;
     }
 
-    @PostMapping
-    public ResponseEntity<OptionResponseDto> addItemOption(@RequestBody OptionRequestDto optionRequestDto, @RequestParam Long itemId) {
+    @AdminOnly
+    @PostMapping("/{itemId}")
+    public ResponseEntity<OptionResponseDto> addItemOption(@RequestBody OptionRequestDto optionRequestDto, @PathVariable Long itemId) {
         ItemOption itemOption = optionRequestDto.dtoToEntity();
         ItemOption savedOption = optionService.save(itemOption, itemId);
         OptionResponseDto optionResponseDto = OptionResponseDto.from(savedOption);
@@ -30,6 +32,7 @@ public class OptionController {
         return new ResponseEntity<>(optionResponseDto, HttpStatus.CREATED);
     }
 
+    @AdminOnly
     @GetMapping
     public ResponseEntity<OptionDtoList> getOptionList(@RequestParam Long itemId) {
         List<ItemOption> optionList = optionService.getOptions(itemId);
@@ -37,6 +40,7 @@ public class OptionController {
         return ResponseEntity.ok(OptionDtoList.from(optionList));
     }
 
+    @AdminOnly
     @PutMapping
     public ResponseEntity<OptionResponseDto> quantityControl(@RequestBody OptionRequestDto optionRequestDto, @RequestParam Long itemId) {
         ItemOption targetOption = optionRequestDto.dtoToEntity();

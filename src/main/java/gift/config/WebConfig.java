@@ -1,6 +1,9 @@
 package gift.config;
 
 import gift.Jwt.TokenUtils;
+import gift.config.Interceptor.RoleCheckInterceptor;
+import gift.config.Interceptor.TemporaryUserCheckInterceptor;
+import gift.config.Interceptor.UserCheckInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -24,6 +27,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthInterceptor(tokenUtils)).addPathPatterns("/wish/**");
+        registry.addInterceptor(new RoleCheckInterceptor(tokenUtils))
+                .addPathPatterns("/**");
+
+        registry.addInterceptor(new UserCheckInterceptor(tokenUtils))
+                .addPathPatterns("/**");
+
+        registry.addInterceptor((new TemporaryUserCheckInterceptor(tokenUtils)))
+                .addPathPatterns("/**");
     }
+
 }

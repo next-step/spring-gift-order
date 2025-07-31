@@ -2,6 +2,8 @@ package gift.controller.userController;
 
 
 import gift.Jwt.TokenUtils;
+import gift.config.Interceptor.AdminOnly;
+import gift.config.Interceptor.TemporaryOnly;
 import gift.dto.userDto.UserLoginDto;
 import gift.dto.userDto.UserRegisterDto;
 import gift.dto.userDto.UserUpdateDto;
@@ -10,6 +12,7 @@ import gift.service.userService.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,6 +33,7 @@ public class UserController {
         this.tokenUtils = tokenUtils;
     }
 
+    @TemporaryOnly
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody @Valid UserRegisterDto dto) {
         String token = userService.registerUser(dto.dtoToUser());
@@ -39,13 +43,15 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody @Valid UserLoginDto dto) {
-
+        System.out.println(dto.email());
+        System.out.println(dto.password());
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("token", userService.loginUser(dto.email(), dto.password())));
     }
 
 
+    @AdminOnly
     @GetMapping()
-    public ResponseEntity<?> getUserList(@RequestHeader("Authorization") String authHeader, @RequestParam(required = false) String email, Pageable pageable, Model model) {
+    public ResponseEntity<?> getUserList(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader, @RequestParam(required = false) String email, Pageable pageable, Model model) {
         String token = tokenUtils.extractToken(authHeader);
         tokenUtils.validateToken(token);
         Long loginId = tokenUtils.extractUserId(token);
@@ -54,8 +60,9 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @AdminOnly
     @DeleteMapping
-    public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String authHeader, @RequestParam Long id, Model model) {
+    public ResponseEntity<?> deleteUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader, @RequestParam Long id, Model model) {
         String token = tokenUtils.extractToken(authHeader);
         tokenUtils.validateToken(token);
         Long loginId = tokenUtils.extractUserId(token);
@@ -64,8 +71,9 @@ public class UserController {
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
+    @AdminOnly
     @PutMapping("/{id}/edit")
-    public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String authHeader, @PathVariable Long id, @RequestBody @Valid UserUpdateDto dto) {
+    public ResponseEntity<User> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader, @PathVariable Long id, @RequestBody @Valid UserUpdateDto dto) {
         String token = tokenUtils.extractToken(authHeader);
         tokenUtils.validateToken(token);
         Long loginToken = tokenUtils.extractUserId(token);

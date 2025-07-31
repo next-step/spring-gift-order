@@ -1,6 +1,7 @@
 package gift.controller.wishListController;
 
-import gift.config.LoginUser;
+import gift.config.Interceptor.LoginUser;
+import gift.config.Interceptor.UserOnly;
 import gift.dto.wishListDto.*;
 import gift.entity.ItemOption;
 import gift.entity.WishItem;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/wish")
+@RequestMapping("api/wish")
 public class WishListController {
 
     private final WishListService wishListService;
@@ -25,6 +26,7 @@ public class WishListController {
         this.wishListService = wishListService;
     }
 
+    @UserOnly
     @PostMapping
     public ResponseEntity<ResponseWishItemDto> addItem(@RequestBody @Valid CreateWishItemRequestDto dto, @LoginUser String userEmail) {
         ItemOption option = dto.toEntity();
@@ -33,6 +35,7 @@ public class WishListController {
         return new ResponseEntity<>(ResponseWishItemDto.from(addedWishItem), HttpStatus.CREATED);
     }
 
+    @UserOnly
     @GetMapping
     public ResponseEntity<ResponseWishItem> getWishItemList(@LoginUser String userEmail, @RequestParam(required = false) String name, @RequestParam(required = false) Integer price, Pageable pageable) {
         Page<WishItem> wishItemList = wishListService.getItemList(name, price, userEmail, pageable);
@@ -45,6 +48,7 @@ public class WishListController {
         return ResponseEntity.ok(ResponseWishItem.from(wishItemList));
     }
 
+    @UserOnly
     @PostMapping("/option")
     public ResponseEntity<QuantityWishItemDto> controlWishItemQuantity(@LoginUser String userEmail, @RequestParam String itemName, @RequestParam Integer quantity) {
 
@@ -57,6 +61,7 @@ public class WishListController {
     }
 
 
+    @UserOnly
     @DeleteMapping
     public ResponseEntity<ResponseWishItemDto> deleteWishItem(@LoginUser String userEmail, @RequestParam String name) {
 
@@ -65,6 +70,7 @@ public class WishListController {
         return new ResponseEntity<>(ResponseWishItemDto.from(targetWishItem), HttpStatus.NO_CONTENT);
     }
 
+    @UserOnly
     @PutMapping("/option")
     public ResponseEntity<ResponseWishItemDto> updateWishItem(@LoginUser String userEmail, @RequestBody UpdateWishItemDto updateWishItemDto) {
 

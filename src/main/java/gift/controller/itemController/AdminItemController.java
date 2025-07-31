@@ -1,6 +1,8 @@
 package gift.controller.itemController;
 
 
+import gift.config.Interceptor.AdminOnly;
+import gift.config.Interceptor.UserOnly;
 import gift.dto.itemDto.ItemCreateDto;
 import gift.dto.itemDto.ItemUpdateDto;
 import gift.dto.itemDto.ResponseItems;
@@ -23,6 +25,7 @@ public class AdminItemController {
         this.itemService = itemService;
     }
 
+    @UserOnly
     @GetMapping
     public String viewItemList(Model model, @RequestParam(required = false) String name, @RequestParam(required = false) Integer price, Pageable pageable) {
 
@@ -48,6 +51,7 @@ public class AdminItemController {
     }
 
     @PostMapping
+    @AdminOnly
     public String saveItem(@ModelAttribute @Valid ItemCreateDto itemDTO) {
 
         itemService.saveItem(itemDTO.convertItem());
@@ -55,18 +59,21 @@ public class AdminItemController {
     }
 
     @GetMapping("/new")
+    @AdminOnly
     public String showCreateForm(Model model) {
         model.addAttribute("itemDTO", new ItemCreateDto("", 0, "", false));
         return "admin/createForm";
     }
 
     @PostMapping("/delete")
+    @AdminOnly
     public String deleteItem(@RequestParam Long id) {
         itemService.deleteById(id);
         return "redirect:/admin/products";
     }
 
     @PostMapping("/{id}/edit")
+    @AdminOnly
     public String updateItem(@PathVariable Long id, @ModelAttribute @Valid ItemUpdateDto dto) {
         Item item = Item.from(dto);
         itemService.updateItem(id, item);
@@ -74,6 +81,7 @@ public class AdminItemController {
     }
 
     @GetMapping("/{id}/edit")
+    @AdminOnly
     public String showEditForm(@PathVariable Long id, Model model) {
         Item item = itemService.findById(id);
         model.addAttribute("itemDTO", item);

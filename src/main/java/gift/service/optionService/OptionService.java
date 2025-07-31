@@ -10,4 +10,6 @@ public interface OptionService {
     List<ItemOption> getOptions(Long itemId);
 
     ItemOption quantityControl(ItemOption targetOption, Long itemId);
+
+    ItemOption findById(Long optionId);
 }

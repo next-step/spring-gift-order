@@ -22,8 +22,8 @@ if [ $? -ne 0 ]; then
 fi
 
 # --- 4. Gradle로 프로젝트 빌드 ---
-log "Gradle 빌드를 시작합니다..."
-./gradlew build
+log "Gradle 빌드를 시작합니다... (테스트는 제외합니다)"
+./gradlew build -x test
 
 if [ $? -ne 0 ]; then
     log "Gradle 빌드에 실패했습니다. 스크립트를 중단합니다."

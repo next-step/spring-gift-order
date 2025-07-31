@@ -3,7 +3,8 @@ package gift.shared.auth.constants;
 public enum KakaoConstants {
     KAKAO_LOGIN("https", "kauth.kakao.com", "/oauth/authorize"),
     KAKAO_TOKEN("https", "kauth.kakao.com", "/oauth/token"),
-    KAKAO_USER("https", "kapi.kakao.com", "/v2/user/me");
+    KAKAO_USER("https", "kapi.kakao.com", "/v2/user/me"),
+    KAKAO_SEND_TO_ME("https", "kapi.kakao.com", "/v2/api/talk/memo/default/send");
 
     private final String scheme;
     private final String url;
@@ -28,6 +29,6 @@ public enum KakaoConstants {
     }
 
     public String getFullUrl(){
-        return scheme + url + path;
+        return scheme + "://"  +  url + path;
     }
 }

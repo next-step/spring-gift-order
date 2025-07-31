@@ -1,5 +1,6 @@
 package gift.shared.exception;
 
+import gift.shared.exception.option.NoOptionException;
 import gift.shared.exception.token.TokenTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,5 +36,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NoSuchAlgorithmException.class)
     public ResponseEntity<?> handleException(NoSuchAlgorithmException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    }
+
+    @ExceptionHandler(value = NoOptionException.class)
+    public ResponseEntity<?> handleException(NoOptionException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }

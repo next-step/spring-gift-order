@@ -1,5 +1,6 @@
 package gift.shared.config;
 
+import gift.shared.filter.KakaoLoginMemberArgumentHandler;
 import gift.shared.filter.LoginMemberArgumentHandler;
 import gift.shared.token.service.TokenService;
 import gift.user.service.UserService;
@@ -22,5 +23,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new LoginMemberArgumentHandler(userService, tokenService));
+        resolvers.add(new KakaoLoginMemberArgumentHandler());
     }
 }

@@ -49,6 +49,10 @@ public class Option {
         return quantity;
     }
 
+    public Product getProduct() {
+        return product;
+    }
+
     public void substract(Integer quantity){
         if(this.quantity - quantity < 0){
             throw new OverQuantityException(OVER_QUANTITY.getMessage());

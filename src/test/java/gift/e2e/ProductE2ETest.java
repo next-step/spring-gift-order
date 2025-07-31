@@ -48,7 +48,7 @@ public class ProductE2ETest {
         String baseUrl = "http://localhost:" + port + "/api/products";
 
         Member member = memberRepository.save(
-            new MemberBuilder()
+            MemberBuilder.builder()
                 .providerId(123456L)
                 .email("test@domain.com")
                 .nickname("테스트 사용자")

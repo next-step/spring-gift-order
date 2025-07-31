@@ -38,7 +38,7 @@ class WishRepositoryTest {
     @BeforeEach
     void setUp() {
         testMember = memberRepository.save(
-            new MemberBuilder()
+            MemberBuilder.builder()
                 .providerId(123456L)
                 .email("test@domain.com")
                 .nickname("테스트 사용자")

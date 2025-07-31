@@ -53,12 +53,14 @@ public class PaginationE2ETest {
         String baseUrl = "http://localhost:" + port + "/api";
         client = RestClient.builder().baseUrl(baseUrl).build();
 
-        Member member = new MemberBuilder()
-            .providerId(123456L)
-            .email("test@domain.com")
-            .nickname("테스트 사용자")
-            .profileImage("https://example.com/profile.jpg")
-            .build();
+        Member member = memberRepository.save(
+            MemberBuilder.builder()
+                .providerId(123456L)
+                .email("test@domain.com")
+                .nickname("테스트 사용자")
+                .profileImage("https://example.com/profile.jpg")
+                .build()
+        );
 
         this.authToken = "Bearer " + jwtUtil.generateToken(member);
 

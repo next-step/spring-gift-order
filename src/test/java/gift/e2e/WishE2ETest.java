@@ -61,7 +61,7 @@ class WishE2ETest {
 
     @BeforeEach
     void setup() {
-        testMember = new MemberBuilder()
+        testMember = MemberBuilder.builder()
             .id(1L)
             .providerId(123456L)
             .email("test@domain.com")

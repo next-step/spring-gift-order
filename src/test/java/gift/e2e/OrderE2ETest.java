@@ -65,7 +65,7 @@ class OrderE2ETest {
         String baseUrl = "http://localhost:" + port + "/api";
         client = RestClient.builder().baseUrl(baseUrl).build();
 
-        Member member = new MemberBuilder()
+        Member member = MemberBuilder.builder()
             .providerId(123456L)
             .email("test@domain.com")
             .nickname("테스트 사용자")

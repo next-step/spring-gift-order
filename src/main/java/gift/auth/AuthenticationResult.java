@@ -43,8 +43,5 @@ public class AuthenticationResult {
     public Long getMemberId() { return memberId; }
     public String getEmail() { return email; }
     public String getRole() { return role; }
-
-    public String getJwtToken() {
-        return newJwtToken;
-    }
+    public String getNewJwtToken() { return newJwtToken; }
 }

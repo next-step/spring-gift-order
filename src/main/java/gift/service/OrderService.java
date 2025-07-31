@@ -1,6 +1,5 @@
 package gift.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.client.KakaoClient;
 import gift.dto.OrderRequest;
@@ -8,15 +7,12 @@ import gift.dto.OrderResponse;
 import gift.entity.Member;
 import gift.entity.Option;
 import gift.entity.Order;
-import gift.entity.Product;
 import gift.exception.MemberNotFoundException;
 import gift.exception.OptionNotFoundException;
 import gift.repository.MemberRepository;
 import gift.repository.OptionRepository;
 import gift.repository.OrderRepository;
 import gift.repository.WishRepository;
-import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,16 +25,19 @@ public class OrderService {
     private final WishRepository wishRepository;
     private final KakaoClient kakaoClient;
     private final ObjectMapper objectMapper;
+    private final NotificationService notificationService;
 
     public OrderService(OrderRepository orderRepository, MemberRepository memberRepository,
             OptionRepository optionRepository, WishRepository wishRepository,
-            KakaoClient kakaoClient, ObjectMapper objectMapper) {
+            KakaoClient kakaoClient, ObjectMapper objectMapper,
+            NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.memberRepository = memberRepository;
         this.optionRepository = optionRepository;
         this.wishRepository = wishRepository;
         this.kakaoClient = kakaoClient;
         this.objectMapper = objectMapper;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -59,46 +58,8 @@ public class OrderService {
 
         wishRepository.deleteByMemberAndProductId(member, option.getProduct().getId());
 
-        try {
-            String commerceTemplate = createKakaoCommerceTemplate(savedOrder);
-            kakaoClient.sendKakaoTalkMessage(kakaoAccessToken, commerceTemplate);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("카카오 메시지 템플릿 생성에 실패했습니다.", e);
-        }
+        notificationService.sendOrderCompletionNotification(savedOrder, kakaoAccessToken);
 
         return OrderResponse.from(savedOrder);
-    }
-
-    private String createKakaoCommerceTemplate(Order order) throws JsonProcessingException {
-        Product product = order.getOption().getProduct();
-
-        Map<String, Object> commerceDetails = Map.of(
-                "product_name", product.getName() + " (" + order.getOption().getName() + ")",
-                "regular_price", product.getPrice() * order.getQuantity()
-        );
-
-        Map<String, Object> content = Map.of(
-                "title", "주문이 성공적으로 완료되었습니다.",
-                "image_url", product.getImageUrl(),
-                "link", Map.of("web_url", "http://localhost:8080", "mobile_web_url",
-                        "http://localhost:8080")
-        );
-
-        List<Object> buttons = List.of(
-                Map.of(
-                        "title", "주문 상세 보기",
-                        "link", Map.of("web_url", "http://localhost:8080/wishes", "mobile_web_url",
-                                "http://localhost:8080/wishes")
-                )
-        );
-
-        Map<String, Object> template = Map.of(
-                "object_type", "commerce",
-                "content", content,
-                "commerce", commerceDetails,
-                "buttons", buttons
-        );
-
-        return objectMapper.writeValueAsString(template);
     }
 }

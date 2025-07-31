@@ -9,6 +9,7 @@ import gift.user.KakaoMessageClient;
 import gift.user.OrderService;
 import gift.user.dto.OrderRequestDto;
 import gift.user.dto.OrderResponseDto;
+import gift.user.template.OrderMessageTemplateV1;
 import gift.wishlist.repository.WishlistRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,7 +78,8 @@ class OrderServiceTest {
         verify(mockOption).decreaseQuantity(1L);
         verify(wishlistRepository).deleteByMemberIdAndProductId(1L, 1L);
         verify(kakaoMessageClient).sendOrderMessageToUser(
-                "valid-access-token", "테스트 상품", "옵션A", 1L, "재미나게쓰라우"
+                "valid-access-token",
+                new OrderMessageTemplateV1("테스트 상품", "옵션A", 1L, "재미나게쓰라우")
         );
     }
 }

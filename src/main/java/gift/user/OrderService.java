@@ -10,11 +10,14 @@ import gift.user.dto.OrderRequestDto;
 import gift.user.dto.OrderResponseDto;
 import gift.user.template.OrderMessageTemplateV1;
 import gift.wishlist.repository.WishlistRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
     private final ProductService productService;
     private final WishlistRepository wishlistRepository;
     private final KakaoMessageClient kakaoMessageClient;
@@ -41,16 +44,20 @@ public class OrderService {
         wishlistRepository.deleteByMemberIdAndProductId(member.getId(), product.getId());
 
         //4. 카카오톡 나에게 메세지 발송
-        String validAccessToken = kakaoTokenService.getValidAccessToken(member.getClientId());
-        kakaoMessageClient.sendOrderMessageToUser(
-                validAccessToken,
-                new OrderMessageTemplateV1(
-                        product.getName(),
-                        selectedOption.getName(),
-                        requestDto.quantity(),
-                        requestDto.message()
-                )
-        );
+        try {
+            String validAccessToken = kakaoTokenService.getValidAccessToken(member.getClientId());
+            kakaoMessageClient.sendOrderMessageToUser(
+                    validAccessToken,
+                    new OrderMessageTemplateV1(
+                            product.getName(),
+                            selectedOption.getName(),
+                            requestDto.quantity(),
+                            requestDto.message()
+                    )
+            );
+        } catch (Exception e) {
+            log.warn("카카오 메시지 전송 실패: {}", e.getMessage());
+        }
 
         return new OrderResponseDto(requestDto.productId(), requestDto.optionId(), requestDto.quantity(), requestDto.message());
     }

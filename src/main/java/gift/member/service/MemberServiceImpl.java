@@ -27,7 +27,7 @@ public class MemberServiceImpl implements MemberService{
     public void addMember(MemberAddRequestDto requestDto) {
         validateEmailUnique(requestDto.email());
         String hashedPassword = hashWithSHA256(requestDto.password());
-        Member member = new Member(requestDto.email(), hashedPassword, requestDto.name(), requestDto.role(), "", AuthType.EMAIL);
+        Member member = Member.createEmailMember(requestDto.email(), hashedPassword, requestDto.name());
         memberRepository.save(member);
     }
 

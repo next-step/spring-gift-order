@@ -33,7 +33,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
         String hashedPassword = hashWithSHA256(requestDto.password());
 
-        Member member = new Member(requestDto.email(), hashedPassword, requestDto.name(), Role.USER, "", AuthType.EMAIL);
+        Member member = Member.createEmailMember(requestDto.email(), hashedPassword, requestDto.name());
         Member savedMember = memberRepository.save(member);
 
         return new TokenResponseDto(jwtProvider.createToken(savedMember.getId(), savedMember.getName(), savedMember.getEmail(), savedMember.getRole(), savedMember.getAuthType()));
@@ -41,7 +41,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Override
     public TokenResponseDto registerMemberByKakao(UserRegisterRequestByKakaoDto requestDto) {
-        Member member = new Member("", "", "", Role.USER, requestDto.clientId(),AuthType.KAKAO);
+        Member member = Member.createKakaoMember(requestDto.clientId());
         Member savedMember = memberRepository.save(member);
 
         return new TokenResponseDto(jwtProvider.createToken(savedMember.getId(), savedMember.getName(), savedMember.getEmail(), savedMember.getRole(), savedMember.getAuthType()));

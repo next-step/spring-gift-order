@@ -41,6 +41,14 @@ public class Member {
         this.authType = authType;
     }
 
+    public static Member createEmailMember(String email, String hashedPassword, String name) {
+        return new Member(email, hashedPassword, name, Role.USER, "", AuthType.EMAIL);
+    }
+
+    public static Member createKakaoMember(String clientId) {
+        return new Member("", "", "", Role.USER, clientId, AuthType.KAKAO);
+    }
+
     public void update(MemberUpdateRequestDto requestDto) {
         this.email = requestDto.email();
         this.name = requestDto.name();

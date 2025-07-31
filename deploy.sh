@@ -31,6 +31,6 @@ mkdir -p $LOG_PATH
 
 echo "🚀 애플리케이션 시작!"
 
-nohup java -jar $BUILD_PATH --spring.profiles.active=prod --spring.config.location=classpath:/application.properties,$EXTERNAL_CONFIG_PATH > $LOG_PATH/app.log 2>&1 &
+nohup java -Xms256m -Xmx512m -jar $BUILD_PATH --spring.profiles.active=prod --spring.config.location=classpath:/application.properties,$EXTERNAL_CONFIG_PATH > $LOG_PATH/app.log 2>&1 &
 
 echo "🎉 배포가 완료되었습니다 🎉"

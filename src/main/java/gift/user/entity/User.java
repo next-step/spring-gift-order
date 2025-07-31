@@ -1,12 +1,10 @@
 package gift.user.entity;
 
-import gift.product.entity.Product;
+import gift.shared.domain.LoginProviderType;
 import gift.shared.domain.UserRole;
 import gift.user.dto.request.UserModifyRequest;
 import jakarta.persistence.*;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 @Entity
@@ -26,21 +24,20 @@ public class User {
     @Column(nullable = false)
     private UserRole role = UserRole.NORMAL;
 
+    private Long oauthId;
+
+    @Enumerated(EnumType.STRING)
+    private LoginProviderType providerType;
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public User(String email) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] hashBytes = md.digest(email.getBytes());
-        StringBuilder sb = new StringBuilder();
-        for (byte b : hashBytes) {
-            sb.append(String.format("%02x", b));
-        }
-
+    public User(String email, String password, Long oauthId) {
         this.email = email;
-        this.password = sb.toString();
+        this.password = password;
+        this.oauthId = oauthId;
     }
 
     protected User() {}

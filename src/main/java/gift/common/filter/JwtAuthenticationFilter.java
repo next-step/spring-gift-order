@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/users/register", Set.of(HttpMethod.POST),
             "/api/users/login", Set.of(HttpMethod.POST),
             "/admin/login", Set.of(HttpMethod.GET, HttpMethod.POST),
-            "/api/products", Set.of(HttpMethod.GET),
+            "/api/products", Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
             "/kakao/callback", Set.of(HttpMethod.GET),
 
             "/favicon.ico", Set.of(HttpMethod.GET),
@@ -55,6 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         HttpMethod method = HttpMethod.valueOf(request.getMethod());
+
+        if (method == HttpMethod.OPTIONS) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String requestURI = request.getRequestURI();
 
         Optional<String> match = EXCLUDED_PATHS.keySet().stream().filter(pattern -> MATCHER.match(pattern, requestURI)).findFirst();
@@ -79,6 +85,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (authHeader == null) {
                 if (request.getCookies().length == 0) {
+                    System.out.println("하이");
                     throw new InvalidAccessTokenException();
                 }
                 for (Cookie cookie : request.getCookies()) {

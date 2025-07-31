@@ -23,7 +23,7 @@ public class AuthenticatedArgumentResolver implements HandlerMethodArgumentResol
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(Authenticated.class)
-                && parameter.getParameterType().equals(Member.class);
+                && parameter.getParameterType().equals(LoginMember.class);
     }
 
     @Override
@@ -38,7 +38,6 @@ public class AuthenticatedArgumentResolver implements HandlerMethodArgumentResol
             throw new IllegalStateException("인증된 사용자가 없습니다.");
         }
 
-        return memberRepository.findById(loginMember.getId())
-                .orElseThrow(() -> new IllegalStateException("회원 정보를 찾을 수 없습니다."));
+        return loginMember;
     }
 }

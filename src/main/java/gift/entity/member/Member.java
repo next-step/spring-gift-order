@@ -48,22 +48,15 @@ public class Member {
         this.refreshToken = refreshToken;
     }
 
-    public Member(Long id, Long providerId, String email, String nickname, String profileImage) {
-        this(id, providerId, email, nickname, profileImage, null, null);
-    }
-
-    public Member(Long providerId, String email, String nickname, String profileImage) {
-        this(null, providerId, email, nickname, profileImage);
-    }
-
-    public Member(Long providerId, String email, String nickname, String profileImage,
-        String accessToken, String refreshToken) {
-        this(null, providerId, email, nickname, profileImage, accessToken, refreshToken);
-    }
-
     public static Member from(AuthUser user) {
-        return new Member(user.providerId(), user.email(), user.nickname(), user.profileImage(),
-            user.accessToken(), user.refreshToken());
+        return new MemberBuilder()
+            .providerId(user.providerId())
+            .email(user.email())
+            .nickname(user.nickname())
+            .profileImage(user.profileImage())
+            .accessToken(user.accessToken())
+            .refreshToken(user.refreshToken())
+            .build();
     }
 
     public void updateTokens(String accessToken, String refreshToken) {

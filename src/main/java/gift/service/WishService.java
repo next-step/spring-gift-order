@@ -1,5 +1,6 @@
 package gift.service;
 
+import gift.dto.CreateWishResponse;
 import gift.dto.ProductResponseDto;
 import gift.entity.Member;
 import gift.entity.Product;
@@ -21,7 +22,7 @@ public class WishService {
         this.productRepository = productRepository;
     }
 
-    public void addWish(Member member, Long productId) {
+    public CreateWishResponse addWish(Member member, Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
 
@@ -29,8 +30,9 @@ public class WishService {
             throw new IllegalArgumentException("이미 위시리스트에 추가된 상품입니다.");
         }
 
-        Wish wish = Wish.of(member, product);
-        wishRepository.save(wish);
+        Wish wish = wishRepository.save( Wish.of(member, product));
+
+        return new CreateWishResponse(wish.getId(), wish.getProduct().getId());
     }
 
     public void removeWish(Member member, Long productId) {

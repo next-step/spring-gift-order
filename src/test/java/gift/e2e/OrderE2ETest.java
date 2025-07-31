@@ -7,6 +7,7 @@ import gift.auth.jwt.JwtUtil;
 import gift.common.code.CustomResponseCode;
 import gift.dto.order.OrderRequest;
 import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
 import gift.entity.product.Product;
 import gift.entity.product.option.ProductOption;
 import gift.entity.wish.Wish;
@@ -64,12 +65,12 @@ class OrderE2ETest {
         String baseUrl = "http://localhost:" + port + "/api";
         client = RestClient.builder().baseUrl(baseUrl).build();
 
-        Member member = new Member(
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        );
+        Member member = new MemberBuilder()
+            .providerId(123456L)
+            .email("test@domain.com")
+            .nickname("테스트 사용자")
+            .profileImage("https://example.com/profile.jpg")
+            .build();
         this.savedMember = memberRepository.save(member);
 
         this.authToken = "Bearer " + jwtUtil.generateToken(savedMember);

@@ -13,6 +13,7 @@ import gift.dto.product.option.ProductOptionRequest;
 import gift.dto.wish.WishRequest;
 import gift.dto.wish.WishResponse;
 import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
 import gift.repository.MemberRepository;
 import java.util.Comparator;
 import java.util.List;
@@ -52,12 +53,12 @@ public class PaginationE2ETest {
         String baseUrl = "http://localhost:" + port + "/api";
         client = RestClient.builder().baseUrl(baseUrl).build();
 
-        Member member = memberRepository.save(new Member(
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        ));
+        Member member = new MemberBuilder()
+            .providerId(123456L)
+            .email("test@domain.com")
+            .nickname("테스트 사용자")
+            .profileImage("https://example.com/profile.jpg")
+            .build();
 
         this.authToken = "Bearer " + jwtUtil.generateToken(member);
 

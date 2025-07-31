@@ -3,6 +3,7 @@ package gift.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,12 +25,14 @@ class MemberRepositoryTest {
     @BeforeEach
     void setUp() {
         testEmail = "test@domain.com";
-        testMember = memberRepository.save(new Member(
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        ));
+        testMember = memberRepository.save(
+            new MemberBuilder()
+                .providerId(123456L)
+                .email("test@domain.com")
+                .nickname("테스트 사용자")
+                .profileImage("https://example.com/profile.jpg")
+                .build()
+        );
         testMember = memberRepository.save(testMember);
     }
 

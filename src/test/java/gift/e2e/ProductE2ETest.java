@@ -11,6 +11,7 @@ import gift.dto.product.ProductResponse;
 import gift.dto.product.ProductUpdateRequest;
 import gift.dto.product.option.ProductOptionRequest;
 import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
 import gift.repository.MemberRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,12 +47,14 @@ public class ProductE2ETest {
     void setup() {
         String baseUrl = "http://localhost:" + port + "/api/products";
 
-        Member member = memberRepository.save(new Member(
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        ));
+        Member member = memberRepository.save(
+            new MemberBuilder()
+                .providerId(123456L)
+                .email("test@domain.com")
+                .nickname("테스트 사용자")
+                .profileImage("https://example.com/profile.jpg")
+                .build()
+        );
 
         String token = "Bearer " + jwtUtil.generateToken(member);
 

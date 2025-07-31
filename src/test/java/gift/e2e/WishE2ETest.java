@@ -20,6 +20,7 @@ import gift.controller.api.WishController;
 import gift.dto.wish.WishRequest;
 import gift.dto.wish.WishResponse;
 import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
 import gift.repository.MemberRepository;
 import gift.service.wish.WishService;
 import java.util.Optional;
@@ -60,13 +61,13 @@ class WishE2ETest {
 
     @BeforeEach
     void setup() {
-        testMember = new Member(
-            1L,
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        );
+        testMember = new MemberBuilder()
+            .id(1L)
+            .providerId(123456L)
+            .email("test@domain.com")
+            .nickname("테스트 사용자")
+            .profileImage("https://example.com/profile.jpg")
+            .build();
 
         given(memberRepository.findById(eq(testMember.getId())))
             .willReturn(Optional.of(testMember));

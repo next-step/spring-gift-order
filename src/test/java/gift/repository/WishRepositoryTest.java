@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
 import gift.entity.product.Product;
 import gift.entity.wish.Wish;
 import java.util.List;
@@ -36,12 +37,14 @@ class WishRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        testMember = memberRepository.save(new Member(
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        ));
+        testMember = memberRepository.save(
+            new MemberBuilder()
+                .providerId(123456L)
+                .email("test@domain.com")
+                .nickname("테스트 사용자")
+                .profileImage("https://example.com/profile.jpg")
+                .build()
+        );
         testProduct = productRepository.save(new Product("테스트 상품", 4500, "https://test.jpg"));
         testProduct2 = productRepository.save(
             new Product("또다른 상품", 3000, "https://another.jpg"));

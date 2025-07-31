@@ -20,6 +20,7 @@ repositories {
 
 ext {
     JWT_VERSION = '0.12.6'
+    EPAGE_VERSON = '0.18.2'
 }
 
 dependencies {
@@ -38,13 +39,18 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-impl:${JWT_VERSION}"
     implementation "io.jsonwebtoken:jjwt-jackson:${JWT_VERSION}"
 
+    // Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation "com.github.ben-manes.caffeine:caffeine:3.2.2"
+
+
     // Spring REST Docs & Test Dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
-    testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
-    testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
+    testImplementation 'com.epages:restdocs-api-spec-mockmvc:${EPAGE_VERSION}'
+    testImplementation 'com.epages:restdocs-api-spec-restassured:${EPAGE_VERSION}'
     testImplementation 'io.rest-assured:rest-assured'
 }
 

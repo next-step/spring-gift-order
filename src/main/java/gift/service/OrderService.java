@@ -50,6 +50,10 @@ public class OrderService {
         Order order = Order.of(member, product, actual, request.quantity(), request.message());
         Order savedOrder = orderRepository.save(order);
 
+        var accessToken = member.getKakaoAccessToken();
+
+        kakaoMessageService.sendMessage(member, savedOrder);
+
         return new OrderResponse(savedOrder.getId(), product.getId(), actual.getId(), savedOrder.getQuantity(),
                 savedOrder.getMessage(), savedOrder.getOrderDateTime());
     }

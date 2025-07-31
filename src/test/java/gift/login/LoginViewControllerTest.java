@@ -1,5 +1,6 @@
 package gift.login;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -7,8 +8,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import gift.config.KakaoProperties;
 import gift.controller.login.LoginViewController;
+import gift.dto.login.KakaoTokenDto;
+import gift.dto.member.MemberResponseDto;
 import gift.resolver.LoginMemberArgumentResolver;
+import gift.service.member.MemberService;
 import gift.service.member.OauthService;
+import gift.util.Sha256Util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,9 @@ public class LoginViewControllerTest {
     MockMvc mockmvc;
 
     @MockitoBean
+    MemberService memberService;
+
+    @MockitoBean
     OauthService oauthService;
 
     @MockitoBean
@@ -30,14 +38,20 @@ public class LoginViewControllerTest {
     @MockitoBean
     LoginMemberArgumentResolver loginMemberArgumentResolver;
 
+    @MockitoBean
+    Sha256Util sha256Util;
+
     @Test
     @DisplayName("카카오 로그인 성공 - 302 redirect")
     void kakaoLogin_success() throws Exception {
         String code = "fake-kakao-code";
-        String token = "fake-kakao-token";
+        KakaoTokenDto tokenDto = new KakaoTokenDto("token-type","access-token", 3600L, "refresh-token", 3600L);
 
         given(oauthService.fetchKakaoToken(code))
-            .willReturn(token);
+            .willReturn(tokenDto);
+
+        given(memberService.createOrLoginForKakao(any()))
+            .willReturn(new MemberResponseDto("token"));
 
         mockmvc.perform(get("/oauth/kakao").param("code", code))
             .andExpect(status().is3xxRedirection())

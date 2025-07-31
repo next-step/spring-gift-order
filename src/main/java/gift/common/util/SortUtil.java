@@ -1,7 +1,6 @@
 package gift.common.util;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.CustomException;
+import gift.common.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,7 +50,7 @@ public class SortUtil {
         String[] params = sortParam.split(SORT_DELIMITER);
 
         if (params.length < 2) {
-            throw new CustomException(CustomResponseCode.VALIDATION_FAILED);
+            throw new ValidationException("정렬 파라미터가 유효하지 않습니다.");
         }
 
         String property = params[0];
@@ -65,13 +64,13 @@ public class SortUtil {
 
     private static void validateSortField(String field, Set<String> allowedFields) {
         if (!allowedFields.contains(field)) {
-            throw new CustomException(CustomResponseCode.INVALID_SORT_FIELD);
+            throw new ValidationException("허용되지 않는 정렬 필드입니다.");
         }
     }
 
     private static void validateSortDirection(String direction) {
         if (!DIRECTION_ASC.equals(direction) && !DIRECTION_DESC.equals(direction)) {
-            throw new CustomException(CustomResponseCode.INVALID_SORT_DIRECTION);
+            throw new ValidationException("허용되지 않는 정렬 방향입니다.");
         }
     }
 

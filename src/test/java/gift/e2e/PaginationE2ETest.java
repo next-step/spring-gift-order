@@ -4,15 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.auth.jwt.JwtUtil;
-import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
-import gift.dto.PageResponse;
-import gift.dto.ProductOptionRequest;
-import gift.dto.ProductRequest;
-import gift.dto.ProductResponse;
-import gift.dto.WishRequest;
-import gift.dto.WishResponse;
-import gift.entity.Member;
+import gift.dto.pagination.PageResponse;
+import gift.dto.product.ProductRequest;
+import gift.dto.product.ProductResponse;
+import gift.dto.product.option.ProductOptionRequest;
+import gift.dto.wish.WishRequest;
+import gift.dto.wish.WishResponse;
+import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
 import gift.repository.MemberRepository;
 import java.util.Comparator;
 import java.util.List;
@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,12 +53,14 @@ public class PaginationE2ETest {
         String baseUrl = "http://localhost:" + port + "/api";
         client = RestClient.builder().baseUrl(baseUrl).build();
 
-        Member member = memberRepository.save(new Member(
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        ));
+        Member member = memberRepository.save(
+            MemberBuilder.builder()
+                .providerId(123456L)
+                .email("test@domain.com")
+                .nickname("테스트 사용자")
+                .profileImage("https://example.com/profile.jpg")
+                .build()
+        );
 
         this.authToken = "Bearer " + jwtUtil.generateToken(member);
 
@@ -89,7 +92,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 기본 (page=1, size=10)")
-    void testWishSuccess() {
+    void test1() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -118,7 +121,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 사이즈 5 (page=1, size=5)")
-    void testWishSize5Success() {
+    void test2() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -146,7 +149,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 마지막 페이지 조회 (page=3, size=10)")
-    void testWishLastPageSuccess() {
+    void test3() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -173,7 +176,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - size가 전체 개수보다 큰 경우 (page=1, size=100)")
-    void testWishSizeLargerThanTotalSuccess() {
+    void test4() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -201,7 +204,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 가격 오름차순 정렬")
-    void testWishSortByPriceAsc() {
+    void test5() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -230,7 +233,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 상품 이름 내림차순 정렬")
-    void testWishSortByProductNameDesc() {
+    void test6() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -259,7 +262,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 가격 오름차순, 상품명 내림차순 정렬 (복수 sort 파라미터)")
-    void testWishSortByPriceAscAndProductNameDesc() {
+    void test7() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -285,7 +288,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - page 음수 예외")
-    void testWishNegativePageError() {
+    void test8() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -303,7 +306,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시페이지네이션 - size 0 예외")
-    void testWishZeroSizeError() {
+    void test9() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -321,7 +324,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("정렬 필드가 허용되지 않으면 예외 발생")
-    void testWishInvalidSortFieldError() {
+    void test10() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -338,7 +341,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("정렬 방향이 잘못되었을 때 예외 발생")
-    void testWishInvalidSortDirectionError() {
+    void test11() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -361,7 +364,7 @@ public class PaginationE2ETest {
         assertAll("응답 객체 검증",
             () -> assertThat(response).isNotNull(),
             () -> assertThat(response.getStatusCode().value())
-                .isEqualTo(CustomResponseCode.VALIDATION_FAILED.getHttpStatus().value()),
+                .isEqualTo(HttpStatus.BAD_REQUEST.value()),
             () -> assertThat(response.getBody()).contains(expectedMessage)
         );
     }

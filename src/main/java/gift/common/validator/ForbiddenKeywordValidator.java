@@ -1,6 +1,5 @@
 package gift.common.validator;
 
-import gift.common.annotation.ForbiddenKeyword;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;

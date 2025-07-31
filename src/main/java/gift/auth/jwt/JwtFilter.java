@@ -1,8 +1,6 @@
 package gift.auth.jwt;
 
-import gift.common.code.CustomResponseCode;
-import gift.common.exception.CustomException;
-import gift.entity.Member;
+import gift.common.exception.core.CustomException;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,13 +42,13 @@ public class JwtFilter implements Filter {
                 return;
             }
 
-            Member member = extractMemberFromToken(httpRequest);
-            httpRequest.setAttribute("member", member);
+            Long memberId = extractMemberIdFromToken(httpRequest);
+            httpRequest.setAttribute("memberId", memberId);
 
             chain.doFilter(request, response);
 
         } catch (CustomException e) {
-            sendErrorResponse(httpResponse, e.getErrorCode());
+            sendErrorResponse(httpResponse, e.getStatus(), e.getMessage());
         }
     }
 
@@ -58,22 +57,17 @@ public class JwtFilter implements Filter {
         return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 
-    private Member extractMemberFromToken(HttpServletRequest request) {
+    private Long extractMemberIdFromToken(HttpServletRequest request) {
         String token = jwtProvider.extractToken(request);
         Map<String, Object> claims = jwtProvider.getClaimsFromToken(token);
 
-        Long providerId = Long.valueOf((String) claims.get("sub"));
-        Long memberId = ((Number) claims.get("memberId")).longValue();
-        String email = (String) claims.get("email");
-        String nickname = (String) claims.get("nickname");
-        String profileImage = (String) claims.get("profileImage");
-
-        return new Member(memberId, providerId, email, nickname, profileImage);
+        return ((Number) claims.get("memberId")).longValue();
     }
 
-    private void sendErrorResponse(HttpServletResponse response, CustomResponseCode code)
+    private void sendErrorResponse(HttpServletResponse response, HttpStatusCode statusCode,
+        String message)
         throws IOException {
-        response.setStatus(code.getCode());
+        response.setStatus(statusCode.value());
         response.setContentType("application/json; charset=UTF-8");
 
         String jsonResponse = String.format("""
@@ -82,7 +76,7 @@ public class JwtFilter implements Filter {
               "message": "%s",
               "data": null
             }
-            """, code.getCode(), code.getMessage());
+            """, statusCode.value(), message);
 
         response.getWriter().write(jsonResponse);
         response.getWriter().flush();

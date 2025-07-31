@@ -1,0 +1,64 @@
+package gift.controller.api;
+
+import gift.common.code.CustomResponseCode;
+import gift.common.dto.CustomResponseBody;
+import gift.dto.product.option.ProductOptionRequest;
+import gift.dto.product.option.ProductOptionResponse;
+import gift.service.product.option.OptionService;
+import jakarta.validation.Valid;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/products")
+public class OptionController {
+
+    private final OptionService optionService;
+
+    public OptionController(OptionService optionService) {
+        this.optionService = optionService;
+    }
+
+    @PostMapping("/{productId}/options")
+    public ResponseEntity<CustomResponseBody<ProductOptionResponse>> addOptionToProduct(
+        @PathVariable Long productId,
+        @Valid @RequestBody ProductOptionRequest request
+    ) {
+        ProductOptionResponse response = optionService.add(productId, request);
+
+        return ResponseEntity
+            .status(201)
+            .body(CustomResponseBody.of(CustomResponseCode.CREATED, response));
+    }
+
+
+    @GetMapping("/{productId}/options")
+    public ResponseEntity<CustomResponseBody<List<ProductOptionResponse>>> getOptionsByProduct(
+        @PathVariable Long productId
+    ) {
+        List<ProductOptionResponse> responses = optionService.getOptionsByProductId(productId);
+
+        return ResponseEntity
+            .status(200)
+            .body(CustomResponseBody.of(CustomResponseCode.RETRIEVED, responses));
+    }
+
+    @PutMapping("/options/{optionId}")
+    public ResponseEntity<CustomResponseBody<ProductOptionResponse>> updateOption(
+        @PathVariable Long optionId,
+        @Valid @RequestBody ProductOptionRequest request
+    ) {
+        ProductOptionResponse response = optionService.update(optionId, request);
+
+        return ResponseEntity
+            .status(200)
+            .body(CustomResponseBody.of(CustomResponseCode.UPDATED, response));
+    }
+}

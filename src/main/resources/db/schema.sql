@@ -10,7 +10,9 @@ CREATE TABLE member (
     provider_id BIGINT NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     nickname VARCHAR(255) NOT NULL,
-    profile_image VARCHAR(500)
+    profile_image VARCHAR(500),
+    access_token VARCHAR(1000),
+    refresh_token VARCHAR(1000)
 );
 
 CREATE TABLE wish (
@@ -29,4 +31,14 @@ CREATE TABLE product_option (
     product_id BIGINT NOT NULL,
     CONSTRAINT fk_option_product FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT uc_product_option UNIQUE (product_id, name)
+);
+
+CREATE TABLE orders (
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+     member_id BIGINT NOT NULL,
+     product_option_id BIGINT NOT NULL,
+     quantity INT NOT NULL,
+     message VARCHAR(1000),
+     FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+     FOREIGN KEY (product_option_id) REFERENCES product_option(id)
 );

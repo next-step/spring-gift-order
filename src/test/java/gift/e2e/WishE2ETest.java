@@ -12,14 +12,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.auth.jwt.JwtFilter;
 import gift.auth.jwt.JwtProvider;
 import gift.auth.jwt.JwtUtil;
+import gift.auth.resolver.CurrentUserArgumentResolver;
 import gift.common.code.CustomResponseCode;
 import gift.common.dto.CustomResponseBody;
-import gift.common.exception.CustomException;
-import gift.controller.WishController;
-import gift.dto.WishRequest;
-import gift.dto.WishResponse;
-import gift.entity.Member;
-import gift.service.WishService;
+import gift.common.exception.DuplicateResourceException;
+import gift.common.exception.NotFoundException;
+import gift.controller.api.WishController;
+import gift.dto.wish.WishRequest;
+import gift.dto.wish.WishResponse;
+import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
+import gift.repository.MemberRepository;
+import gift.service.wish.WishService;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,13 +34,20 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(WishController.class)
-@Import({JwtFilter.class, JwtProvider.class, WishE2ETest.JwtTestConfig.class})
+@Import({
+    JwtFilter.class,
+    JwtProvider.class,
+    WishE2ETest.JwtTestConfig.class,
+    CurrentUserArgumentResolver.class
+})
 class WishE2ETest {
 
     @Autowired
@@ -46,26 +58,31 @@ class WishE2ETest {
     private JwtUtil jwtUtil;
     @MockBean
     private WishService wishService;
+    @MockBean
+    private MemberRepository memberRepository;
     private Member testMember;
 
     @BeforeEach
     void setup() {
-        testMember = new Member(
-            1L,
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        );
+        testMember = MemberBuilder.builder()
+            .id(1L)
+            .providerId(123456L)
+            .email("test@domain.com")
+            .nickname("테스트 사용자")
+            .profileImage("https://example.com/profile.jpg")
+            .build();
+
+        given(memberRepository.findById(eq(testMember.getId())))
+            .willReturn(Optional.of(testMember));
     }
 
     @Test
     @DisplayName("위시 등록 성공")
-    void testAddWishSuccess() throws Exception {
+    void test1() throws Exception {
         WishRequest request = new WishRequest(10L, 2);
         WishResponse response = new WishResponse(1L, 10L, 2, "상품명", 1000, "https://img");
 
-        given(wishService.addWish(eq(testMember.getId()), any(WishRequest.class))).willReturn(
+        given(wishService.addWish(eq(testMember), any(WishRequest.class))).willReturn(
             response);
 
         String token = jwtUtil.generateToken(testMember);
@@ -96,11 +113,11 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 등록 실패 - 이미 등록된 항목")
-    void testAddWishDuplicateFail() throws Exception {
+    void test2() throws Exception {
         WishRequest request = new WishRequest(10L, 1);
 
-        given(wishService.addWish(eq(testMember.getId()), any(WishRequest.class)))
-            .willThrow(new CustomException(CustomResponseCode.ALREADY_EXISTS));
+        given(wishService.addWish(eq(testMember), any(WishRequest.class)))
+            .willThrow(new DuplicateResourceException());
 
         String token = jwtUtil.generateToken(testMember);
 
@@ -112,12 +129,12 @@ class WishE2ETest {
 
         String content = result.getResponse().getContentAsString();
         CustomResponseBody<?> response = objectMapper.readValue(content, CustomResponseBody.class);
-        assertErrorResponse(response, CustomResponseCode.ALREADY_EXISTS);
+        assertErrorResponse(response, HttpStatus.CONFLICT, "이미 존재하는 리소스입니다.");
     }
 
     @Test
     @DisplayName("위시 등록 실패 - 유효성 검사")
-    void testAddWishValidationFail() throws Exception {
+    void test3() throws Exception {
         WishRequest invalidRequest = new WishRequest(null, -1);
 
         String token = jwtUtil.generateToken(testMember);
@@ -131,18 +148,18 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 목록 조회 실패 - 인증 없음")
-    void testGetWishesUnauthorizedFail() throws Exception {
+    void test4() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/wishes"))
             .andReturn();
 
         String content = result.getResponse().getContentAsString();
         CustomResponseBody<?> response = objectMapper.readValue(content, CustomResponseBody.class);
-        assertErrorResponse(response, CustomResponseCode.UNAUTHORIZED);
+        assertErrorResponse(response, HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
     }
 
     @Test
     @DisplayName("위시 삭제 성공")
-    void testDeleteWishSuccess() throws Exception {
+    void test5() throws Exception {
         String token = jwtUtil.generateToken(testMember);
 
         MvcResult result = mockMvc.perform(
@@ -157,9 +174,9 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 삭제 실패 - 존재하지 않는 wish")
-    void testDeleteWishNotFoundFail() throws Exception {
-        doThrow(new CustomException(CustomResponseCode.NOT_FOUND))
-            .when(wishService).deleteWish(eq(testMember.getId()), eq(999L));
+    void test6() throws Exception {
+        doThrow(new NotFoundException())
+            .when(wishService).deleteWish(eq(testMember), eq(999L));
 
         String token = jwtUtil.generateToken(testMember);
 
@@ -170,7 +187,7 @@ class WishE2ETest {
 
         String content = result.getResponse().getContentAsString();
         CustomResponseBody<?> response = objectMapper.readValue(content, CustomResponseBody.class);
-        assertErrorResponse(response, CustomResponseCode.NOT_FOUND);
+        assertErrorResponse(response, HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다.");
     }
 
     private <T> void assertWishResponse(CustomResponseBody<T> response,
@@ -182,11 +199,11 @@ class WishE2ETest {
     }
 
     private void assertErrorResponse(CustomResponseBody<?> response,
-        CustomResponseCode expectedCode) {
+        HttpStatusCode statusCode, String message) {
         assertAll("응답 객체 검증",
             () -> assertThat(response).isNotNull(),
-            () -> assertThat(response.status()).isEqualTo(expectedCode.getCode()),
-            () -> assertThat(response.message()).isEqualTo(expectedCode.getMessage())
+            () -> assertThat(response.status()).isEqualTo(statusCode.value()),
+            () -> assertThat(response.message()).isEqualTo(message)
         );
     }
 

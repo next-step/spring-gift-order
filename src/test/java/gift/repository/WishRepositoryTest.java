@@ -3,9 +3,10 @@ package gift.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import gift.entity.Member;
-import gift.entity.Product;
-import gift.entity.Wish;
+import gift.entity.member.Member;
+import gift.entity.member.MemberBuilder;
+import gift.entity.product.Product;
+import gift.entity.wish.Wish;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,12 +37,14 @@ class WishRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        testMember = memberRepository.save(new Member(
-            123456L,
-            "test@domain.com",
-            "테스트 사용자",
-            "https://example.com/profile.jpg"
-        ));
+        testMember = memberRepository.save(
+            MemberBuilder.builder()
+                .providerId(123456L)
+                .email("test@domain.com")
+                .nickname("테스트 사용자")
+                .profileImage("https://example.com/profile.jpg")
+                .build()
+        );
         testProduct = productRepository.save(new Product("테스트 상품", 4500, "https://test.jpg"));
         testProduct2 = productRepository.save(
             new Product("또다른 상품", 3000, "https://another.jpg"));
@@ -49,7 +52,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("위시 저장 테스트")
-    void save() {
+    void test1() {
         Wish wish = new Wish(testMember, testProduct, 1);
         Wish savedWish = wishRepository.save(wish);
 
@@ -71,7 +74,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("유저와 상품으로 위시 존재 여부 확인")
-    void existsByMemberAndProduct() {
+    void test2() {
         wishRepository.save(new Wish(testMember, testProduct, 1));
 
         boolean exists = wishRepository.existsByMemberAndProduct(testMember, testProduct);
@@ -81,7 +84,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("유저와 상품으로 위시 삭제")
-    void deleteByMemberAndProduct() {
+    void test3() {
         Wish wish = wishRepository.save(new Wish(testMember, testProduct, 1));
 
         wishRepository.deleteByMemberAndProduct(testMember, testProduct);
@@ -96,7 +99,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("유저로 모든 위시 조회")
-    void findAllByMember() {
+    void test4() {
         Wish wish1 = wishRepository.save(new Wish(testMember, testProduct, 1));
         Wish wish2 = wishRepository.save(new Wish(testMember, testProduct2, 2));
 

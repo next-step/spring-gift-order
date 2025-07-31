@@ -3,9 +3,9 @@ package gift.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import gift.common.exception.CustomException;
-import gift.entity.Product;
-import gift.entity.ProductOption;
+import gift.common.exception.core.CustomException;
+import gift.entity.product.Product;
+import gift.entity.product.option.ProductOption;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ public class ProductUnitTest {
 
     @Test
     @DisplayName("옵션 정상 추가 테스트")
-    void addUniqueOptionSuccess() {
+    void test1() {
         Product product = new Product("콜라", 1000, "image.jpg");
 
         ProductOption option = product.addUniqueOption("500ml", 5L);
@@ -24,7 +24,7 @@ public class ProductUnitTest {
 
     @Test
     @DisplayName("중복된 옵션 이름일 경우 예외 발생")
-    void addUniqueOptionNameDuplicatedError() {
+    void test2() {
         Product product = new Product("콜라", 1000, "image.jpg");
         product.addUniqueOption("500ml", 5L);
 

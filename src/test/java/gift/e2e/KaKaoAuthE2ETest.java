@@ -2,14 +2,12 @@ package gift.e2e;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import gift.dto.AuthUser;
-import gift.dto.TokenResponse;
-import gift.service.AuthService;
+import gift.dto.auth.AuthUser;
+import gift.dto.auth.TokenResponse;
+import gift.service.auth.AuthService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,7 @@ public class KaKaoAuthE2ETest {
 
     @Test
     @DisplayName("로그인 요청시 리다이렉트 URL 반환 성공")
-    void loginSuccessReturnRedirectUrl() throws Exception {
+    void test1() throws Exception {
         String redirectUrl = "https://kauth.kakao.com/oauth/authorize?...";
 
         given(authService.getRedirectUrl()).willReturn(redirectUrl);
@@ -44,11 +42,18 @@ public class KaKaoAuthE2ETest {
     }
 
     @Test
-    @DisplayName("콜백 요청시 토큰 반환 성공")
-    void callbackSuccessReturnAccessToken() throws Exception {
+    @DisplayName("콜백 요청 시 쿠키에 액세스 토큰 설정 후 리다이렉트")
+    void test2() throws Exception {
         String code = "testCode";
 
-        AuthUser mockUser = new AuthUser(123456L, "nickname", "email@test.com", "https://img.url");
+        AuthUser mockUser = new AuthUser(
+            123456L,
+            "nickname",
+            "email@test.com",
+            "https://img.url",
+            "mock-access-token",
+            "mock-refresh-token"
+        );
         TokenResponse mockToken = new TokenResponse("mock-access-token");
 
         given(authService.authenticate(code)).willReturn(mockUser);
@@ -56,8 +61,11 @@ public class KaKaoAuthE2ETest {
 
         mockMvc.perform(get("/api/auth/kakao/callback")
                 .param("code", code))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.token").value("mock-access-token"));
+            .andExpect(status().isFound())
+            .andExpect(header().string("Set-Cookie",
+                org.hamcrest.Matchers.containsString("access_token=mock-access-token")))
+            .andExpect(
+                header().string("Set-Cookie", org.hamcrest.Matchers.containsString("HttpOnly")))
+            .andExpect(header().string("Location", "http://localhost:8080"));
     }
 }

@@ -1,12 +1,14 @@
 package gift.controller;
 
 import gift.annotation.LoginMember;
+import gift.dto.MemberRequest;
 import gift.dto.MemberResponse;
 import gift.dto.OrderRequest;
 import gift.dto.OrderResponse;
 import gift.dto.common.PageResponse;
 import gift.service.OrderService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,7 @@ public class OrderController {
     public ResponseEntity<OrderResponse> order(
             @Valid @RequestBody OrderRequest request,
             @RequestHeader("kakao-access-token") String kakaoAccessToken,
-            @LoginMember MemberResponse member) {
+            @LoginMember MemberRequest member) {
 
         OrderResponse response = orderService.order(request, member, kakaoAccessToken);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -39,11 +41,10 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<PageResponse<OrderResponse>> getOrders(
-            @LoginMember MemberResponse member,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        
-        PageResponse<OrderResponse> response = orderService.getOrdersByMember(member.id(), page, size);
+            @LoginMember MemberRequest member,
+            Pageable pageable) {
+
+        PageResponse<OrderResponse> response = orderService.getOrdersByMember(member.id(), pageable);
         return ResponseEntity.ok(response);
     }
 

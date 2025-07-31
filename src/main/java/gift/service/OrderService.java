@@ -5,6 +5,7 @@ import gift.domain.Option;
 import gift.domain.Order;
 import gift.domain.Product;
 import gift.domain.Wish;
+import gift.dto.MemberRequest;
 import gift.dto.MemberResponse;
 import gift.dto.OrderRequest;
 import gift.dto.OrderResponse;
@@ -16,6 +17,7 @@ import gift.repository.MemberJpaRepository;
 import gift.repository.OptionJpaRepository;
 import gift.repository.OrderJpaRepository;
 import gift.repository.WishJpaRepository;
+import jakarta.validation.constraints.Size.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,9 +48,9 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponse order(OrderRequest request, MemberResponse memberResponse, String kakaoToken) {
+    public OrderResponse order(OrderRequest request, MemberRequest memberRequest, String kakaoToken) {
         Option option = findOptionById(request.optionId());
-        Member member = findMemberById(memberResponse.id());
+        Member member = findMemberById(memberRequest.id());
         
         option.subtract(request.quantity());
         
@@ -62,15 +64,14 @@ public class OrderService {
         try {
             kakaoMessageClient.sendOrderMessage(kakaoToken, product.name(), request.quantity(), request.message());
         } catch (Exception e) {
-            System.err.println("카카오톡 메시지 전송 실패: " + e.getMessage());
+            throw new BusinessException(ErrorCode.KAKAO_MESSAGE_SEND_FAILED);
         }
         
         return OrderResponse.from(savedOrder);
     }
 
-    public PageResponse<OrderResponse> getOrdersByMember(Long memberId, int page, int size) {
+    public PageResponse<OrderResponse> getOrdersByMember(Long memberId, Pageable pageable) {
         Member member = findMemberById(memberId);
-        Pageable pageable = PageRequest.of(page, size);
         Page<Order> orderPage = orderJpaRepository.findByMemberOrderByOrderDateTimeDesc(member, pageable);
         
         return PageResponse.from(orderPage.map(OrderResponse::from));

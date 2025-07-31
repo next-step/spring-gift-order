@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.KaKaoClientException;
-import gift.common.exception.UnauthorizedException;
+import gift.common.exception.ServerErrorException;
 import gift.entity.Member.Member;
 import gift.entity.Order.Order;
 import gift.entity.Product.Option.ProductOption;
@@ -12,11 +12,13 @@ import gift.entity.Product.Product;
 import gift.service.Auth.AuthService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 @Component
@@ -39,12 +41,27 @@ public class KaKaoMessageClient {
     public void sendOrderMessage(Order order, Member member) {
         String template = createOrderMessageTemplate(order);
 
+        if (trySendTemplate(template, member.getAccessToken())) {
+            return;
+        }
+
+        String newAccessToken = authService.refreshAccessToken(member.getRefreshToken());
+        if (!trySendTemplate(template, newAccessToken)) {
+            throw new KaKaoClientException(CustomResponseCode.KAKAO_MESSAGE_SEND_FAILED);
+        }
+    }
+
+    private boolean trySendTemplate(String template, String accessToken) {
         try {
-            sendTemplate(template, member.getAccessToken());
-        } catch (UnauthorizedException e) {
-            String refreshToken = member.getRefreshToken();
-            String newAccessToken = authService.refreshAccessToken(refreshToken);
-            sendTemplate(template, newAccessToken);
+            sendTemplate(template, accessToken);
+            return true;
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                return false;
+            }
+            throw new KaKaoClientException(CustomResponseCode.KAKAO_MESSAGE_SEND_FAILED);
+        } catch (HttpServerErrorException e) {
+            throw new ServerErrorException(CustomResponseCode.SERVER_ERROR);
         }
     }
 
@@ -60,14 +77,6 @@ public class KaKaoMessageClient {
             })
             .body(body)
             .retrieve()
-            .onStatus(status -> status.value() == 401, (req, res) -> {
-                throw new UnauthorizedException();
-            })
-            .onStatus(HttpStatusCode::is4xxClientError,
-                (req, res) -> {
-                    throw new KaKaoClientException(
-                        CustomResponseCode.KAKAO_MESSAGE_SEND_FAILED);
-                })
             .toBodilessEntity();
     }
 

@@ -5,6 +5,7 @@ import gift.member.Member;
 import gift.resolver.LoginMember;
 import gift.user.dto.OrderRequestDto;
 import gift.user.dto.OrderResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +26,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponseDto> placeHolder(
             @LoginMember Member member,
-            @RequestBody OrderRequestDto requestDto
+            @RequestBody @Valid OrderRequestDto requestDto
     ) {
         OrderResponseDto responseDto = orderService.placeOrder(member,requestDto);
         return new ResponseEntity<>(responseDto, HttpStatus.OK);

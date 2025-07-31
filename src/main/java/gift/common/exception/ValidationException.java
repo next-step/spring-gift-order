@@ -2,7 +2,7 @@ package gift.common.exception;
 
 import gift.common.code.CustomResponseCode;
 import gift.common.exception.core.CustomException;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 
 public class ValidationException extends CustomException {
 
@@ -14,7 +14,7 @@ public class ValidationException extends CustomException {
         super(customCode);
     }
 
-    public ValidationException(HttpStatusCode statusCode, String customMessage) {
-        super(statusCode, customMessage);
+    public ValidationException(String customMessage) {
+        super(HttpStatus.BAD_REQUEST, customMessage);
     }
 }

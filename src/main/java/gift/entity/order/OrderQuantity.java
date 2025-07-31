@@ -1,9 +1,8 @@
 package gift.entity.order;
 
-import gift.common.exception.core.CustomException;
+import gift.common.exception.ValidationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import org.springframework.http.HttpStatus;
 
 @Embeddable
 public record OrderQuantity(
@@ -13,7 +12,7 @@ public record OrderQuantity(
 
     public OrderQuantity {
         if (value < 1) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "주문 수량은 1 이상이어야 합니다.");
+            throw new ValidationException("주문 수량은 1 이상이어야 합니다.");
         }
     }
 }

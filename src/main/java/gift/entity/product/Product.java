@@ -12,7 +12,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 
 @Entity
 @Table(name = "product")
@@ -69,7 +68,7 @@ public class Product {
         boolean isOptionNameDuplicated = options.stream()
             .anyMatch(opt -> opt.getName().equals(name));
         if (isOptionNameDuplicated) {
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "동일한 상품 내 옵션 이름은 중복될 수 없습니다.");
+            throw new ValidationException("동일한 상품 내 옵션 이름은 중복될 수 없습니다.");
         }
     }
 

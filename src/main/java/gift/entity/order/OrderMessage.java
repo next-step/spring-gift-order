@@ -3,7 +3,6 @@ package gift.entity.order;
 import gift.common.exception.ValidationException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import org.springframework.http.HttpStatus;
 
 @Embeddable
 public record OrderMessage(
@@ -15,10 +14,10 @@ public record OrderMessage(
 
     public OrderMessage {
         if (value == null || value.isBlank()) {
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "주문 메시지는 필수입니다.");
+            throw new ValidationException("주문 메시지는 필수입니다.");
         }
         if (value.length() > MAX_LENGTH) {
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "주문 메시지는 500자 이내로 입력해 주세요.");
+            throw new ValidationException("주문 메시지는 500자 이내로 입력해 주세요.");
         }
     }
 }

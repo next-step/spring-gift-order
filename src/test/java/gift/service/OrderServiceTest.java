@@ -1,19 +1,25 @@
 package gift.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hibernate.loader.internal.AliasConstantsHelper.get;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 import gift.dto.OrderRequest;
 import gift.entity.Member;
 import gift.entity.Option;
+import gift.entity.Order;
 import gift.entity.Product;
 import gift.entity.Wish;
 import gift.repository.MemberRepository;
 import gift.repository.OptionRepository;
+import gift.repository.OrderRepository;
 import gift.repository.ProductRepository;
 import gift.repository.WishRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +43,12 @@ public class OrderServiceTest {
     @Autowired
     private WishRepository wishRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @MockBean
+    private KakaoMessageService kakaoMessageService;
+
     @Test
     void 주문_성공() {
         Member member = memberRepository.save(Member.of("aran@email.com", "1234"));
@@ -51,11 +63,13 @@ public class OrderServiceTest {
 
         // then
         Option updated = optionRepository.findById(option.getId()).get();
-
         assertThat(updated.getQuantity()).isEqualTo(28);
 
         Page<Wish> remain = wishRepository.findAllByMember(member, Pageable.ofSize(10));
         assertThat(remain.getContent()).isEmpty();
+
+        Order savedOrder = orderRepository.findAll().get(0);
+        verify(kakaoMessageService).sendMessage(any(), any());
     }
 }
 

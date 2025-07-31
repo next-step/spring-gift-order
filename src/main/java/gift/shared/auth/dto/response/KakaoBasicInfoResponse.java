@@ -11,9 +11,6 @@ public class KakaoBasicInfoResponse {
     @JsonProperty("kakao_account")
     private KakaoAccount kakaoAccount;
 
-    // 해당 부분은 protected 로 작성 안해도 될까요?
-    // 이렇게 작성한 이유는 Domain 이라면 protected 를 사용했지만,
-    // DTO 로 사용해서 따로 protected 를 설정하지 않았습니다.
     public KakaoBasicInfoResponse() {
     }
 
@@ -36,7 +33,7 @@ public class KakaoBasicInfoResponse {
         public String getEmail() { return email; }
     }
 
-    public String makeEmailById(){
-        return this.id + "@kakao.com";
+    public Long getId() {
+        return id;
     }
 }

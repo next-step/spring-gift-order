@@ -8,6 +8,7 @@ import gift.shared.exception.user.NoUserException;
 import gift.shared.token.service.TokenService;
 import gift.user.entity.User;
 import gift.user.repository.UserRepository;
+import gift.user.utils.PasswordGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +23,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.UUID;
 
 import static gift.shared.auth.constants.KakaoConstants.*;
+import static gift.shared.domain.LoginProviderType.*;
 import static gift.shared.token.status.TokenStatus.*;
 import static org.springframework.http.MediaType.*;
 
@@ -55,14 +58,51 @@ public class KakaoService {
 
     public TokenResponse kakaoLogin(String accessCode) throws NoUserException, NoTokenException, NoSuchAlgorithmException {
         KakaoTokenResponse kakaoTokenResponse = getKakaoToken(accessCode);
-        KakaoBasicInfoResponse kakaoEmail = getKakaoEmail(kakaoTokenResponse.access_token());
-        Optional<User> user = userRepository.findByEmail(kakaoEmail.makeEmailById());
-        if(user.isPresent()){
-            return new TokenResponse(tokenService.generateToken(user.get()));
+        KakaoBasicInfoResponse kakaoInfo = getKakaoEmail(kakaoTokenResponse.access_token());
+        Optional<User> user = userRepository.findByOAuthIdAndProviderType(kakaoInfo.getId(), KAKAO);
+        if(user.isEmpty()){
+            // 저는 이 부분을 Email 을 unique 하지 않은 값 + nullable = true 로 바꿀 자신이 없어,
+            // 임의의 값을 넣어야되지 않을까 라는 생각을 하게 되었습니다.
+            String randomEmail = UUID.randomUUID().toString().replace("-", "") + "@kakao.com";
+            String password = PasswordGenerator.generatePassword(15);
+            User newUser = new User(randomEmail, password, kakaoInfo.getId());
+            userRepository.save(newUser);
+            return TokenResponse.from(kakaoTokenResponse.access_token());
         }
-        User newUser = new User(kakaoEmail.makeEmailById());
-        userRepository.save(newUser);
-        return new TokenResponse(tokenService.generateToken(newUser));
+        return TokenResponse.from(kakaoTokenResponse.access_token());
+    }
+
+    public void sendMessageToMe(String accessToken, String message){
+        try{
+            String templateObject = String.format("""
+            {
+                "object_type": "text",
+                    "text": "%s",
+                    "link": {
+                        "web_url": "https://developers.kakao.com",
+                        "mobile_web_url": "https://developers.kakao.com"
+                    },
+                    "button_title": "확인"
+            }
+            """, message);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("template_object", templateObject);
+            ResponseEntity<String> response = restClient.post()
+                    .uri(createKakaoSendToMeUrl())
+                    .header(HttpHeaders.CONTENT_TYPE, String.valueOf(APPLICATION_FORM_URLENCODED))
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+                    .body(params)
+                    .accept(APPLICATION_JSON)
+                    .retrieve()
+                    .toEntity(String.class);
+            if(response.getBody() == null){
+                throw new NoUserException(NO_TOKEN.getMessage());
+            }
+        }catch(HttpClientErrorException e){
+            logger.error(NO_KAKAO_TOKEN.getMessage(), e);
+            throw new NoUserException(e.getMessage());
+        }
     }
 
     private String createKakaoAuthUrl(){
@@ -77,18 +117,17 @@ public class KakaoService {
     }
 
     private String createKakaoTokenUrl(){
-        UriComponentsBuilder uri =  UriComponentsBuilder.newInstance()
-                .scheme(KAKAO_TOKEN.getScheme())
-                .host(KAKAO_TOKEN.getUrl())
-                .path(KAKAO_TOKEN.getPath());
+        UriComponentsBuilder uri =  UriComponentsBuilder.fromUriString(KAKAO_TOKEN.getFullUrl());
         return uri.build().toUriString();
     }
 
     private String createKakaoUserUrl(){
-        UriComponentsBuilder uri =  UriComponentsBuilder.newInstance()
-                .scheme(KAKAO_USER.getScheme())
-                .host(KAKAO_USER.getUrl())
-                .path(KAKAO_USER.getPath());
+        UriComponentsBuilder uri =  UriComponentsBuilder.fromUriString(KAKAO_USER.getFullUrl());
+        return uri.build().toUriString();
+    }
+
+    private String createKakaoSendToMeUrl(){
+        UriComponentsBuilder uri =  UriComponentsBuilder.fromUriString(KAKAO_SEND_TO_ME.getFullUrl());
         return uri.build().toUriString();
     }
 
@@ -112,7 +151,7 @@ public class KakaoService {
             }
             return response.getBody();
         }catch(HttpClientErrorException e){
-            logger.error(NO_KAKAO_TOKEN.getMessage());
+            logger.error(NO_KAKAO_TOKEN.getMessage(), e);
             throw new NoUserException(NO_KAKAO_TOKEN.getMessage());
         }
     }
@@ -134,7 +173,7 @@ public class KakaoService {
             }
             return response.getBody();
         }catch(HttpClientErrorException e) {
-            logger.error(NO_KAKAO_TOKEN.getMessage());
+            logger.error(NO_KAKAO_TOKEN.getMessage(), e);
             throw new NoUserException(e.getMessage());
         }
     }

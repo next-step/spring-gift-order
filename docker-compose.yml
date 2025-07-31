@@ -1,4 +1,7 @@
+verson: '3.8'
 services:
+  volumes:
+    db_data:
   db:
     image: mysql:latest
     container_name: mysql-db
@@ -29,5 +32,3 @@ services:
     depends_on:
       - db
 
-volumes:
-      db_data:

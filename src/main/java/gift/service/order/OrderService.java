@@ -42,7 +42,6 @@ public class OrderService {
         // 옵션 재고 삭제
         Option option = optionRepository.findOrThrow(orderRequest.optionId());
         option.subtractQuantity(orderRequest.quantity());
-        //optionRepository.save(option);
 
         // 위시리스트에 있으면 삭제
         Optional<WishList> wishList = wishListRepository.findByMemberIdAndProductId(memberId,

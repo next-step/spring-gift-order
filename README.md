@@ -12,3 +12,9 @@
 - 주문하기 기능 구현
 - 외부 API 보내는 부분을 stubbing하여 카카오 메세지 보내기 부분 테스트 코드 작성
 - OrderService를 추상화하여 FakeOrderService 생성 후 테스트 코드 작성
+
+## step3 구현 기능
+- CORS 테스트 코드 작성
+- OPTIONS 헤더는 필터를 타지 않도록 제일 앞단의 필터에서 HTTP METHOD가 OPTIONS일 경우 필터 통과 (preflight)
+- deploy.sh 쉘 스크립트 작성
+- 배포

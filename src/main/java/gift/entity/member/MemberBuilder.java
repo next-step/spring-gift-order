@@ -10,6 +10,13 @@ public class MemberBuilder {
     private String accessToken;
     private String refreshToken;
 
+    private MemberBuilder() {
+    }
+
+    public static MemberBuilder builder() {
+        return new MemberBuilder();
+    }
+
     public MemberBuilder id(Long id) {
         this.id = id;
         return this;

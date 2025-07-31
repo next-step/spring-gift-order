@@ -49,7 +49,7 @@ public class Member {
     }
 
     public static Member from(AuthUser user) {
-        return new MemberBuilder()
+        return MemberBuilder.builder()
             .providerId(user.providerId())
             .email(user.email())
             .nickname(user.nickname())

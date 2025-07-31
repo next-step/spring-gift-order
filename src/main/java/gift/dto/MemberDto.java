@@ -5,13 +5,13 @@ import jakarta.validation.constraints.NotNull;
 
 public class MemberDto {
 
-    private final Long id;
+    private Long id;
 
     @NotNull
-    private final String email;
+    private String email;
 
     @NotNull
-    private final String password;
+    private String password;
 
     public MemberDto(Long id, String email, String password) {
         this.id = id;
@@ -25,6 +25,8 @@ public class MemberDto {
         this.password = member.getPassword();
     }
 
+    public MemberDto() {}
+
     public Long getId() {
         return id;
     }
@@ -36,4 +38,17 @@ public class MemberDto {
     public String getPassword() {
         return password;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }

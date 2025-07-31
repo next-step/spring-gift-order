@@ -15,7 +15,7 @@ public class KakaoLoginController {
         this.kakaoLoginService = kakaoLoginService;
     }
 
-    @GetMapping("/callback")
+    @GetMapping("/login/callback")
     public ResponseEntity<String> callback(@RequestParam String code) {
 
         String accessToken = kakaoLoginService.getAccessToken(code);

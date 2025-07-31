@@ -30,7 +30,7 @@ public class ProductController {
     }
 
     // 1. 상품 추가
-    @PostMapping
+    @PostMapping("/new")
     public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductRequestDto dto) {
 
         ProductResponseDto response = productService.create(dto);

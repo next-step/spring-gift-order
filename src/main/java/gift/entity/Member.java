@@ -21,6 +21,8 @@ public class Member {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
+    private String kakaoAccessToken;
+
     public Member() {
     }
 
@@ -50,6 +52,13 @@ public class Member {
         return password;
     }
 
+    public String getKakaoAccessToken() {
+        return kakaoAccessToken;
+    }
+
+    public void updateKakaoAccessToken(String token) {
+        this.kakaoAccessToken = token;
+    }
 
     public void validatePassword(String password) throws IllegalAccessException {
         if (!this.password.equals(password)) {

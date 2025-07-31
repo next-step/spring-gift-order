@@ -8,6 +8,7 @@ import gift.product.ProductOption;
 import gift.product.service.ProductService;
 import gift.user.dto.OrderRequestDto;
 import gift.user.dto.OrderResponseDto;
+import gift.user.template.OrderMessageTemplateV1;
 import gift.wishlist.repository.WishlistRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,10 +44,12 @@ public class OrderService {
         String validAccessToken = kakaoTokenService.getValidAccessToken(member.getClientId());
         kakaoMessageClient.sendOrderMessageToUser(
                 validAccessToken,
-                product.getName(),
-                selectedOption.getName(),
-                requestDto.quantity(),
-                requestDto.message()
+                new OrderMessageTemplateV1(
+                        product.getName(),
+                        selectedOption.getName(),
+                        requestDto.quantity(),
+                        requestDto.message()
+                )
         );
 
         return new OrderResponseDto(requestDto.productId(), requestDto.optionId(), requestDto.quantity(), requestDto.message());

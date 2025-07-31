@@ -3,13 +3,12 @@ package gift.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.jwt.JWTUtil;
 import gift.jwt.JWTValidator;
-import gift.jwt.filter.ApiFilter;
-import gift.jwt.filter.CustomLoginFilter;
-import gift.jwt.filter.CustomLogoutFilter;
-import gift.jwt.filter.ViewFilter;
+import gift.jwt.filter.*;
 import gift.member.argumentresolver.MyAuthenticalResolver;
 import gift.member.service.MemberService;
+import gift.util.CookieProperties;
 import jakarta.servlet.Filter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,22 +26,26 @@ public class SecurityConfig implements WebMvcConfigurer {
     private final JWTValidator jwtValidator;
     private final JWTUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    @Value("${spring.front.domain}")
+    private String frontDomain;
+    private final CookieProperties cookieProperties;
 
 
-    public SecurityConfig(MemberService memberService, JWTUtil jwtUtil, ObjectMapper objectMapper) {
+    public SecurityConfig(MemberService memberService, JWTUtil jwtUtil, ObjectMapper objectMapper, CookieProperties cookieProperties) {
         this.memberService = memberService;
         this.jwtUtil = jwtUtil;
         this.objectMapper = objectMapper;
+        this.cookieProperties = cookieProperties;
         this.jwtValidator = new JWTValidator(jwtUtil, memberService);
     }
 
     @Bean
     public FilterRegistrationBean customLoginFilter() {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
-        filterFilterRegistrationBean.setFilter(new CustomLoginFilter(memberService, jwtUtil, objectMapper));
+        filterFilterRegistrationBean.setFilter(new CustomLoginFilter(memberService, jwtUtil, objectMapper, cookieProperties));
 
         filterFilterRegistrationBean.addUrlPatterns("/api/members/login");
-        filterFilterRegistrationBean.setOrder(3);
+        filterFilterRegistrationBean.setOrder(4);
         return filterFilterRegistrationBean;
     }
 
@@ -52,7 +55,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         filterRegistrationBean.setFilter(new ApiFilter(objectMapper, jwtValidator));
 
         filterRegistrationBean.addUrlPatterns("/api/*");
-        filterRegistrationBean.setOrder(2);
+        filterRegistrationBean.setOrder(3);
         return filterRegistrationBean;
     }
 
@@ -61,7 +64,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new ViewFilter(jwtValidator));
         filterRegistrationBean.addUrlPatterns("/*");
-        filterRegistrationBean.setOrder(1);
+        filterRegistrationBean.setOrder(2);
 
         return filterRegistrationBean;
     }
@@ -69,9 +72,18 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean customLogoutFilter() {
         FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(new CustomLogoutFilter(objectMapper));
+        filterRegistrationBean.setFilter(new CustomLogoutFilter(objectMapper, cookieProperties));
         filterRegistrationBean.addUrlPatterns("/api/members/logout");
-        filterRegistrationBean.setOrder(4);
+        filterRegistrationBean.setOrder(5);
+        return filterRegistrationBean;
+    }
+
+    @Bean
+    public FilterRegistrationBean CorsFilter() {
+        FilterRegistrationBean<Filter> filterRegistrationBean = new FilterRegistrationBean<>();
+        filterRegistrationBean.setFilter(new CorsFilter(frontDomain));
+        filterRegistrationBean.addUrlPatterns("/*");
+        filterRegistrationBean.setOrder(1);
         return filterRegistrationBean;
     }
 

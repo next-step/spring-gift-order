@@ -13,6 +13,7 @@ import gift.oauth2.dto.KakaoUserInfoResponse;
 import gift.oauth2.properties.KakaoProperties;
 import gift.oauth2.repository.KakaoTokenRepository;
 import gift.order.dto.KakaoOrderMessageTemplate;
+import gift.util.CookieProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,9 @@ class KakaoServiceTest {
 
     @MockitoBean
     private KakaoProperties kakaoProperties;
+
+    @MockitoBean
+    private CookieProperties cookieProperties;
 
     @BeforeEach
     void setUp() {
@@ -228,14 +232,10 @@ class KakaoServiceTest {
                         .contentType(MediaType.APPLICATION_JSON));
 
 
-        // when
+        // when & then
         kakaoService.sendOrderMessage(new KakaoOrderMessageTemplate
                 ("상품1", "옵션1", 100, 20,
-                        "메시지", 2000), member.getId());
-
-        // then
-        verify(kakaoTokenRepository).findByMemberId(any());
-        verifyNoMoreInteractions(kakaoTokenRepository);
+                        "메시지", 2000), kakaoToken);
     }
 
 
@@ -250,7 +250,6 @@ class KakaoServiceTest {
             "code": -401
         }
     """;
-
 
         String errorResponse2 = """
                 {
@@ -279,11 +278,8 @@ class KakaoServiceTest {
         // when & then
         assertThatThrownBy(()->kakaoService.sendOrderMessage(new KakaoOrderMessageTemplate
                 ("상품1", "옵션1", 100, 20,
-                        "메시지", 2000), member.getId())
+                        "메시지", 2000), kakaoToken)
         ).isInstanceOf(KakaoKAuthException.class);
-
-        verify(kakaoTokenRepository).findByMemberId(any());
-        verifyNoMoreInteractions(kakaoTokenRepository);
 
     }
 }

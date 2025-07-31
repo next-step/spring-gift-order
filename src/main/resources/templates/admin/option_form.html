@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>옵션 추가</title>
+</head>
+<body>
+
+<h1>옵션 추가</h1>
+
+<div th:if="${errorMessage}">
+  <p th:text="${errorMessage}"></p>
+</div>
+
+<form th:action="@{'/admin/products/' + ${productId} + '/options'}" method="post">
+  <div>
+    <label for="name">옵션명:</label>
+    <input type="text" id="name" name="name">
+  </div>
+
+  <div>
+    <label for="quantity">수량:</label>
+    <input type="number" id="quantity" name="quantity">
+  </div>
+
+  <div>
+    <button type="submit">추가</button>
+    <a th:href="@{/admin/products}">상품 목록으로</a>
+  </div>
+</form>
+
+</body>
+</html>

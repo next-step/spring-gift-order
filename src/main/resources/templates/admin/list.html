@@ -17,6 +17,8 @@
     <p>이미지: <img th:src="${product.imageUrl}" width="100"></p>
     <p>가격: <span th:text="${product.price} + '원'"></span></p>
 
+      <a th:href="@{'/admin/products/' + ${product.id} + '/options'}">옵션 추가</a>
+
       <a th:href="@{'/admin/products/' + ${product.id} + '/edit'}">수정</a>
     <form th:action="@{'/admin/products/' + ${product.id} + '/delete'}" method="post" style="display:inline;">
       <button type="submit">삭제</button>

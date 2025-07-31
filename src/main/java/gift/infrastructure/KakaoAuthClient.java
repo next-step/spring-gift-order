@@ -2,53 +2,60 @@ package gift.infrastructure;
 
 import gift.dto.KakaoTokenDto;
 import gift.dto.KakaoUserInfoDto;
+import gift.entity.KakaoToken;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
 
 @Service
 public class KakaoAuthClient {
     private final String kakaoRestApiKey;
     private final String redirectUri;
-    private final RestTemplate restTemplate;
+    private final String clientSecret;
+    private final RestTemplate kakaoAuthRestTemplate;
+    private final RestTemplate kakaoKapiRestTemplate;
 
     public KakaoAuthClient(@Value("${kakao_rest_api_key}") String kakaoRestApiKey,
-                            @Value("${redirect_uri}") String redirectUri,
-                            RestTemplate kakaoAuthRestTemplate) {
+                           @Value("${redirect_uri}") String redirectUri,
+                           @Value("${client_secret}") String clientSecret,
+                           RestTemplate kakaoAuthRestTemplate,
+                           RestTemplate kakaoKapiRestTemplate) {
         this.kakaoRestApiKey = kakaoRestApiKey;
         this.redirectUri = redirectUri;
-        this.restTemplate = kakaoAuthRestTemplate;
+        this.clientSecret = clientSecret;
+        this.kakaoAuthRestTemplate = kakaoAuthRestTemplate;
+        this.kakaoKapiRestTemplate = kakaoKapiRestTemplate;
     }
 
     public KakaoTokenDto getKakaoToken(String code) {
-        final String url = "/token";
+        final String url = "/oauth/token";
+
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", kakaoRestApiKey);
         body.add("redirect_uri", redirectUri);
         body.add("code", code);
+        body.add("client_secret", clientSecret);
 
-        var request = new RequestEntity<>(body, HttpMethod.POST, URI.create(url));
-        ResponseEntity<KakaoTokenDto> response = restTemplate.exchange(request, KakaoTokenDto.class);
+        var httpentity = new HttpEntity<>(body, headers);
 
+        ResponseEntity<KakaoTokenDto> response = kakaoAuthRestTemplate.exchange(url, HttpMethod.POST, httpentity, KakaoTokenDto.class);
         return response.getBody();
     }
 
-    public KakaoUserInfoDto getKakaoUserInfo(KakaoTokenDto token) {
-        final String url = "/userinfo";
+    public KakaoUserInfoDto getKakaoUserInfo(KakaoToken token) {
+        final String url = "/v1/oidc/userinfo";
         var headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.accessToken());
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.getAccessToken());
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        var request = new RequestEntity<>(headers, HttpMethod.GET, URI.create(url));
-        ResponseEntity<KakaoUserInfoDto> response = restTemplate.exchange(request, KakaoUserInfoDto.class);
+        var httpentity = new HttpEntity<>(headers);
+        ResponseEntity<KakaoUserInfoDto> response = kakaoKapiRestTemplate.exchange(url, HttpMethod.GET, httpentity, KakaoUserInfoDto.class);
         return response.getBody();
     }
 }

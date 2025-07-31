@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WishRepository extends JpaRepository<Wish, Long> {
     Page<Wish> findByUserId(Long userId, Pageable pageable);
-    boolean existsByProductId(Long productId);
+    boolean existsByProductOptionId(Long productOptionId);
 }

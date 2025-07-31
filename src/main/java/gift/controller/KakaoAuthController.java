@@ -1,7 +1,9 @@
 package gift.controller;
 
+import gift.annotation.UserValid;
 import gift.dto.KakaoTokenDto;
 import gift.dto.KakaoUserInfoDto;
+import gift.dto.UserInfoDto;
 import gift.service.KakaoAuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +17,26 @@ public class KakaoAuthController {
         this.kakaoAuthService = kakaoAuthService;
     }
 
+
     /**
-     *
-     * @param code 사용자 인가 코드
-     * @return KakaoTokenDto 카카오가 발급한 토큰
+     * 기존 회원정보에 카카오 토큰 연동하는 API
+     * @param userInfoDto 기존 사용자 정보
+     * @param code 카카오 사용자 인가 정보
+     * @return KakaoTokenDto 카카오 토큰
      */
     @GetMapping
-    public ResponseEntity<KakaoTokenDto> getKakaoToken(@RequestParam("code") String code) {
-        return new ResponseEntity<> (kakaoAuthService.getKakaoToken(code), HttpStatus.OK);
+    public ResponseEntity<KakaoTokenDto> accessKakaoToken(@UserValid UserInfoDto userInfoDto, @RequestParam("code") String code) {
+        return new ResponseEntity<> (kakaoAuthService.accessKakaoToken(userInfoDto, code), HttpStatus.OK);
     }
 
+
+    /**
+     * 내 유저 정보에 저장돼있는 카카오 토큰으로 카카오 유저 정보 받아오는 API
+     * @param userInfoDto 유저 정보
+     * @return 카카오 유저 정보
+     */
     @GetMapping("/kakao-info")
-    public ResponseEntity<KakaoUserInfoDto> getKakaoUserInfo(@RequestBody KakaoTokenDto kakaoTokenDto) {
-        return new ResponseEntity<>(kakaoAuthService.getKakaoUserInfo(kakaoTokenDto), HttpStatus.OK);
+    public ResponseEntity<KakaoUserInfoDto> getKakaoUserInfo(@UserValid UserInfoDto userInfoDto) {
+        return new ResponseEntity<>(kakaoAuthService.getKakaoUserInfo(userInfoDto), HttpStatus.OK);
     }
 }

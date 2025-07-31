@@ -5,6 +5,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name= "user")
@@ -23,6 +25,12 @@ public class User {
 
     private String role;
 
+    @OneToOne
+    private KakaoToken kakaoToken;
+
+    @OneToMany(mappedBy = "user")
+    private List<Wish> wishList = new ArrayList<>();
+
     protected User() {}
 
     public User(String email, String password) {
@@ -35,9 +43,15 @@ public class User {
         this.password = password;
     }
 
+    public void updateKakaoToken(KakaoToken kakaoToken){
+        this.kakaoToken = kakaoToken;
+    }
+
     public Long getId() {return id;}
     public String getEmail() {return email;}
     public String getPassword() {return password;}
     public LocalDateTime getCreatedDate() {return createdDate;}
     public String getRole() {return role;}
+    public KakaoToken getKakaoToken() {return kakaoToken;}
+    public List<Wish> getWishList() {return wishList;}
 }

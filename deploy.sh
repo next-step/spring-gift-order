@@ -4,6 +4,23 @@ PROJECT_PATH=/home/ubuntu/spring-gift-order
 GIT_BRANCH=step3
 EXTERNAL_CONFIG_PATH="/home/ubuntu/config/application-prod.properties"
 
+echo "🚀 배포 시작!"
+
+echo "Git 저장소에서 최신 코드를 가져옵니다."
+git pull origin $GIT_BRANCH
+
+echo "🚀 빌드 시작!"
+./gradlew build -x test
+
+echo "로그 파일 경로를 설정합니다."
+LOG_PATH=$PROJECT_PATH/logs
+mkdir -p $LOG_PATH
+
+echo "🚀 애플리케이션 시작!"
+
+BUILD_PATH=$(ls $PROJECT_PATH/build/libs/spring-gift-0.0.1-SNAPSHOT.jar)
+JAR_NAME=$(basename $BUILD_PATH)
+
 CURRENT_PID=$(pgrep -f $JAR_NAME)
 
 if [ -z $CURRENT_PID ]
@@ -15,21 +32,6 @@ else
   kill -15 $CURRENT_PID
   sleep 5
 fi
-
-echo "🚀 배포 시작!"
-
-echo "Git 저장소에서 최신 코드를 가져옵니다."
-
-git pull origin $GIT_BRANCH
-./gradlew build -x test
-
-LOG_PATH=$PROJECT_PATH/logs
-mkdir -p $LOG_PATH
-
-echo "🚀 애플리케이션 시작!"
-
-BUILD_PATH=$(ls $PROJECT_PATH/build/libs/spring-gift-0.0.1-SNAPSHOT.jar)
-JAR_NAME=$(basename $BUILD_PATH)
 
 nohup java -jar $BUILD_PATH --spring.profiles.active=prod --spring.config.location=classpath:/application.properties,$EXTERNAL_CONFIG_PATH > $LOG_PATH/app.log 2>&1 &
 

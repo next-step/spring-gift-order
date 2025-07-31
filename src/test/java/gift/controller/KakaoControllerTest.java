@@ -1,6 +1,8 @@
 package gift.controller;
 
+import gift.dto.KakaoLoginResponse;
 import gift.dto.KakaoTokenResponse;
+import gift.entity.vo.Email;
 import gift.service.KakaoApiService;
 import gift.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -40,20 +42,24 @@ class KakaoControllerTest {
     @Test
     void testGetToken() throws Exception {
         String code = "mockCode";
+        String mockAccessToken = "access-token";
+        String mockJwtToken = "jwt-token";
 
         KakaoTokenResponse mockResponse = new KakaoTokenResponse();
-        mockResponse.setAccessToken("access-token");
+        mockResponse.setAccessToken(mockAccessToken);
         mockResponse.setRefreshToken("refresh-token");
         mockResponse.setTokenType("bearer");
         mockResponse.setExpiresIn(3600);
 
+        Email mockEmail = new Email("test@test.com");
+
         when(kakaoApiService.getToken(code)).thenReturn(mockResponse);
+        when(kakaoApiService.getEmail(mockAccessToken)).thenReturn(mockEmail);
+        when(userService.kakaoRegister(mockEmail)).thenReturn(mockJwtToken);
 
         mockMvc.perform(get("/").param("code", code))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.access_token").value("access-token"))
-                .andExpect(jsonPath("$.refresh_token").value("refresh-token"))
-                .andExpect(jsonPath("$.token_type").value("bearer"))
-                .andExpect(jsonPath("$.expires_in").value(3600));
+                .andExpect(jsonPath("$.jwtToken").value(mockJwtToken))
+                .andExpect(jsonPath("$.kakaoAccessToken").value(mockAccessToken));
     }
 }

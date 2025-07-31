@@ -3,6 +3,7 @@ package gift.repository;
 import gift.entity.User;
 import gift.entity.vo.Email;
 import gift.entity.vo.Password;
+import gift.enums.UserType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,7 +19,7 @@ class UserRepositoryTest {
 
     @Test
     void save() {
-        User expected = new User(new Email("test@email.com"), new Password("12345678"));
+        User expected = new User(new Email("test@email.com"), new Password("12345678"), UserType.LOCAL);
         User actual = userRepository.save(expected);
         assertAll(
                 () -> assertThat(actual.getId()).isNotNull(),
@@ -29,7 +30,7 @@ class UserRepositoryTest {
     @Test
     void findByEmail() {
         Email email = new Email("test@email.com");
-        User expected = new User(email, new Password("12345678"));
+        User expected = new User(email, new Password("12345678"), UserType.LOCAL);
         userRepository.save(expected);
         User actual = userRepository.findByEmail(email).get();
         assertThat(actual).isEqualTo(expected);

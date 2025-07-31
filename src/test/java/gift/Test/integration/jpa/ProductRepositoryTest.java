@@ -108,7 +108,7 @@ public class ProductRepositoryTest extends AbstractRepositoryTest {
     @Order(5)
     @DisplayName("영속성 테스트")
     public void persistenceTest() {
-        Product product = new Product(null, "Persistent Product", 1500L, "http://example.com/persistent_image.jpg", testUser);
+        Product product = new Product(null, "PersistentProd", 1500L, "http://example.com/persistent_image.jpg", testUser);
         List<Option> options = List.of(
                 new Option("Option 1", 10L),
                 new Option("Option 2", 20L)

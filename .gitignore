@@ -45,3 +45,6 @@ out/
 ## environment files
 .env
 .env.local
+
+##
+!/build/lib/*.jar

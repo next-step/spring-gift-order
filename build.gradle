@@ -20,7 +20,7 @@ repositories {
 
 ext {
     JWT_VERSION = '0.12.6'
-    EPAGE_VERSON = '0.18.2'
+    EPAGE_VERSION = '0.18.2'
 }
 
 dependencies {
@@ -50,8 +50,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
-    testImplementation 'com.epages:restdocs-api-spec-mockmvc:${EPAGE_VERSION}'
-    testImplementation 'com.epages:restdocs-api-spec-restassured:${EPAGE_VERSION}'
+    testImplementation "com.epages:restdocs-api-spec-mockmvc:${EPAGE_VERSION}"
+    testImplementation "com.epages:restdocs-api-spec-restassured:${EPAGE_VERSION}"
     testImplementation 'io.rest-assured:rest-assured'
 }
 

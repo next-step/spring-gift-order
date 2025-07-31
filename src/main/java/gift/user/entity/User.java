@@ -5,6 +5,8 @@ import gift.shared.domain.UserRole;
 import gift.user.dto.request.UserModifyRequest;
 import jakarta.persistence.*;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 @Entity

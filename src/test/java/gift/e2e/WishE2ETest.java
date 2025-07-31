@@ -74,7 +74,7 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 등록 성공")
-    void testAddWishSuccess() throws Exception {
+    void test1() throws Exception {
         WishRequest request = new WishRequest(10L, 2);
         WishResponse response = new WishResponse(1L, 10L, 2, "상품명", 1000, "https://img");
 
@@ -109,7 +109,7 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 등록 실패 - 이미 등록된 항목")
-    void testAddWishDuplicateFail() throws Exception {
+    void test2() throws Exception {
         WishRequest request = new WishRequest(10L, 1);
 
         given(wishService.addWish(eq(testMember), any(WishRequest.class)))
@@ -130,7 +130,7 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 등록 실패 - 유효성 검사")
-    void testAddWishValidationFail() throws Exception {
+    void test3() throws Exception {
         WishRequest invalidRequest = new WishRequest(null, -1);
 
         String token = jwtUtil.generateToken(testMember);
@@ -144,7 +144,7 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 목록 조회 실패 - 인증 없음")
-    void testGetWishesUnauthorizedFail() throws Exception {
+    void test4() throws Exception {
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/wishes"))
             .andReturn();
 
@@ -155,7 +155,7 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 삭제 성공")
-    void testDeleteWishSuccess() throws Exception {
+    void test5() throws Exception {
         String token = jwtUtil.generateToken(testMember);
 
         MvcResult result = mockMvc.perform(
@@ -170,7 +170,7 @@ class WishE2ETest {
 
     @Test
     @DisplayName("위시 삭제 실패 - 존재하지 않는 wish")
-    void testDeleteWishNotFoundFail() throws Exception {
+    void test6() throws Exception {
         doThrow(new CustomException(CustomResponseCode.NOT_FOUND))
             .when(wishService).deleteWish(eq(testMember), eq(999L));
 

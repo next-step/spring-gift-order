@@ -31,7 +31,7 @@ public class KaKaoAuthE2ETest {
 
     @Test
     @DisplayName("로그인 요청시 리다이렉트 URL 반환 성공")
-    void loginSuccessReturnRedirectUrl() throws Exception {
+    void test1() throws Exception {
         String redirectUrl = "https://kauth.kakao.com/oauth/authorize?...";
 
         given(authService.getRedirectUrl()).willReturn(redirectUrl);
@@ -43,7 +43,7 @@ public class KaKaoAuthE2ETest {
 
     @Test
     @DisplayName("콜백 요청 시 쿠키에 액세스 토큰 설정 후 리다이렉트")
-    void callbackSuccessSetAccessTokenInCookie() throws Exception {
+    void test2() throws Exception {
         String code = "testCode";
 
         AuthUser mockUser = new AuthUser(

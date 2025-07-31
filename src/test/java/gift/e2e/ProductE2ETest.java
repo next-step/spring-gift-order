@@ -63,7 +63,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품 생성 테스트")
-    void testCreateProduct() {
+    void test1() {
         List<ProductOptionRequest> optionRequests = List.of(
             new ProductOptionRequest("테스트 옵션", 100L));
         ProductRequest request = new ProductRequest("테스트 상품", 4500, "https://test.jpg",
@@ -93,7 +93,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품 조회 테스트")
-    void testGetProduct() {
+    void test2() {
         Long id = createSampleProduct("테스트 조회 상품", 4500, "https://test.jpg");
 
         CustomResponseBody<ProductResponse> response = client.get()
@@ -118,7 +118,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품 수정 테스트")
-    void testUpdateProduct() {
+    void test3() {
         Long id = createSampleProduct("테스트 기존 상품", 1000, "https://old.jpg");
 
         ProductUpdateRequest update = new ProductUpdateRequest("테스트 수정 상품", 1500,
@@ -146,7 +146,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품 삭제 테스트")
-    void testDeleteProduct() {
+    void test4() {
         Long id = createSampleProduct("테스트 삭제 상품", 2000, "https://test.jpg");
 
         ResponseEntity<Void> response = client.delete()
@@ -163,7 +163,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품명 빈 값 유효성 검사")
-    void testProductNameBlankValidation() {
+    void test5() {
         ProductRequest invalidRequest = new ProductRequest("", 1000, "https://test.jpg",
             createDummyOptions());
 
@@ -181,7 +181,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품명 최대 길이 유효성 검사")
-    void testProductNameLengthValidation() {
+    void test6() {
         ProductRequest invalidRequest = new ProductRequest("일이삼사오육칠팔구십123456", 1000,
             "https://test.jpg", createDummyOptions());
 
@@ -199,7 +199,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품명 허용되지 않는 문자 유효성 검사")
-    void testProductNamePatternValidation() {
+    void test7() {
         ProductRequest invalidRequest = new ProductRequest("@@@!!!", 1000, "https://test.jpg",
             createDummyOptions());
 
@@ -217,7 +217,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("상품명에 카카오 포함 시 유효성 검사")
-    void testProductNameForbiddenKeywordValidation() {
+    void test8() {
         ProductRequest invalidRequest = new ProductRequest("카카오", 3000, "https://test.jpg",
             createDummyOptions());
 
@@ -236,7 +236,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("가격 누락 유효성 검사")
-    void testPriceRequiredValidation() {
+    void test9() {
         ProductRequest invalidRequest = new ProductRequest("테스트 상품", null, "https://test.jpg",
             createDummyOptions());
 
@@ -254,7 +254,7 @@ public class ProductE2ETest {
 
     @Test
     @DisplayName("이미지 URL 누락 유효성 검사")
-    void testImageUrlRequiredValidation() {
+    void test10() {
         ProductRequest invalidRequest = new ProductRequest("테스트 상품", 1000, "",
             createDummyOptions());
 

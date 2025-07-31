@@ -49,7 +49,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("위시 저장 테스트")
-    void save() {
+    void test1() {
         Wish wish = new Wish(testMember, testProduct, 1);
         Wish savedWish = wishRepository.save(wish);
 
@@ -71,7 +71,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("유저와 상품으로 위시 존재 여부 확인")
-    void existsByMemberAndProduct() {
+    void test2() {
         wishRepository.save(new Wish(testMember, testProduct, 1));
 
         boolean exists = wishRepository.existsByMemberAndProduct(testMember, testProduct);
@@ -81,7 +81,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("유저와 상품으로 위시 삭제")
-    void deleteByMemberAndProduct() {
+    void test3() {
         Wish wish = wishRepository.save(new Wish(testMember, testProduct, 1));
 
         wishRepository.deleteByMemberAndProduct(testMember, testProduct);
@@ -96,7 +96,7 @@ class WishRepositoryTest {
 
     @Test
     @DisplayName("유저로 모든 위시 조회")
-    void findAllByMember() {
+    void test4() {
         Wish wish1 = wishRepository.save(new Wish(testMember, testProduct, 1));
         Wish wish2 = wishRepository.save(new Wish(testMember, testProduct2, 2));
 

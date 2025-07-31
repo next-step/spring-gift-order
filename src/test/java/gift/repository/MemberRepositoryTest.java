@@ -35,14 +35,14 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("이메일로 회원 존재 여부 확인")
-    void existsByEmail() {
+    void test1() {
         boolean exists = memberRepository.existsByEmail(testEmail);
         assertThat(exists).isTrue();
     }
 
     @Test
     @DisplayName("이메일로 회원 조회")
-    void findByEmail() {
+    void test2() {
         Optional<Member> result = memberRepository.findByEmail(testEmail);
 
         assertThat(result).isPresent();

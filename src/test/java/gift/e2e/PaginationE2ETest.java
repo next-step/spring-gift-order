@@ -89,7 +89,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 기본 (page=1, size=10)")
-    void testWishSuccess() {
+    void test1() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -118,7 +118,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 사이즈 5 (page=1, size=5)")
-    void testWishSize5Success() {
+    void test2() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -146,7 +146,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 마지막 페이지 조회 (page=3, size=10)")
-    void testWishLastPageSuccess() {
+    void test3() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -173,7 +173,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - size가 전체 개수보다 큰 경우 (page=1, size=100)")
-    void testWishSizeLargerThanTotalSuccess() {
+    void test4() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -201,7 +201,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 가격 오름차순 정렬")
-    void testWishSortByPriceAsc() {
+    void test5() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -230,7 +230,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 상품 이름 내림차순 정렬")
-    void testWishSortByProductNameDesc() {
+    void test6() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -259,7 +259,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - 가격 오름차순, 상품명 내림차순 정렬 (복수 sort 파라미터)")
-    void testWishSortByPriceAscAndProductNameDesc() {
+    void test7() {
         CustomResponseBody<PageResponse<WishResponse>> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -285,7 +285,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시 페이지네이션 - page 음수 예외")
-    void testWishNegativePageError() {
+    void test8() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -303,7 +303,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("위시페이지네이션 - size 0 예외")
-    void testWishZeroSizeError() {
+    void test9() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -321,7 +321,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("정렬 필드가 허용되지 않으면 예외 발생")
-    void testWishInvalidSortFieldError() {
+    void test10() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")
@@ -338,7 +338,7 @@ public class PaginationE2ETest {
 
     @Test
     @DisplayName("정렬 방향이 잘못되었을 때 예외 발생")
-    void testWishInvalidSortDirectionError() {
+    void test11() {
         ResponseEntity<String> response = client.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/wishes")

@@ -13,7 +13,7 @@ public class ProductUnitTest {
 
     @Test
     @DisplayName("옵션 정상 추가 테스트")
-    void addUniqueOptionSuccess() {
+    void test1() {
         Product product = new Product("콜라", 1000, "image.jpg");
 
         ProductOption option = product.addUniqueOption("500ml", 5L);
@@ -24,7 +24,7 @@ public class ProductUnitTest {
 
     @Test
     @DisplayName("중복된 옵션 이름일 경우 예외 발생")
-    void addUniqueOptionNameDuplicatedError() {
+    void test2() {
         Product product = new Product("콜라", 1000, "image.jpg");
         product.addUniqueOption("500ml", 5L);
 

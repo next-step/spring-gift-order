@@ -46,4 +46,17 @@ public class KakaoClient {
                 .retrieve()
                 .body(KakaoUserInfoResponse.class);
     }
+
+    public void sendKakaoTalkMessage(String accessToken, String templateObject) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("template_object", templateObject);
+
+        kapiApiClient.post()
+                .uri("/v2/api/talk/memo/default/send")
+                .header("Authorization", "Bearer " + accessToken)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(body)
+                .retrieve()
+                .toBodilessEntity();
+    }
 }

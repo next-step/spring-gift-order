@@ -48,4 +48,4 @@ jwt:
 
 kakao:
   client-id: test-client-id
-  redirect-uri: http://localhost:8080/oauth/callback/kakao
+  redirect-uri: http://ec2-13-209-48-111.ap-northeast-2.compute.amazonaws.com:8080/oauth/callback/kakao

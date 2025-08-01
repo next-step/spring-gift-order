@@ -41,8 +41,3 @@
 2. CORS 설정
     - 클라이언트와 다른 Origin 간 통신을 허용하도록 서버에 CORS 설정 추가
     - `GET`, `POST`, `PATCH`, `DELETE` 요청 허용
-    - 필요한 경우 응답 헤더에 `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods` 추가
-3. Spring Boot 배포 설정
-    - `application.yml`을 통해 배포용 설정 구성
-    - H2 Console 비활성화, JWT 키 값 등 환경변수 적용
-    - `@Profile("prod")` 기반으로 SecurityConfig 등 설정 분리

@@ -1,5 +1,5 @@
 #!/bin/bash
-BUILD_PATH=$(ls /home/sylimi2r2/kakao/*.jar)
+BUILD_PATH=$(ls /home/ubuntu/kakao/*.jar)
 JAR_NAME=$(basename $BUILD_PATH)
 
 CURRENT_PID=$(pgrep -f $JAR_NAME)
@@ -12,7 +12,7 @@ else
   sleep 5
 fi
 
-DEPLOY_PATH=/home/sylimi2r2/
+DEPLOY_PATH=/home/ubuntu/
 cp $BUILD_PATH $DEPLOY_PATH
 cd $DEPLOY_PATH
 

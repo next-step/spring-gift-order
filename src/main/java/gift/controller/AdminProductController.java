@@ -54,7 +54,7 @@ public class AdminProductController {
             return "admin/product-form";
         }
         productService.create(productRequest.toEntity());
-        return "redirect:/admin/products";
+        return "redirect:/api/admin/products";
     }
 
     @GetMapping("/{id}/edit")
@@ -73,14 +73,14 @@ public class AdminProductController {
             return "admin/product-form";
         }
         productService.update(id, request);
-        return "redirect:/admin/products";
+        return "redirect:/api/admin/products";
     }
 
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable(name = "id") Long productId) {
         productService.delete(productId);
-        return "redirect:/admin/products";
+        return "redirect:/api/admin/products";
     }
 
 }

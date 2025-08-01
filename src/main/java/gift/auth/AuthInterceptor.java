@@ -15,28 +15,21 @@ public class AuthInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String authorizationHeader = request.getHeader("Authorization");
-
-
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("토큰이 필요합니다.");
             return false;
         }
 
-
-        String token = authorizationHeader.substring(7);
-
-
+        String token = authHeader.substring(7);
         if (!jwtTokenProvider.validateToken(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("유효하지 않은 토큰입니다.");
             return false;
         }
 
-
-        request.setAttribute("userEmail", jwtTokenProvider.getEmailFromToken(token));
+        String userEmail = jwtTokenProvider.getSubject(token);
+        request.setAttribute("userEmail", userEmail);
         return true;
     }
 }

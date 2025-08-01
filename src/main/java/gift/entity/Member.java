@@ -4,8 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Table;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "member")
@@ -20,6 +20,9 @@ public class Member {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "access_token")
+    private String accessToken;
 
     protected Member() {
     }
@@ -41,5 +44,11 @@ public class Member {
         return password;
     }
 
+    public String getAccessToken() {
+        return accessToken;
+    }
 
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 }

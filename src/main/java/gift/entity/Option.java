@@ -1,14 +1,6 @@
 package gift.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "option")
@@ -28,35 +20,27 @@ public class Option {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    protected Option() {
-    }
+    protected Option() {}
 
     public Option(String name, int quantity) {
         this.name = name;
         this.quantity = quantity;
     }
 
-    public Long getId() {
-        return id;
+
+    public void subtractQuantity(int quantity) {
+        int restQuantity = this.quantity - quantity;
+        if (restQuantity < 0) {
+            throw new IllegalArgumentException("재고가 부족합니다.");
+        }
+        this.quantity = restQuantity;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public int getQuantity() { return quantity; }
+    public Product getProduct() { return product; }
+    public void setProduct(Product product) { this.product = product; }
+    public void setName(String name) { this.name = name; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
 }

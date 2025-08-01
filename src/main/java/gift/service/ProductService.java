@@ -1,14 +1,13 @@
 package gift.service;
 
+import gift.dto.product.ProductRequestDto;
+import gift.dto.product.ProductResponseDto;
 import gift.entity.Product;
 import gift.repository.ProductRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProductService {
@@ -19,37 +18,66 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    @Transactional(readOnly = true)
-    public Page<Product> getAll(Pageable pageable) {
-        return productRepository.findAll(pageable);
-    }
 
     @Transactional(readOnly = true)
-    public Optional<Product> getById(Long id) {
-        return productRepository.findById(id);
+    public Page<ProductResponseDto> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(product -> new ProductResponseDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImageUrl())
+                );
     }
 
-    @Transactional
-    public Product createProduct(Product product) {
-        return productRepository.save(product);
-    }
-
-    @Transactional
-    public Optional<Product> update(Long id, Product productDetails) {
+    @Transactional(readOnly = true)
+    public ProductResponseDto getProductById(Long id) {
         return productRepository.findById(id)
-                .map(existingProduct -> {
-                    Product updated = new Product(productDetails.getName(), productDetails.getPrice(), productDetails.getImageUrl());
-                    updated.setId(id); // ID는 기존값을 유지해야 합니다.
-                    return productRepository.save(updated);
-                });
+                .map(product -> new ProductResponseDto(
+                        product.getId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImageUrl()))
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + id));
     }
 
+
     @Transactional
-    public boolean delete(Long id) {
-        if (productRepository.existsById(id)) {
-            productRepository.deleteById(id);
-            return true;
+    public ProductResponseDto save(ProductRequestDto requestDto) {
+        Product product = new Product(requestDto.name(), requestDto.price(), requestDto.imageUrl());
+        Product savedProduct = productRepository.save(product);
+        return new ProductResponseDto(
+                savedProduct.getId(),
+                savedProduct.getName(),
+                savedProduct.getPrice(),
+                savedProduct.getImageUrl()
+        );
+    }
+
+
+    @Transactional
+    public ProductResponseDto update(Long id, ProductRequestDto requestDto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다: " + id));
+
+        product.setName(requestDto.name());
+        product.setPrice(requestDto.price());
+        product.setImageUrl(requestDto.imageUrl());
+
+        return new ProductResponseDto(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getImageUrl()
+        );
+    }
+
+
+    @Transactional
+    public void delete(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new IllegalArgumentException("상품을 찾을 수 없습니다: " + id);
         }
-        return false;
+        productRepository.deleteById(id);
     }
 }

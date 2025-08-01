@@ -26,7 +26,7 @@ public class KakaoAuthController {
      */
     @GetMapping
     public ResponseEntity<KakaoTokenDto> accessKakaoToken(@UserValid UserInfoDto userInfoDto, @RequestParam("code") String code) {
-        return new ResponseEntity<> (kakaoAuthService.accessKakaoToken(userInfoDto, code), HttpStatus.OK);
+        return new ResponseEntity<> (kakaoAuthService.linkingUserWithKakaoToken(userInfoDto, code), HttpStatus.OK);
     }
 
 

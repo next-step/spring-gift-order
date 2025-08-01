@@ -19,3 +19,5 @@ KakaoAuth용 RestTemplate 정의
 2. KakaoToken 테이블 생성 후 User와 1:1 참조하도록 추가
 3. User가 자신의 위시리스트를 볼 수 있도록 Wish와 연관관계 형성
 4. 주문하기 로직 및 카카오 메세지 전송 기능 구현
+5. 코드 피드백 반영
+

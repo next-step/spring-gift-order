@@ -24,7 +24,6 @@ public class UserService {
         this.authService = authService;
     }
 
-    @Transactional
     public List<UserResponseDto> findAllUsers(){
         return userRepository.findAll().stream()
                 .map(user -> {
@@ -42,7 +41,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public UserResponseDto findUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User", id));
         String email;
@@ -56,12 +54,10 @@ public class UserService {
         return new UserResponseDto(user.getId(), email, user.getPassword(), user.getCreatedDate());
     }
 
-    @Transactional
     public void deleteUser(Long id){
         userRepository.deleteById(id);
     }
 
-    @Transactional
     public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto){
         String email;
         String password;

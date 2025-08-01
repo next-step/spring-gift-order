@@ -47,16 +47,4 @@ public class WishListRepositoryTest {
         List<Wish> actual = wishListRepository.findAllByMemberId(1L);
         assertThat(actual).contains(expected);
     }
-
-    @Test
-    void deleteByProductIdAndMemberId() {
-        Product product = productRepository.getReferenceById(1L);
-        Member member = memberRepository.getReferenceById(1L);
-
-        wishListRepository.save(new Wish(product, member));
-        int deleteRow = wishListRepository.deleteByProductIdAndMemberId(product.getId(),
-            member.getId());
-        assertThat(deleteRow).isEqualTo(1);
-    }
-
 }

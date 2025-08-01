@@ -22,18 +22,16 @@ public class ProductOrderServiceImpl implements ProductOrderService {
     private final ProductOptionRepository productOptionRepository;
     private final MemberRepository memberRepository;
     private final WishListRepository wishListRepository;
-    private final KakaoClient kakaoClient;
     private final ApplicationEventPublisher publisher;
 
     public ProductOrderServiceImpl(ProductRepository productRepository,
         ProductOptionRepository productOptionRepository, MemberRepository memberRepository,
         WishListRepository wishListRepository,
-        KakaoClient kakaoClient, ApplicationEventPublisher publisher) {
+        ApplicationEventPublisher publisher) {
         this.productRepository = productRepository;
         this.productOptionRepository = productOptionRepository;
         this.memberRepository = memberRepository;
         this.wishListRepository = wishListRepository;
-        this.kakaoClient = kakaoClient;
         this.publisher = publisher;
     }
 

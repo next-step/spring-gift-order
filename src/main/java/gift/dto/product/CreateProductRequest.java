@@ -20,7 +20,7 @@ public record CreateProductRequest(
         List<CreateProductOptionRequest> options
 ) {
 
-    private static final CreateProductRequest EMPTY = new CreateProductRequest(null, null, new ArrayList<>());
+    private static final CreateProductRequest EMPTY = new CreateProductRequest(null, null, new ArrayList<>(List.of(new CreateProductOptionRequest(null, null, null))));
 
     public static CreateProductRequest empty() {
         return EMPTY;

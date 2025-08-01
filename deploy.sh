@@ -26,7 +26,7 @@ JAR_NAME=$(ls ${BUILD_PATH} | grep .jar$ | grep -v "plain")
 JAR_PATH="${BUILD_PATH}/${JAR_NAME}"
 
 print_log "Stopping the application on port ${APP_PORT}"
-PID=$(lsof -ti :${APP_PORT} | grep java)
+PID=$(lsof -i :${APP_PORT} | grep java | awk '{print $2}')
 if [ -n "$PID" ]; then
   print_log "killing process with PID: ${PID}"
   kill -9 $PID
@@ -34,7 +34,7 @@ fi
 
 if [ -f "$JAR_PATH" ]; then
   print_log "Starting new application..."
-  nohup java -jar -Dserver.port=${APP_PORT} "$JAR_PATH" > /dev/null 2>&1 &
+  nohup java -jar -Dserver.port=${APP_PORT} "$JAR_PATH" > log.log 2>&1 &
   print_log "Deployment successful."
 else
   print_log "Build failed. JAR file not found at $JAR_PATH"

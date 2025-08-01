@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/members/register", "/api/members/login", "/");
+                .excludePathPatterns("/api/members/register", "/api/members/login", "/", "/api/members/kakao/callback");
     }
 
     @Bean

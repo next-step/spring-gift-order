@@ -35,11 +35,7 @@ public class KakaoOrderService {
 
         // 제품 옵션 재고 차감 및 확인
         ProductOption productOption = productOptionRepository.findById(kakaoOrderRequestDto.optionId()).orElseThrow(() -> new NotFoundException("ProductOption", kakaoOrderRequestDto.optionId()));
-        try {
-            productOption.subtract(kakaoOrderRequestDto.quantity());
-        } catch(Exception e) {
-            throw new IllegalArgumentException("재고가 없습니다.");
-        }
+        productOption.subtract(kakaoOrderRequestDto.quantity());
 
         // 주문자 피드 메세지 생성
         List<KakaoFeedMessageDto.Item> items = List.of(new KakaoFeedMessageDto.Item(

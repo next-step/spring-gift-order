@@ -1,5 +1,6 @@
 package gift.entity;
 
+import gift.exception.OutOfStockException;
 import jakarta.persistence.*;
 
 @Entity
@@ -36,7 +37,7 @@ public class ProductOption {
         this.stock -= stock;
         if (this.stock < 0) {
             this.stock += stock;
-            throw new RuntimeException("재고가 없습니다.");
+            throw new OutOfStockException("재고가 없습니다. 옵션명 : " + this.option.getName() + " 재고 : " + this.stock + " 주문 수량 : " + stock);
         }
     }
 

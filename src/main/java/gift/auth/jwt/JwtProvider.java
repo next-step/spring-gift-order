@@ -3,6 +3,7 @@ package gift.auth.jwt;
 import gift.common.exception.InvalidTokenException;
 import gift.common.exception.UnauthorizedException;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -17,11 +18,18 @@ public class JwtProvider {
     }
 
     public String extractToken(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
             throw new UnauthorizedException();
         }
-        return header.substring(7);
+
+        for (Cookie cookie : cookies) {
+            if ("access_token".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        throw new UnauthorizedException();
     }
 
     public Map<String, Object> getClaimsFromToken(String token) {

@@ -18,10 +18,9 @@ import org.springframework.stereotype.Component;
 public class JwtFilter implements Filter {
 
     private static final Set<String> EXCLUDED_PATHS = Set.of(
-        "/api/auth",
-        "/h2-console",
-        "/admin/products",
-        "/css"
+        "/css",
+        "/images",
+        "/api/auth"
     );
     private final JwtProvider jwtProvider;
 
@@ -54,6 +53,10 @@ public class JwtFilter implements Filter {
 
 
     private boolean isExcludedPath(String path) {
+        if ("/".equals(path)) {
+            return true;
+        }
+
         return EXCLUDED_PATHS.stream().anyMatch(path::startsWith);
     }
 

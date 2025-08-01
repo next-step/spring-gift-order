@@ -14,7 +14,7 @@ JWT_SECRET=
 JWT_EXPIRATION_MS=3600000
 
 # 3. 카카오 로그인 REST API 키 (Client ID)
-kakao.clientId=
+kakao.client-id=
 
 # 4. 카카오 OAuth2 인증 요청을 보낼 엔드포인트
 #    - 사용자에게 로그인/동의 화면을 보여주는 URL
@@ -209,5 +209,233 @@ sequenceDiagram
 - [x] **주문 내역 페이징 API** `GET /api/orders`
 - [x] 예외 처리 (404 Not Found, 409 Conflict, 502 Bad Gateway 등)
 - [x] 단위 테스트 (카카오 API Stub)
+
+---
+
+## 🚀 Step 3 배포하기
+
+지금까지 만든 선물하기 서비스를 **GitHub Actions → EC2** 파이프라인으로 자동 배포하고 클라이언트가 `http://13.209.131.194:8080` 에서 안전하게 API를 호출하도록 구성합니다.
+
+### 기능 목록
+
+- CI/CD
+  - [x] GitHub Actions 워크플로(`deploy.yml`) 작성
+  - [x] JAR → EC2 업로드(`scp-action`) + 원격 재시작(`deploy.sh`)
+- 보안 
+  - [x] 글로벌 CORS 설정 (`/api/**`)
+
+### 시스템 개요
+
+```Plain text
+GitHub Repo (push)
+        │
+        ▼
+GitHub Actions
+(build → deploy)
+        │
+        ▼
+ssh + scp
+        │
+        ▼
+EC2 (Ubuntu)
+└─ /scripts/deploy.sh 실행
+   └─ Spring Boot JAR 구동
+```
+
+## 요구 사항 & 사전 준비
+
+| 항목 | 설명                                              |
+|------|-------------------------------------------------|
+|EC2| Ubuntu 22.04, OpenJDK 21, 포트 `8080` 오픈          |
+|도메인| `http://13.209.131.194:8080`               |
+|GitHub Secrets| `EC2_HOST`, `EC2_SSH_KEY`, `EC2_USER` (=ubuntu) |
+|빌드 툴| Gradle Wrapper 포함 (`./gradlew`)                 |
+
+## 디렉토리/파일
+
+```Plane text
+├── .github/workflows/deploy.yml # CI/CD 파이프라인
+├── scripts/
+│ └── deploy.sh # 서버 재시작 스크립트
+└── src/ ... # 기존 백엔드 코드
+```
+
+## 5. GitHub Actions 워크플로 예시 (`deploy.yml`)
+
+> 주요 Action
+> * 파일 업로드 : **appleboy/scp-action** 
+> * 원격 명령 : **appleboy/ssh-action** (동일 리포)
+
+```yaml
+name: Gift Service
+on:
+  push:
+    branches: [step3]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_AUTH_URL: ${{ secrets.KAKAO_AUTH_URL }}
+      KAKAO_API_URL: ${{ secrets.KAKAO_API_URL }}
+      KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+      KAKAO_TEMPLATE_ID: ${{ secrets.KAKAO_TEMPLATE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+
+      - name: Build JAR
+        run: ./gradlew clean build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "deploy-${{ github.ref }}"
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Prepare remote dirs
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mkdir -p /home/${{ secrets.EC2_USER }}/scripts \
+                     /home/${{ secrets.EC2_USER }}/build \
+                     /home/${{ secrets.EC2_USER }}/app
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/
+
+      - name: Copy deploy script to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: scripts/deploy.sh
+          target: /home/${{ secrets.EC2_USER }}/scripts/
+          strip_components: 1
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: build/libs/*.jar
+          target: /home/${{ secrets.EC2_USER }}/build/
+          strip_components: 2
+
+      - name: Restart remote service
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_AUTH_URL: ${{ secrets.KAKAO_AUTH_URL }}
+          KAKAO_API_URL: ${{ secrets.KAKAO_API_URL }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          KAKAO_TEMPLATE_ID: ${{ secrets.KAKAO_TEMPLATE_ID }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: |
+            JWT_SECRET,
+            JWT_EXPIRATION_MS,
+            KAKAO_CLIENT_ID,
+            KAKAO_AUTH_URL,
+            KAKAO_API_URL,
+            KAKAO_REDIRECT_URI,
+            KAKAO_TEMPLATE_ID
+          script: |
+            chmod +x ~/scripts/deploy.sh
+            ~/scripts/deploy.sh
+```
+
+### 서버 재시작 스크립트 예시 (`scripts/deploy.sh`)
+
+```bash
+#!/bin/bash
+set -e
+
+# 빌드 결과에서 최신 JAR 파일 찾기
+BUILD_PATH=$(ls /home/ubuntu/build/*.jar | grep -v 'plain' | head -n 1)
+JAR_NAME=$(basename "$BUILD_PATH")
+APP_DIR=/home/ubuntu/app
+
+echo "▶ current JAR  : $JAR_NAME"
+PID=$(pgrep -f "$JAR_NAME" || true)
+
+if [ -n "$PID" ]; then
+  echo "▶ stop running app (pid=$PID)"
+  kill -15 "$PID"
+  sleep 5
+fi
+
+echo "▶ deploy new JAR"
+cp "$BUILD_PATH" "$APP_DIR/"
+cd "$APP_DIR"
+
+nohup java -jar "$JAR_NAME" \
+  --spring.profiles.active=prod \
+  --jwt.secret="${JWT_SECRET}" \
+  --jwt.expiration-ms="${JWT_EXPIRATION_MS}" \
+  --kakao.client-id="${KAKAO_CLIENT_ID}" \
+  --kakao.auth-url="${KAKAO_AUTH_URL}" \
+  --kakao.api-url="${KAKAO_API_URL}" \
+  --kakao.redirect-uri="${KAKAO_REDIRECT_URI}" \
+  --kakao.template-id="${KAKAO_TEMPLATE_ID}" \
+  > "$APP_DIR/app.log" 2>&1 &
+
+echo "▶ started! (bg)"
+```
+
+### 글로벌 CORS 설정
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+            .allowedOrigins("http://localhost:3000")
+            .allowedMethods("GET","POST","PUT","DELETE","OPTIONS","HEAD")
+            .allowedHeaders(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "X-Requested-With",
+                "Cookie"
+            )
+            .allowCredentials(true)
+            .maxAge(1800);
+    }
+}
+```
 
 ---

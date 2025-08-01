@@ -107,7 +107,6 @@ public class OrderServiceTest {
 
     @ParameterizedTest(name = "[page={0}] quantity={1}, message={2}")
     @CsvSource({
-        // page, quantity, message, isFirst, hasPrevious, hasNext
         "0, 3, C, true,  false, true",
         "1, 2, B, false, true,  true",
         "2, 1, A, false, true,  false"
@@ -195,12 +194,13 @@ public class OrderServiceTest {
     @DisplayName("[성공] 주문 삭제 - 204 No Content")
     void deleteOrder_success() {
         Long orderId = 1L;
+        Order order = new Order(1, "부탁해요", member, option);
         when(orderRepository.findById(orderId))
-            .thenReturn(Optional.of(new Order(1, "부탁해요", member, option)));
+            .thenReturn(Optional.of(order));
 
         orderService.deleteOrderForMember(member, orderId);
 
-        verify(orderRepository).deleteById(orderId);
+        verify(orderRepository).delete(order);
     }
 
     @Test

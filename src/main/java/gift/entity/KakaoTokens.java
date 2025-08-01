@@ -2,6 +2,7 @@ package gift.entity;
 
 import gift.dto.api.KakaoTokenResponseDto;
 import jakarta.persistence.Embeddable;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Embeddable
@@ -27,11 +28,12 @@ public class KakaoTokens {
     }
 
     public static KakaoTokens from(KakaoTokenResponseDto kakaoTokenResponseDto) {
+        LocalDateTime now = LocalDateTime.now();
         return new KakaoTokens(
             kakaoTokenResponseDto.accessToken(),
             kakaoTokenResponseDto.refreshToken(),
-            LocalDateTime.now().plusSeconds(kakaoTokenResponseDto.expiresIn()),
-            LocalDateTime.now().plusDays(kakaoTokenResponseDto.refreshTokenExpiresIn())
+            now.plusSeconds(kakaoTokenResponseDto.expiresIn()),
+            now.plusDays(kakaoTokenResponseDto.refreshTokenExpiresIn())
         );
     }
 

@@ -1,14 +1,17 @@
 package gift;
 
+import gift.config.KakaoProperties;
 import gift.entity.Item;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+@EnableConfigurationProperties(KakaoProperties.class)
 @EnableAsync
 @SpringBootApplication
 @ConfigurationPropertiesScan

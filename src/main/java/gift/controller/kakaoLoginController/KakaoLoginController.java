@@ -24,6 +24,7 @@ public class KakaoLoginController {
     @GetMapping("/login/page")
     public ResponseEntity<Void> redirectToKakao() {
         String location = "https://kauth.kakao.com/oauth/authorize" + "?response_type=code" + "&client_id=" + kakaoProperties.clientId() + "&redirect_uri=" + kakaoProperties.redirectUri();
+        System.out.println(location);
         return ResponseEntity.status(302).header("Location", location).build();
     }
 

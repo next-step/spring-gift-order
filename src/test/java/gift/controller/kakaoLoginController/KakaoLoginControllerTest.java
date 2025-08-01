@@ -1,5 +1,6 @@
 package gift.controller.kakaoLoginController;
 
+import gift.Jwt.TokenUtils;
 import gift.config.KakaoProperties;
 import gift.service.kakaoService.KakaoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,10 @@ class KakaoLoginControllerTest {
     private KakaoService kakaoService;
 
     @MockBean
-    private KakaoProperties kakaoProperties;
+    private TokenUtils tokenUtils; // WebConfig를 위한 Mock
+
+    @MockBean
+    private KakaoProperties kakaoProperties; // KakaoLoginController 생성자 주입
 
     @BeforeEach
     void setUp() {

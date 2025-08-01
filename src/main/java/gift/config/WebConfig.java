@@ -6,6 +6,7 @@ import gift.config.Interceptor.TemporaryUserCheckInterceptor;
 import gift.config.Interceptor.UserCheckInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -36,5 +37,4 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor((new TemporaryUserCheckInterceptor(tokenUtils)))
                 .addPathPatterns("/**");
     }
-
 }

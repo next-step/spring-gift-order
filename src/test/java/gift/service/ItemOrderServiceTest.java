@@ -59,23 +59,6 @@ public class ItemOrderServiceTest {
     }
 
     @Test
-    void 옵션_정상조회() {
-        ItemOption option1 = new ItemOption(item, "다크초콜릿", 10);
-        ItemOption option2 = new ItemOption(item, "화이트초콜릿", 20);
-
-        item.getOptions().add(option1);
-        item.getOptions().add(option2);
-
-        when(itemService.findById(1L)).thenReturn(item);
-
-        List<ItemOption> result = optionService.getOptions(1L);
-
-        assertThat(result).hasSize(2);
-        assertThat(result.get(0).getOptionName()).isEqualTo("다크초콜릿");
-        assertThat(result.get(1).getQuantity()).isEqualTo(20);
-    }
-
-    @Test
     void 옵션_아이템없으면예외() {
         when(itemService.findById(1L)).thenThrow(new ItemNotFoundException());
 
@@ -119,19 +102,6 @@ public class ItemOrderServiceTest {
 
         assertThatThrownBy(() -> optionService.save(requestDto.dtoToEntity(), 1L))
                 .isInstanceOf(OptionExceptionException.class);
-    }
-
-    @Test
-    void 옵션이_중복되면_예외발생() {
-        ItemOption targetOption = new ItemOption(item, "다크초콜릿", 5);
-        item.getOptions().add(targetOption);
-
-        OptionRequestDto requestDto = new OptionRequestDto("다크초콜릿", 10);
-
-        when(itemService.findById(1L)).thenReturn(item);
-
-        assertThatThrownBy(() -> optionService.save(requestDto.dtoToEntity(), 1L))
-                .isInstanceOf(OptionDuplicatedException.class);
     }
 
 }

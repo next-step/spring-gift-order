@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root or use sudo."
+  exit 1
+fi
+
 APP_PATH=$(pwd)
 BUILD_PATH="${APP_PATH}/build/libs"
 GIT_REMOTE=origin

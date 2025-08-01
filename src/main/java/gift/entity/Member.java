@@ -20,8 +20,14 @@ public class Member {
     @Column(nullable = false)
     private String role;
 
+    @Column(name = "kakao_id", unique = true)
+    private Long kakaoId;
+
     @Column(name = "kakao_access_token")
     private String kakaoAccessToken;
+
+    @Column(name = "kakao_refresh_token")
+    private String kakaoRefreshToken;
 
     @Embedded
     private WishList wishList = new WishList();
@@ -34,11 +40,19 @@ public class Member {
         this.role = role;
     }
 
+    public Member(String email, String password, String role, Long kakaoId) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.kakaoId = kakaoId;
+    }
+
     public Long getId() { return id; }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public String getRole() { return role; }
     public String getKakaoAccessToken() { return kakaoAccessToken; }
+    public String getKakaoRefreshToken() { return kakaoRefreshToken; }
 
     public void update(String newEmail, String newEncodedPassword) {
         if (newEmail != null && !newEmail.isBlank()) {
@@ -63,5 +77,9 @@ public class Member {
 
     public void setKakaoAccessToken(String kakaoAccessToken) {
         this.kakaoAccessToken = kakaoAccessToken;
+    }
+
+    public void setKakaoRefreshToken(String kakaoRefreshToken) {
+        this.kakaoRefreshToken = kakaoRefreshToken;
     }
 }

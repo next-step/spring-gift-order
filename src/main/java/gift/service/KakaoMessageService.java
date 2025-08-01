@@ -47,7 +47,7 @@ public class KakaoMessageService {
   },
   "buttons": [
     {
-      "title": "홈으로 가기",
+      "title": "자세히 보기",
       "link": {
         "web_url": "https://localhost:8080",
         "mobile_web_url": "https://localhost:8080"

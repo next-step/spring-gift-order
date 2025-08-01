@@ -10,6 +10,11 @@ then
 else
   kill -15 $CURRENT_PID
   sleep 5
+
+  if ps -p $CURRENT_PID > /dev/null
+  then
+    kill -9 $CURRENT_PID
+  fi
 fi
 
 DEPLOY_PATH=/home/ubuntu/

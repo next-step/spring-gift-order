@@ -19,7 +19,7 @@ DEPLOY_JAR=$DEPLOY_PATH$JAR_NAME
 CURRENT_PID=$(pgrep -f $JAR_NAME)
 
 # 프로세스가 실행 중인지 확인하고, 실행 중이면 종료(kill)합니다.
-if [ -z $CURRENT_PID ]
+if [ -z "$CURRENT_PID" ]
 then
   echo "> 현재 실행 중인 애플리케이션이 없으므로 종료하지 않습니다."
 else
@@ -36,6 +36,5 @@ echo "> 새 애플리케이션을 배포합니다."
 cp $BUILD_PATH $DEPLOY_PATH
 
 echo "> $DEPLOY_JAR 를 실행합니다."
-# nohup 명령으로 터미널을 종료해도 애플리케이션이 계속 실행되도록 합니다.
-# 애플리케이션 로그는 아래와 같이 저장합니다.
-nohup java -jar $DEPLOY_JAR > application.log 2>&1 &
+# -Dspring.profiles.active=prod 옵션을 추가하여 prod 프로필로 실행합니다.
+nohup java -jar -Dspring.profiles.active=prod $DEPLOY_JAR > $DEPLOY_PATH/application.log 2>&1 &

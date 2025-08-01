@@ -127,3 +127,35 @@ client-id와 client-secret은 properties에 따로 올리지 않았습니다!
 #### 메세지 포맷 예시
 
 ![order.png](images/order.png)
+
+## 배포
+
+- aws ec2 인스턴스를 띄워서 배포하는 방식을 사용하였습니다!
+- deploy.sh을 작성하여서 쉘 스크립트를 통해서 aws ec2에서 `./deploy.sh` 을 통해서 배포하였습니다!
+
+#### 배포 주소
+
+- 로그인 화면(기본 화면): http://44.205.52.249:8080/
+- 관리자 화면: http://44.205.52.249:8080/admin/products
+
+## 배포 화면
+
+### 로그인 화면
+
+![img.png](images/img.png)
+
+### 홈 화면
+
+![img_1.png](images/img_1.png)
+
+### 위시리스트 화면
+
+![img_2.png](images/img_2.png)
+
+### 주문 화면
+
+![img_3.png](images/img_3.png)
+
+### 관리자 화면
+
+![img_4.png](images/img_4.png)

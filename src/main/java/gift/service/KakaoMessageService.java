@@ -18,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class KakaoMessageService {
 
-
     private static final Logger log = LoggerFactory.getLogger(KakaoMessageService.class);
     private static final String KAKAO_SEND_URL = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
     private final RestTemplate restTemplate = new RestTemplate();
@@ -89,7 +88,3 @@ public class KakaoMessageService {
         }
     }
 }
-
-
-
-

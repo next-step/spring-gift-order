@@ -21,3 +21,6 @@ jwt-access-token-expire-time: ${JWT_ACCESS_TOKEN_EXPIRED_TIME}
 
 kakao-client-id: ${KAKAO_TECH_CAMPUS_CLIENT_ID}
 kakao-redirect-url: ${KAKAO_TECH_CAMPUS_REDIRECT_URL}
+
+server:
+  port: 8080

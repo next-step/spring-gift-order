@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>상품 등록/수정</title>
   <link rel="stylesheet" th:href="@{/css/admin-product-form.css}">
 </head>
@@ -13,38 +13,99 @@
     <p th:text="${productId != null} ? '상품 정보를 수정하세요' : '새로운 상품을 등록하세요'">새로운 상품을 등록하세요</p>
   </div>
   <div class="form-container">
-    <form th:object="${product}"
+    <form method="post"
           th:action="${productId != null} ? @{'/admin/products/' + ${productId}} : @{/admin/products}"
-          method="post">
+          th:object="${product}">
 
       <div class="form-element">
         <label for="name">상품명</label>
-        <input type="text" id="name" th:field="*{name}" placeholder="상품명을 입력하세요">
-        <div th:if="${#fields.hasErrors('name')}" class="error-message" th:errors="*{name}"></div>
+        <input id="name" placeholder="상품명을 입력하세요" th:field="*{name}" type="text">
+        <div class="error-message" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></div>
       </div>
 
       <div class="form-element">
         <label for="price">가격</label>
-        <input type="number" id="price" th:field="*{price}" placeholder="가격을 입력하세요" min="0"
-               step="100">
-        <div th:if="${#fields.hasErrors('price')}" class="error-message" th:errors="*{price}"></div>
+        <input id="price" min="0" placeholder="가격을 입력하세요" step="100" th:field="*{price}"
+               type="number">
+        <div class="error-message" th:errors="*{price}" th:if="${#fields.hasErrors('price')}"></div>
       </div>
 
       <div class="form-element">
         <label for="imageUrl">이미지 URL</label>
-        <input type="url" id="imageUrl" th:field="*{imageUrl}" placeholder="이미지 URL을 입력하세요">
-        <div th:if="${#fields.hasErrors('imageUrl')}" class="error-message"
-             th:errors="*{imageUrl}"></div>
+        <input id="imageUrl" placeholder="이미지 URL을 입력하세요" th:field="*{imageUrl}" type="url">
+        <div class="error-message" th:errors="*{imageUrl}"
+             th:if="${#fields.hasErrors('imageUrl')}"></div>
+      </div>
+
+      <div class="form-element" th:if="${productId == null}">
+        <label>상품 옵션</label>
+        <div id="options-container">
+          <div class="option-item" th:each="option, optionStat : *{options}">
+            <div class="option-inputs">
+              <input class="option-name" placeholder="옵션명을 입력하세요"
+                     th:field="*{options[__${optionStat.index}__].name}" type="text">
+              <input class="option-quantity" min="1"
+                     placeholder="수량" th:field="*{options[__${optionStat.index}__].quantity}" type="number">
+              <button class="btn btn-remove" onclick="removeOption(this)" type="button">삭제</button>
+            </div>
+            <div class="error-message"
+                 th:errors="*{options[__${optionStat.index}__].name}" th:if="${#fields.hasErrors('options[' + __${optionStat.index}__ + '].name')}"></div>
+            <div class="error-message"
+                 th:errors="*{options[__${optionStat.index}__].quantity}"
+                 th:if="${#fields.hasErrors('options[' + __${optionStat.index}__ + '].quantity')}"></div>
+          </div>
+        </div>
+        <button class="btn btn-add" onclick="addOption()" type="button">옵션 추가</button>
+        <div class="error-message" th:errors="*{options}"
+             th:if="${#fields.hasErrors('options')}"></div>
       </div>
 
       <div class="button-container">
-        <button type="submit" class="btn btn-submit"
-                th:text="${productId != null} ? '수정하기' : '등록하기'">저장
+        <button class="btn btn-submit" th:text="${productId != null} ? '수정하기' : '등록하기'"
+                type="submit">저장
         </button>
-        <a href="/admin/products" class="btn btn-cancel">취소</a>
+        <a class="btn btn-cancel" href="/admin/products">취소</a>
       </div>
     </form>
   </div>
 </div>
+
+<script>
+  function addOption() {
+    const container = document.getElementById('options-container');
+    const optionCount = container.children.length;
+
+    const optionDiv = document.createElement('div');
+    optionDiv.className = 'option-item';
+    optionDiv.innerHTML = `
+    <div class="option-inputs">
+      <input type="text" name="options[${optionCount}].name" placeholder="옵션명을 입력하세요" class="option-name">
+      <input type="number" name="options[${optionCount}].quantity" placeholder="수량" min="1" class="option-quantity">
+      <button type="button" class="btn btn-remove" onclick="removeOption(this)">삭제</button>
+    </div>
+  `;
+
+    container.appendChild(optionDiv);
+  }
+
+  function removeOption(button) {
+    const optionItem = button.closest('.option-item');
+    optionItem.remove();
+
+    // 인덱스 재정렬
+    const container = document.getElementById('options-container');
+    const options = container.querySelectorAll('.option-item');
+    options.forEach((option, index) => {
+      const nameInput = option.querySelector('input[name*="].name"]');
+      const quantityInput = option.querySelector('input[name*="].quantity"]');
+      if (nameInput) {
+        nameInput.name = `options[${index}].name`;
+      }
+      if (quantityInput) {
+        quantityInput.name = `options[${index}].quantity`;
+      }
+    });
+  }
+</script>
 </body>
 </html>

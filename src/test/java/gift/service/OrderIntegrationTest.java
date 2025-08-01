@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,7 +84,8 @@ public class OrderIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 // then (검증)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.quantity").value(orderQuantity));
+                .andExpect(jsonPath("$.quantity").value(orderQuantity))
+                .andDo(print());
 
         // DB 상태 검증
         Option optionAfterOrder = optionRepository.findById(testOption.getId()).get();

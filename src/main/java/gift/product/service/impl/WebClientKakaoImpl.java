@@ -3,6 +3,7 @@ package gift.product.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.product.dto.GetKakaoTokenApiResponse;
 import gift.product.dto.GetKakaoUserInfoResponse;
+import gift.product.dto.SendOrderRequest;
 import gift.product.dto.SendOrderToKakaoRequest;
 import gift.product.entity.Order;
 import gift.product.service.KakaoService;
@@ -69,11 +70,11 @@ public class WebClientKakaoImpl implements KakaoService {
 	}
 
 	@Override
-	public void sendOrderToKakao(String accessToken, Order order) {
+	public void sendOrderToKakao(String accessToken, SendOrderRequest request) {
 		try {
-			SendOrderToKakaoRequest request = new SendOrderToKakaoRequest("text", formatOrderMessage(order), null);
+			SendOrderToKakaoRequest sendOrderToKakaoRequest = new SendOrderToKakaoRequest("text", formatOrderMessage(request), null);
 			ObjectMapper objectMapper = new ObjectMapper();
-			String templateObjectJson = objectMapper.writeValueAsString(request);
+			String templateObjectJson = objectMapper.writeValueAsString(sendOrderToKakaoRequest);
 
 			// form-urlencoded 형태로 데이터 구성
 			MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -91,19 +92,19 @@ public class WebClientKakaoImpl implements KakaoService {
 		}
 	}
 
-	private String formatOrderMessage(Order order) {
+	private String formatOrderMessage(SendOrderRequest sendOrderRequest) {
 		StringBuilder message = new StringBuilder();
 
 		message.append("📋 주문 정보\n");
 		message.append("━━━━━━━━━━━━━━━\n");
-		message.append("주문번호: ").append(order.getId()).append("\n");
-		message.append("상품명: ").append(order.getOption().getItem().getName()).append("\n");
-		message.append("옵션: ").append(order.getOption().getOptionName()).append("\n");
-		message.append("수량: ").append(order.getQuantity()).append("개\n");
-		message.append("주문일시: ").append(order.getOrderDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))).append("\n");
+		message.append("주문번호: ").append(sendOrderRequest.id()).append("\n");
+		message.append("상품명: ").append(sendOrderRequest.itemName()).append("\n");
+		message.append("옵션: ").append(sendOrderRequest.optionName()).append("\n");
+		message.append("수량: ").append(sendOrderRequest.quantity()).append("개\n");
+		message.append("주문일시: ").append(sendOrderRequest.orderDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))).append("\n");
 
-		if (order.getMessage() != null && !order.getMessage().trim().isEmpty()) {
-			message.append("메시지: ").append(order.getMessage()).append("\n");
+		if (sendOrderRequest.message() != null && !sendOrderRequest.message().trim().isEmpty()) {
+			message.append("메시지: ").append(sendOrderRequest.message()).append("\n");
 		}
 
 		return message.toString();

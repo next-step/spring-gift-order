@@ -19,7 +19,7 @@ public class User {
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private KakaoToken kakaoToken;
 
-	public User(Long id, String nickname, Long oauthId) {
+	private User(Long id, String nickname, Long oauthId) {
 		this.id = id;
 		this.nickname = nickname;
 		this.oauthId = oauthId;

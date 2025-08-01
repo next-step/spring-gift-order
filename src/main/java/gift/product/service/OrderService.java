@@ -2,6 +2,7 @@ package gift.product.service;
 
 
 import gift.product.dto.CreateOrderRequest;
+import gift.product.dto.SendOrderRequest;
 import gift.product.entity.*;
 import gift.product.repository.*;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,18 @@ public class OrderService {
 				.orElseThrow(() -> new RuntimeException("사용자에 대한 카카오 토큰이 존재하지 않음..!"));
 
 		Order saved = orderRepository.save(order);
-		kakaoService.sendOrderToKakao(kakaoToken.getAccessToken(), saved);
+
+		SendOrderRequest sendOrderRequest = new SendOrderRequest(
+			saved.getId(),
+			saved.getOption().getItem().getName(),
+			saved.getOption().getOptionName(),
+			saved.getQuantity(),
+			saved.getMessage(),
+			saved.getOrderDateTime()
+		);
+
+
+		kakaoService.sendOrderToKakao(kakaoToken.getAccessToken(), sendOrderRequest);
 		wishListRepository.findByUserAndItem(user, option.getItem())
 			.ifPresent(wishListRepository::delete);
 

@@ -2,9 +2,9 @@ package gift.service;
 
 import gift.auth.JwtTokenProvider;
 import gift.dto.member.MemberRequestDto;
-import gift.dto.member.MemberResponseDto;
 import gift.entity.Member;
 import gift.repository.MemberRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,34 +13,31 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
+    public MemberService(MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
-    public MemberResponseDto register(MemberRequestDto request) {
+    public void register(MemberRequestDto request) {
         if (memberRepository.findByEmail(request.email()).isPresent()) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
-        Member member = new Member(request.email(), request.password());
-        Member savedMember = memberRepository.save(member);
-
-        String token = jwtTokenProvider.createToken(savedMember.getEmail());
-        return new MemberResponseDto(savedMember.getId(), savedMember.getEmail(), token);
+        String encodedPassword = passwordEncoder.encode(request.password());
+        memberRepository.save(new Member(request.email(), encodedPassword));
     }
 
     @Transactional(readOnly = true)
-    public MemberResponseDto login(MemberRequestDto request) {
+    public String login(MemberRequestDto request) {
         Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 이메일입니다."));
 
-        if (!member.getPassword().equals(request.password())) {
+        if (!passwordEncoder.matches(request.password(), member.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-
-        String token = jwtTokenProvider.createToken(member.getEmail());
-        return new MemberResponseDto(member.getId(), member.getEmail(), token);
+        return jwtTokenProvider.createToken(member.getEmail());
     }
 }

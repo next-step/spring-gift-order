@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>내 위시리스트 - 카카오 선물하기</title>
+  <link href="/css/wish.css" rel="stylesheet">
+</head>
+<body>
+<header class="header">
+  <div class="header-content">
+    <div class="logo">카카오 선물하기</div>
+    <div class="nav-buttons">
+      <a class="nav-btn" href="/home">홈으로</a>
+      <button class="nav-btn logout-btn" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<main class="main-container">
+  <h1 class="page-title">내 위시리스트</h1>
+
+  <div class="wishes-grid" id="wishes-container">
+    <div class="loading">위시리스트를 불러오는 중...</div>
+  </div>
+</main>
+
+<script>
+  let wishes = [];
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadWishes();
+  });
+
+  async function loadWishes() {
+    try {
+      const response = await fetch('/api/wishes?page=1&size=20', {
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (data.status === 200) {
+        wishes = data.data.content;
+        renderWishes();
+      } else {
+        showError('위시리스트를 불러오는데 실패했습니다.');
+      }
+    } catch (error) {
+      showError('위시리스트를 불러오는데 실패했습니다.');
+    }
+  }
+
+  function renderWishes() {
+    const container = document.getElementById('wishes-container');
+
+    if (wishes.length === 0) {
+      container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>위시리스트가 비어있습니다</h3>
+                        <p>홈에서 상품을 위시리스트에 추가해보세요!</p>
+                        <a href="/home" class="go-home-btn">홈으로 가기</a>
+                    </div>
+                `;
+      return;
+    }
+
+    container.innerHTML = wishes.map(wish => `
+                <div class="wish-card">
+                    <img src="${wish.imageUrl}" alt="${wish.productName}" class="wish-image">
+                    <div class="wish-info">
+                        <div class="wish-name">${wish.productName}</div>
+                        <div class="wish-price">${formatPrice(wish.productPrice)}원</div>
+                        <div class="wish-quantity">수량: ${wish.quantity}개</div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="order-btn" onclick="goToOrder(${wish.productId})">
+                            주문하기
+                        </button>
+                        <button class="remove-wish-btn" onclick="removeWish(${wish.productId})">
+                            삭제
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+  }
+
+  async function removeWish(productId) {
+    try {
+      const response = await fetch(`/api/wishes/${productId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        await loadWishes();
+      } else {
+        alert('위시리스트에서 제거하는 중 오류가 발생했습니다.');
+      }
+
+    } catch (error) {
+      alert('위시리스트에서 제거하는 중 오류가 발생했습니다.');
+    }
+  }
+
+  function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function showError(message) {
+    document.getElementById('wishes-container').innerHTML = `<div class="error">${message}</div>`;
+  }
+
+  function goToOrder(productId) {
+    window.location.href = `/order/${productId}`;
+  }
+
+  function logout() {
+    window.location.href = '/';
+  }
+</script>
+</body>
+</html>

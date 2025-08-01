@@ -56,7 +56,7 @@ public class KakaoMessageService {
         try {
             templateJson = objectMapper.writeValueAsString(template);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("템플릿 직렬화 실패", e);
+            throw new IllegalStateException("템플릿 직렬화 실패", e);
         }
 
         HttpHeaders headers = new HttpHeaders();

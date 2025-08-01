@@ -2,6 +2,7 @@ package gift.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.KakaoFeedMessageDto;
+import gift.entity.ProductOption;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
 public class KakaoServiceClient {
@@ -21,7 +24,23 @@ public class KakaoServiceClient {
         this.objectMapper = objectMapper;
     }
 
-    public void sendFeedMessageToMe (String accessToken, KakaoFeedMessageDto feedMessageDto) {
+    KakaoFeedMessageDto createKakaoFeedOrderMessage(ProductOption productOption, String message) {
+        // 주문자 피드 메세지 생성
+        List<KakaoFeedMessageDto.Item> items = List.of(new KakaoFeedMessageDto.Item(
+                productOption.getOption().getName(),
+                productOption.getProduct().getPrice().toString()));
+
+        return new KakaoFeedMessageDto(
+                new KakaoFeedMessageDto.Content(message),
+                new KakaoFeedMessageDto.ItemContent(
+                        productOption.getProduct().getImageUrl(),
+                        productOption.getProduct().getName(),
+                        items,
+                        productOption.getProduct().getPrice().toString())
+        );
+    }
+
+    public void sendFeedMessageToMe (String accessToken, ProductOption productOption, String message) {
         final String url = "/v2/api/talk/memo/default/send";
         String json;
 
@@ -29,10 +48,12 @@ public class KakaoServiceClient {
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        KakaoFeedMessageDto kakaoFeedMessageDto = createKakaoFeedOrderMessage(productOption, message);
+
         try {
             json = objectMapper
                     .writerWithDefaultPrettyPrinter()      // 보기 좋게 포맷팅
-                    .writeValueAsString(feedMessageDto);
+                    .writeValueAsString(kakaoFeedMessageDto);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

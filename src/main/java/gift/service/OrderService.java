@@ -1,6 +1,5 @@
 package gift.service;
 
-import gift.dto.KakaoFeedMessageDto;
 import gift.dto.KakaoOrderRequestDto;
 import gift.dto.UserInfoDto;
 import gift.entity.ProductOption;
@@ -12,17 +11,15 @@ import gift.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-public class KakaoOrderService {
+public class OrderService {
     private final UserRepository userRepository;
     private final ProductOptionRepository productOptionRepository;
     private final KakaoServiceClient kakaoServiceClient;
 
-    public KakaoOrderService(UserRepository userRepository,
-                             ProductOptionRepository productOptionRepository,
-                             KakaoServiceClient kakaoServiceClient) {
+    public OrderService(UserRepository userRepository,
+                        ProductOptionRepository productOptionRepository,
+                        KakaoServiceClient kakaoServiceClient) {
         this.userRepository = userRepository;
         this.productOptionRepository = productOptionRepository;
         this.kakaoServiceClient = kakaoServiceClient;
@@ -37,20 +34,7 @@ public class KakaoOrderService {
         ProductOption productOption = productOptionRepository.findById(kakaoOrderRequestDto.optionId()).orElseThrow(() -> new NotFoundException("ProductOption", kakaoOrderRequestDto.optionId()));
         productOption.subtract(kakaoOrderRequestDto.quantity());
 
-        // 주문자 피드 메세지 생성
-        List<KakaoFeedMessageDto.Item> items = List.of(new KakaoFeedMessageDto.Item(
-                productOption.getOption().getName(),
-                productOption.getProduct().getPrice().toString()));
-
-        KakaoFeedMessageDto kakaoFeedMessageDto = new KakaoFeedMessageDto(
-                new KakaoFeedMessageDto.Content(kakaoOrderRequestDto.message()),
-                new KakaoFeedMessageDto.ItemContent(
-                        productOption.getProduct().getImageUrl(),
-                        productOption.getProduct().getName(),
-                        items,
-                        productOption.getProduct().getPrice().toString())
-        );
-
-        kakaoServiceClient.sendFeedMessageToMe(accessToken, kakaoFeedMessageDto);
+        // 카카오 피드 메세지 전송
+        kakaoServiceClient.sendFeedMessageToMe(accessToken, productOption, kakaoOrderRequestDto.message());
     }
 }

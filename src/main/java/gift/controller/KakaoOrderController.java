@@ -3,7 +3,7 @@ package gift.controller;
 import gift.annotation.UserValid;
 import gift.dto.KakaoOrderRequestDto;
 import gift.dto.UserInfoDto;
-import gift.service.KakaoOrderService;
+import gift.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/kakao-order")
 public class KakaoOrderController {
-    private final KakaoOrderService kakaoOrderService;
-    public KakaoOrderController(KakaoOrderService kakaoOrderService) {
-        this.kakaoOrderService = kakaoOrderService;
+    private final OrderService orderService;
+    public KakaoOrderController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     @PostMapping
     public ResponseEntity<Void> order(@UserValid UserInfoDto userInfoDto, @RequestBody KakaoOrderRequestDto kakaoOrderRequestDto) {
-        kakaoOrderService.orderProduct(userInfoDto, kakaoOrderRequestDto);
+        orderService.orderProduct(userInfoDto, kakaoOrderRequestDto);
         return ResponseEntity.noContent().build();
     }
 

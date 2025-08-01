@@ -11,8 +11,8 @@ services:
       - "13306:3306"
     volumes:
       - db_data:/var/lib/mysql
-      - ./src/main/resources/sql/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-      - ./src/main/resources/sql/init-dataset.sql:/docker-entrypoint-initdb.d/init-dataset.sql
+      - ./src/main/resources/sql/init-db.sql:/docker-entrypoint-initdb.d/1-init-db.sql
+      - ./src/main/resources/sql/init-dataset.sql:/docker-entrypoint-initdb.d/2-init-dataset.sql
   backend:
     build:
       context: .

@@ -25,7 +25,8 @@ public class User {
 
     private String role;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "kakao_token_id")
     private KakaoToken kakaoToken;
 
     @OneToMany(mappedBy = "user")

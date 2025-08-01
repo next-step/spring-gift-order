@@ -17,7 +17,7 @@ public class Product {
     private Long price;
     private String imageUrl;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ProductOption> options = new ArrayList<>();
 
     protected Product() {}

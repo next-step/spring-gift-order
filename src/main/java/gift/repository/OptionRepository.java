@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface OptionRepository extends JpaRepository<Option, Long> {
 
-    @EntityGraph(attributePaths = {"member"})
+    @EntityGraph(attributePaths = {"product"})
     List<Option> findAllByProductId(Long productId);
     void deleteAllByProductId(Long productId);
     boolean existsByProductIdAndName(Long productId, String name);

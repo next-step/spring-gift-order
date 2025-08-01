@@ -45,16 +45,16 @@ public class MemberKakaoToken {
         this.refreshTokenExpiresAt = refreshTokenExpiresAt;
     }
 
-    public void updateToken(KakaoTokenRefreshResponseDto response){
+    public void updateToken(String accessToken, String refreshToken, Integer accessTokenExpiresAt, Integer refreshTokenExpiresAt){
         Instant now = Instant.now();
 
-        this.accessToken = response.accessToken();
-        this.accessTokenExpiresAt = now.plusSeconds(response.expiresIn());
+        this.accessToken = accessToken;
+        this.accessTokenExpiresAt = now.plusSeconds(accessTokenExpiresAt);
 
-        if (Optional.ofNullable(response.refreshToken()).isPresent() &&
-            Optional.ofNullable(response.refreshTokenExpiresIn()).isPresent()) {
-            this.refreshToken = response.refreshToken();
-            this.accessTokenExpiresAt = now.plusSeconds(response.refreshTokenExpiresIn());
+        if (Optional.ofNullable(refreshToken).isPresent() &&
+            Optional.ofNullable(refreshTokenExpiresAt).isPresent()) {
+            this.refreshToken = refreshToken;
+            this.refreshTokenExpiresAt = now.plusSeconds(refreshTokenExpiresAt);
         }
     }
 

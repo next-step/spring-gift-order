@@ -107,12 +107,11 @@ public class MemberServiceImpl implements MemberService {
         MemberKakaoToken memberKakaoToken = memberKakaoTokenRepository.findById(member.getId())
                 .orElseGet(() -> new MemberKakaoToken(member, null, null, null, null));
 
-        Instant now = Instant.now();
         memberKakaoToken.updateToken(
                 kakaoToken.accessToken(),
                 kakaoToken.refreshToken(),
-                now.plusSeconds(kakaoToken.expiresIn()),
-                now.plusSeconds(kakaoToken.refreshTokenExpiresIn())
+                kakaoToken.expiresIn(),
+                kakaoToken.refreshTokenExpiresIn()
         );
 
         memberKakaoTokenRepository.save(memberKakaoToken);

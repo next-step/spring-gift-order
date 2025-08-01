@@ -43,7 +43,12 @@ public class KakaoOAuthService {
 
         KakaoTokenRefreshResponseDto response = kakaoClient.reissueToken(memberKakaoToken);
 
-        memberKakaoToken.updateToken(response);
+        memberKakaoToken.updateToken(
+                response.accessToken(),
+                response.refreshToken(),
+                response.expiresIn(),
+                response.refreshTokenExpiresIn()
+        );
 
         return response.accessToken();
     }

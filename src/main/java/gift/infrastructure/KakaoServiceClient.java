@@ -3,10 +3,7 @@ package gift.infrastructure;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.KakaoFeedMessageDto;
 import gift.entity.ProductOption;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -40,7 +37,7 @@ public class KakaoServiceClient {
         );
     }
 
-    public void sendFeedMessageToMe (String accessToken, ProductOption productOption, String message) {
+    public ResponseEntity<String> sendFeedMessageToMe (String accessToken, ProductOption productOption, String message) {
         final String url = "/v2/api/talk/memo/default/send";
         String json;
 
@@ -63,6 +60,6 @@ public class KakaoServiceClient {
 
         var httpentity = new HttpEntity<>(body, headers);
 
-        var response = kakaoKapiRestTemplate.exchange(url, HttpMethod.POST, httpentity, String.class);
+        return kakaoKapiRestTemplate.exchange(url, HttpMethod.POST, httpentity, String.class);
     }
 }

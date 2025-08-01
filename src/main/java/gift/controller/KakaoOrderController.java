@@ -19,10 +19,7 @@ public class KakaoOrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> order(@UserValid UserInfoDto userInfoDto, @RequestBody KakaoOrderRequestDto kakaoOrderRequestDto) {
-        orderService.orderProduct(userInfoDto, kakaoOrderRequestDto);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> order(@UserValid UserInfoDto userInfoDto, @RequestBody KakaoOrderRequestDto kakaoOrderRequestDto) {
+        return orderService.orderProduct(userInfoDto, kakaoOrderRequestDto);
     }
-
-
 }

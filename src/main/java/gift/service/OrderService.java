@@ -9,6 +9,7 @@ import gift.infrastructure.KakaoServiceClient;
 import gift.repository.ProductOptionRepository;
 import gift.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,7 +27,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void orderProduct(UserInfoDto userInfoDto, KakaoOrderRequestDto kakaoOrderRequestDto) {
+    public ResponseEntity<String> orderProduct(UserInfoDto userInfoDto, KakaoOrderRequestDto kakaoOrderRequestDto) {
         User user = userRepository.findById(userInfoDto.id()).orElseThrow(() -> new NotFoundException("User", userInfoDto.id()));
         String accessToken = user.getKakaoToken().getAccessToken();
 
@@ -35,6 +36,6 @@ public class OrderService {
         productOption.subtract(kakaoOrderRequestDto.quantity());
 
         // 카카오 피드 메세지 전송
-        kakaoServiceClient.sendFeedMessageToMe(accessToken, productOption, kakaoOrderRequestDto.message());
+        return kakaoServiceClient.sendFeedMessageToMe(accessToken, productOption, kakaoOrderRequestDto.message());
     }
 }

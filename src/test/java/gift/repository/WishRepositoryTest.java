@@ -5,6 +5,7 @@ import gift.entity.User;
 import gift.entity.Wish;
 import gift.entity.vo.Email;
 import gift.entity.vo.Password;
+import gift.enums.UserType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,7 +30,7 @@ class WishRepositoryTest {
     void save() {
         Product product = new Product("test", 1000, "www.image.com");
         productRepository.save(product);
-        User user = new User(new Email("test@email.com"), new Password("12345678"));
+        User user = new User(new Email("test@email.com"), new Password("12345678"), UserType.LOCAL);
         userRepository.save(user);
         Wish expected = new Wish(user, product, 100);
         Wish actual = wishRepository.save(expected);
@@ -43,7 +44,7 @@ class WishRepositoryTest {
     void findByUserIdAndProductId() {
         Product product = new Product("test", 1000, "www.image.com");
         productRepository.save(product);
-        User user = new User(new Email("test@email.com"), new Password("12345678"));
+        User user = new User(new Email("test@email.com"), new Password("12345678"), UserType.LOCAL);
         userRepository.save(user);
         Wish expected = new Wish(user, product, 100);
         wishRepository.save(expected);
@@ -55,7 +56,7 @@ class WishRepositoryTest {
     void existsByUserIdAndProductId() {
         Product product = new Product("test", 1000, "www.image.com");
         productRepository.save(product);
-        User user = new User(new Email("test@email.com"), new Password("12345678"));
+        User user = new User(new Email("test@email.com"), new Password("12345678"), UserType.LOCAL);
         userRepository.save(user);
         Wish wish = new Wish(user, product, 100);
         wishRepository.save(wish);

@@ -6,6 +6,8 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class Password {
 
+    private static final String KAKAO_PASSWORD = "__KAKAO__";
+
     private String value;
 
     protected Password() {
@@ -31,8 +33,6 @@ public class Password {
     }
 
     public static Password forKakaoUser() {
-        Password password = new Password();
-        password.value = "";
-        return password;
+        return new Password(KAKAO_PASSWORD);
     }
 }

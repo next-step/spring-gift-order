@@ -14,7 +14,7 @@ set +o allexport
 if grep -q '^USE_EXTERNAL_DB=y' .env; then
     echo "Detected external DB configuration. Running Dockerfile (docker run)..."
     docker build -t spring-gift .
-    docker run --rm --name spring-gift-server --env-file .env -p ${SERVER_PORT:-8080}:8080 spring-gift
+    docker run --rm --name spring-gift-server --env-file .env -p 8081:8080 spring-gift
 else
     echo "Detected internal DB configuration. Running Docker Compose..."
     docker compose up --build -d

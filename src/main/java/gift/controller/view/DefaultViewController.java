@@ -27,6 +27,7 @@ public class DefaultViewController {
     private final AuthService authService;
     private final Validator validator;
     private final TokenProvider tokenProvider;
+    private final String DOMAIN_URL = "gift.leeswallow.click";
 
     public DefaultViewController(
             AuthService authService,
@@ -109,6 +110,8 @@ public class DefaultViewController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(expiration);
+        cookie.setSecure(true);
+        cookie.setDomain(DOMAIN_URL);
 
         response.addCookie(cookie);
     }
@@ -132,6 +135,8 @@ public class DefaultViewController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0); // 쿠키 삭제
+        cookie.setSecure(true);
+        cookie.setDomain(DOMAIN_URL);
 
         response.addCookie(cookie);
         return "redirect:/admin/login";

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 touch .env
-> .env
 
 echo "Please enter secret infos for the server"
 
@@ -20,21 +19,15 @@ read -r jwt_expires_in
 echo "JWT_EXPIRATION=${jwt_expires_in}" >> .env
 echo "JWT expires in: ${jwt_expires_in} seconds is set."
 
-echo "Please enter the address and port to bind the server to."
+echo "Please enter the URL to bind the server to."
 
-echo "Bind Address (e.g., 0.0.0.0, 127.0.0.1, localhost): "
-read -r bind_address
-echo "SERVER_HOST=${bind_address}" >> .env
-echo "Bind Address: '${bind_address}' is set."
-
-echo "Bind Port (e.g., 8080, 3000): "
-read -r bind_port
-echo "SERVER_PORT=${bind_port}" >> .env
-echo "Bind Port: '${bind_port}' is set."
+echo "Bind URL (e.g., http://localhost:3000, https://example.com)"
+read -r bind_url
+echo "SERVER_URL=${bind_url}" >> .env
+echo "Bind Address: '${bind_url}' is set."
 
 echo "Do you want to use an external database? (y/n)"
 read -r use_external_db
-
 echo "USE_EXTERNAL_DB=${use_external_db}" >> .env
 
 if [ "$use_external_db" == "y" ]; then

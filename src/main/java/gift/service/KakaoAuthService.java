@@ -2,12 +2,16 @@ package gift.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.client.KakaoClient;
+import gift.dto.kakao.KakaoMessageDto;
 import gift.dto.kakao.KakaoTokenResponse;
 import gift.dto.kakao.KakaoUserInfoResponse;
+import gift.entity.Option;
 import gift.entity.Order;
 import gift.exception.KakaoMessageSendException;
 import gift.exception.KakaoTokenException;
 import gift.exception.KakaoUserInfoException;
+import gift.exception.ProductNotFoundException;
+import gift.repository.OptionRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -21,16 +25,21 @@ public class KakaoAuthService {
     private final KakaoClient kakaoClient;
     private final String clientId;
     private final String redirectUri;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+    private final OptionRepository optionRepository;
 
     public KakaoAuthService(
             KakaoClient kakaoClient,
             @Value("${kakao.client.id}") String clientId,
-            @Value("${kakao.redirect.uri}") String redirectUri
+            @Value("${kakao.redirect.uri}") String redirectUri,
+            OptionRepository optionRepository,
+            ObjectMapper objectMapper
     ) {
         this.kakaoClient = kakaoClient;
         this.clientId = clientId;
         this.redirectUri = redirectUri;
+        this.optionRepository = optionRepository;
+        this.objectMapper = objectMapper;
     }
 
     public String getAccessToken(String code) {
@@ -53,30 +62,17 @@ public class KakaoAuthService {
 
     public void sendMessageToMe(String accessToken, Order order) {
         try {
+            Option option = optionRepository.findById(order.getOptionId())
+                    .orElseThrow(() -> new ProductNotFoundException("해당 ID의 옵션을 찾을 수 없습니다: " + order.getOptionId()));
+
+            String templateJson = KakaoMessageDto.toTemplateObject(order, option, this.objectMapper);
+
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-            Map<String, Object> template = Map.of(
-                    "object_type", "text",
-                    "text", String.format(
-                            "주문이 완료되었습니다! 🎉\n\n- 상품명: %s\n- 옵션: %s\n- 수량: %d개\n- 메시지: %s",
-                            order.getOption().getProduct().getName(),
-                            order.getOption().getName(),
-                            order.getQuantity(),
-                            order.getMessage()
-                    ),
-                    "link", Map.of(
-                            "web_url", "http://localhost:8080/admin/products",
-                            "mobile_web_url", "http://localhost:8080/admin/products"
-                    ),
-                    "button_title", "주문 내역 확인"
-            );
-
-            String templateJson = objectMapper.writeValueAsString(template);
             body.add("template_object", templateJson);
 
             kakaoClient.sendKakaoTalkMessage(accessToken, body);
         } catch (Exception e) {
-            throw new KakaoMessageSendException("카카오톡 메시지 전송에 실패했습니다.",e);
+            throw new KakaoMessageSendException("카카오톡 메시지 전송에 실패했습니다.", e);
         }
     }
 }

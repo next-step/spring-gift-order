@@ -1,24 +1,21 @@
 package gift.entity;
 
-
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "option_id", nullable = false)
-    private Option option;
+    @Column(name = "option_id", nullable = false)
+    private Long optionId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private Long memberId;
 
     @Column(nullable = false)
     private int quantity;
@@ -32,9 +29,9 @@ public class Order {
     protected Order() {
     }
 
-    public Order(Option option, Member member, int quantity, String message) {
-        this.option = option;
-        this.member = member;
+    public Order(Long optionId, Long memberId, int quantity, String message) {
+        this.optionId = optionId;
+        this.memberId = memberId;
         this.quantity = quantity;
         this.message = message;
     }
@@ -48,12 +45,12 @@ public class Order {
         return id;
     }
 
-    public Option getOption() {
-        return option;
+    public Long getOptionId() {
+        return optionId;
     }
 
-    public Member getMember() {
-        return member;
+    public Long getMemberId() {
+        return memberId;
     }
 
     public int getQuantity() {
@@ -67,5 +64,5 @@ public class Order {
     public String getMessage() {
         return message;
     }
-
 }
+

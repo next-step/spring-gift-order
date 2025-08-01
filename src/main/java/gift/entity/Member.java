@@ -20,7 +20,7 @@ public class Member {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "member",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "member",cascade = CascadeType.PERSIST,orphanRemoval = true)
     private List<Wish> wishes = new ArrayList<>();
 
     private String nickname;
@@ -32,11 +32,6 @@ public class Member {
     protected Member() {
     }
 
-    public Member(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
     public Member(Long id, String email, String password, Role role, String nickname, String profileImageUrl) {
         this.id = id;
         this.email = email;
@@ -46,10 +41,12 @@ public class Member {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public Member(Long id, String mail, String hashPassword) {
-        this.id = id;
-        this.email = mail;
-        this.password = hashPassword;
+    public Member(String email, String password) {
+        this(null, email, password, Role.USER, null, null);
+    }
+
+    public Member(Long id, String email, String password) {
+        this(id, email, password, null, null, null);
     }
 
     public void updateProfile(String nickname, String profileImageUrl) {

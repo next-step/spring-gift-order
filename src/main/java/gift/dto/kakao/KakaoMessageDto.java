@@ -3,6 +3,7 @@ package gift.dto.kakao;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gift.entity.Option;
 import gift.entity.Order;
 
 public record KakaoMessageDto(
@@ -17,15 +18,15 @@ public record KakaoMessageDto(
     ) {
     }
 
-    public static String toTemplateObject(Order order, ObjectMapper objectMapper) throws JsonProcessingException {
+    public static String toTemplateObject(Order order, Option option, ObjectMapper objectMapper) throws JsonProcessingException {
         String messageText = String.format(
-                "주문이 완료되었습니다.\\n\\n- 상품명: %s\\n- 옵션: %s\\n- 수량: %d개\\n- 메시지: %s",
-                order.getOption().getProduct().getName(),
-                order.getOption().getName(),
+                "주문이 완료되었습니다.\n\n- 상품명: %s\n- 옵션: %s\n- 수량: %d개\n- 메시지: %s",
+                option.getProduct().getName(),
+                option.getName(),
                 order.getQuantity(),
                 order.getMessage()
         );
-        String productUrl = "http://localhost:8080/products/" + order.getOption().getProduct().getId();
+        String productUrl = "http://localhost:8080/products/" + option.getProduct().getId();
 
         var messageDto = new KakaoMessageDto(
                 "text",

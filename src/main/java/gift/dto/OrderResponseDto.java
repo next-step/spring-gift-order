@@ -14,7 +14,7 @@ public record OrderResponseDto(
     public static OrderResponseDto from(Order order) {
         return new OrderResponseDto(
                 order.getId(),
-                order.getOption().getId(),
+                order.getOptionId(),
                 order.getQuantity(),
                 order.getOrderDateTime(),
                 order.getMessage()

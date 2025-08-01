@@ -28,7 +28,7 @@ JAR_PATH="${BUILD_PATH}/${JAR_NAME}"
 print_log "Stopping the application on port ${APP_PORT}"
 PID=$(lsof -ti :${APP_PORT} | grep java)
 if [ -n "$PID" ]; then
-  print_log "killint process with PID: ${PID}"
+  print_log "killing process with PID: ${PID}"
   kill -9 $PID
 fi
 

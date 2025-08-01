@@ -8,7 +8,7 @@ public record UpdateProductRequest(
         @Pattern(regexp = "^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣()\\[\\]+\\-&/_\\s]*$", message = "특수문자는 ( ), [ ], +, -, &, /, _ 만 허용됩니다.")
         String name,
 
-        @NotNull
+        @NotBlank(message = "이미지는 필수 입력 값입니다.")
         String imageUrl
 ) {
     public static UpdateProductRequest from(ProductManageResponse response) {

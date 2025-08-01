@@ -12,7 +12,7 @@ public record CreateProductRequest(
         @Pattern(regexp = "^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣()\\[\\]+\\-&/_\\s]*$", message = "특수문자는 ( ), [ ], +, -, &, /, _ 만 허용됩니다.")
         String name,
 
-        @NotBlank
+        @NotBlank(message = "이미지는 필수 입력 값입니다.")
         String imageUrl,
 
         @NotEmpty(message = "옵션은 1개 이상 필요합니다.")

@@ -47,33 +47,87 @@
     .btn-secondary {
       background-color: #6c757d;
     }
+
+    .option-group {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin-top: 5px;
+      border-radius: 4px;
+    }
+
   </style>
 </head>
 <body>
 <div class="container">
   <h1>상품 등록</h1>
 
-  <form th:action="@{/admin/products}" th:object="${product}" method="post">
+  <form method="post" th:action="@{/admin/products}" th:object="${product}">
     <div class="form-group">
       <label for="name">상품명</label>
-      <input type="text" id="name" th:field="*{name}" required>
+      <input id="name" required th:field="*{name}" type="text">
       <div class="error-message" style="color: red; font-size: 0.9em;"
-           th:if="${#fields.hasErrors('name')}"
-           th:errors="*{name}">
+           th:errors="*{name}"
+           th:if="${#fields.hasErrors('name')}">
         이름 관련 오류 메시지
       </div>
     </div>
     <div class="form-group">
       <label for="price">가격</label>
-      <input type="number" id="price" th:field="*{price}" required>
+      <input id="price" required th:field="*{price}" type="number">
     </div>
     <div class="form-group">
       <label for="imageUrl">이미지 URL</label>
-      <input type="text" id="imageUrl" th:field="*{imageUrl}" required>
+      <input id="imageUrl" required th:field="*{imageUrl}" type="text">
     </div>
-    <button type="submit" class="btn">등록</button>
-    <a th:href="@{/admin/products}" class="btn btn-secondary">취소</a>
+
+    <div id="options-container">
+    </div>
+    <button class="btn" id="add-option-btn" style="margin-top: 10px; background-color: #28a745;"
+            type="button">옵션 추가
+    </button>
+    <hr style="margin: 20px 0;">
+
+    <button class="btn" type="submit">등록</button>
+    <a class="btn btn-secondary" th:href="@{/admin/products}">취소</a>
   </form>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const optionsContainer = document.getElementById('options-container');
+    const addOptionBtn = document.getElementById('add-option-btn');
+    let optionIndex = 0;
+
+    addOptionBtn.addEventListener('click', function () {
+      const optionDiv = document.createElement('div');
+      optionDiv.classList.add('form-group', 'option-group');
+
+      optionDiv.innerHTML = `
+        <label style="font-weight: bold;">옵션 #${optionIndex + 1}</label>
+        <input type="text" name="options[${optionIndex}].name" placeholder="옵션명 (예: 레드)" required>
+        <input type="number" name="options[${optionIndex}].quantity" placeholder="수량" required style="margin-top: 5px;">
+        <button type="button" class="btn-delete">삭제</button>
+      `;
+
+      optionsContainer.appendChild(optionDiv);
+
+      optionDiv.querySelector('.btn-delete').addEventListener('click', function () {
+        optionsContainer.removeChild(optionDiv);
+      });
+
+      optionIndex++;
+    });
+  });
+</script>
 </body>
 </html>

@@ -6,7 +6,6 @@ import gift.dto.auth.TokenResponse;
 import gift.service.auth.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.net.URI;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +19,6 @@ public class KaKaoAuthController {
 
     private final AuthService authService;
     private final CookieUtil cookieUtil;
-    @Value("${base-url}")
-    private String baseUrl;
 
     public KaKaoAuthController(AuthService authService, CookieUtil cookieUtil) {
         this.authService = authService;
@@ -44,7 +41,7 @@ public class KaKaoAuthController {
         cookieUtil.addAuthCookies(tokenResponse.token(), response);
 
         return ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(baseUrl))
+            .location(URI.create("/home"))
             .build();
     }
 }

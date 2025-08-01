@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>카카오 선물하기 - 홈</title>
+  <link href="/css/home.css" rel="stylesheet">
+</head>
+<body>
+<header class="header">
+  <div class="header-content">
+    <div class="logo">카카오 선물하기</div>
+    <div class="user-info">
+      <span class="welcome-text">환영합니다! 👋</span>
+      <a class="wish-btn" href="/wish">위시리스트</a>
+      <button class="logout-btn" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<main class="main-content">
+  <div class="welcome-section">
+    <h1 class="welcome-title">환영합니다!</h1>
+    <p class="welcome-subtitle">카카오 선물하기에서 특별한 선물을 찾아보세요</p>
+  </div>
+
+  <h2 class="section-title">추천 상품</h2>
+  <div class="products-grid" id="products-container">
+    <div class="loading">상품을 불러오는 중...</div>
+  </div>
+</main>
+
+<script>
+  let products = [];
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadProducts();
+  });
+
+  async function loadProducts() {
+    try {
+      const response = await fetch('/api/products?page=1&size=8', {
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (data.status === 200) {
+        products = data.data.content;
+        renderProducts();
+      } else {
+        showError('products-container', '상품을 불러오는데 실패했습니다.');
+      }
+    } catch (error) {
+      showError('products-container', '상품을 불러오는데 실패했습니다.');
+    }
+  }
+
+  function renderProducts() {
+    const container = document.getElementById('products-container');
+
+    if (products.length === 0) {
+      container.innerHTML = '<div class="error">등록된 상품이 없습니다.</div>';
+      return;
+    }
+
+    container.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${formatPrice(product.price)}원</div>
+                        <div class="wish-controls">
+                            <input type="number" class="quantity-input"
+                                   id="quantity-${product.id}"
+                                   value="1" min="1" max="99">
+                            <button class="wish-btn" onclick="addToWish(${product.id})">
+                                위시리스트 추가
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+  }
+
+  async function addToWish(productId) {
+    try {
+      const quantityInput = document.getElementById(`quantity-${productId}`);
+      const quantity = parseInt(quantityInput.value) || 1;
+
+      const response = await fetch('/api/wishes', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          productId: productId,
+          quantity: quantity
+        })
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        alert('위시리스트에 추가되었습니다!');
+      } else if (response.status === 409) {
+        alert('이미 위시리스트에 있는 상품입니다.');
+      } else {
+        alert('위시리스트 추가 중 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      alert('위시리스트 추가 중 오류가 발생했습니다.');
+    }
+  }
+
+  function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function showError(containerId, message) {
+    document.getElementById(containerId).innerHTML = `<div class="error">${message}</div>`;
+  }
+
+  function logout() {
+    window.location.href = '/';
+  }
+</script>
+</body>
+</html>

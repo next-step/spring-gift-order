@@ -67,6 +67,60 @@ body {
   font-size: 0.92rem;
   margin-top: 5px;
 }
+
+/* 옵션 관련 스타일 */
+.option-item {
+  margin-bottom: 15px;
+  padding: 15px;
+  border: 1px solid #e0e6ed;
+  border-radius: 7px;
+  background: #f8f9fa;
+}
+.option-inputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.option-name {
+  flex: 2;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.option-quantity {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.btn-remove {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.btn-remove:hover {
+  background: #c0392b;
+}
+.btn-add {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+.btn-add:hover {
+  background: #2980b9;
+}
+
 .button-container {
   display: flex;
   gap: 12px;
@@ -100,4 +154,6 @@ body {
   .main-container, .form-container, .main-header { padding-left: 10px; padding-right: 10px; }
   .form-container { padding: 18px; }
   .button-container { flex-direction: column; gap: 8px; }
+  .option-inputs { flex-direction: column; }
+  .option-name, .option-quantity { width: 100%; }
 } 

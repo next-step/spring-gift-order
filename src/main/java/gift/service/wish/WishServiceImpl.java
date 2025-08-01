@@ -1,6 +1,6 @@
 package gift.service.wish;
 
-import com.sun.jdi.request.DuplicateRequestException;
+import gift.common.exception.DuplicateResourceException;
 import gift.common.exception.NotFoundException;
 import gift.common.util.SortUtil;
 import gift.dto.pagination.PageResponse;
@@ -40,7 +40,7 @@ public class WishServiceImpl implements WishService {
 
         boolean exists = wishRepository.existsByMemberAndProduct(member, product);
         if (exists) {
-            throw new DuplicateRequestException();
+            throw new DuplicateResourceException();
         }
 
         Wish savedWish = wishRepository.save(

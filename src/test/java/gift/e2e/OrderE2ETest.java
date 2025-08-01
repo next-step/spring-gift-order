@@ -72,7 +72,7 @@ class OrderE2ETest {
             .build();
         this.savedMember = memberRepository.save(member);
 
-        this.authToken = "Bearer " + jwtUtil.generateToken(savedMember);
+        this.authToken = jwtUtil.generateToken(savedMember);
 
         Product product = new Product("기본 상품", 10000, "http://test.jpg");
         ProductOption option = product.addUniqueOption("기본 옵션", 10L);
@@ -92,7 +92,7 @@ class OrderE2ETest {
 
         client.post()
             .uri("/orders")
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -114,7 +114,7 @@ class OrderE2ETest {
 
         client.post()
             .uri("/orders")
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -133,7 +133,7 @@ class OrderE2ETest {
 
         ResponseEntity<String> response = client.post()
             .uri("/orders")
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -157,7 +157,7 @@ class OrderE2ETest {
 
         ResponseEntity<String> response = client.post()
             .uri("/orders")
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -179,7 +179,7 @@ class OrderE2ETest {
 
         ResponseEntity<String> response = client.post()
             .uri("/orders")
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()
@@ -202,7 +202,7 @@ class OrderE2ETest {
 
         ResponseEntity<String> response = client.post()
             .uri("/orders")
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve()

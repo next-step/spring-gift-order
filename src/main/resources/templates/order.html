@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>주문하기 - 카카오 선물하기</title>
+  <link href="/css/order.css" rel="stylesheet">
+</head>
+<body>
+<header class="header">
+  <div class="header-content">
+    <div class="logo">카카오 선물하기</div>
+    <div class="nav-buttons">
+      <a class="nav-btn" href="/home">홈으로</a>
+      <a class="nav-btn" href="/wish">위시리스트</a>
+    </div>
+  </div>
+</header>
+
+<main class="main-container">
+  <h1 class="page-title">주문하기</h1>
+
+  <div class="order-form">
+    <div class="loading" id="loading">상품 정보를 불러오는 중...</div>
+
+    <div id="order-content" style="display: none;">
+      <div class="product-info">
+        <img alt="" class="product-image" id="product-image" src="">
+        <div class="product-details">
+          <h3 id="product-name"></h3>
+          <div class="product-price" id="product-price"></div>
+        </div>
+      </div>
+
+      <form id="order-form">
+        <div class="form-group">
+          <label class="form-label">옵션 선택</label>
+          <select class="form-select" id="option-select" required>
+            <option value="">옵션을 선택해주세요</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">수량</label>
+          <div class="quantity-controls">
+            <button class="quantity-btn" onclick="changeQuantity(-1)" type="button">-</button>
+            <input class="quantity-input" id="quantity-input" max="99" min="1" required
+                   type="number" value="1">
+            <button class="quantity-btn" onclick="changeQuantity(1)" type="button">+</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">메시지</label>
+          <textarea class="form-textarea" id="message-input"
+                    maxlength="500"
+                    placeholder="선물과 함께 전할 메시지를 입력해주세요 (최대 500자)" required></textarea>
+          <div style="text-align: right; margin-top: 5px; color: #666; font-size: 0.9rem;">
+            <span id="char-count">0</span>/500
+          </div>
+        </div>
+
+        <button class="submit-btn" type="submit">주문하기</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="order-success" id="order-success" style="display: none;">
+    <h2>🎉 주문이 완료되었습니다!</h2>
+    <p>선물은 곧 전송될 예정입니다 😊</p>
+  </div>
+</main>
+
+<script>
+  let productId = null;
+  let product = null;
+  let options = [];
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const pathSegments = window.location.pathname.split('/');
+    productId = pathSegments[pathSegments.length - 1];
+
+    if (productId) {
+      loadProductInfo();
+      loadProductOptions();
+    }
+  });
+
+  async function loadProductInfo() {
+    try {
+      const response = await fetch(`/api/products/${productId}`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      if (data.status === 200) {
+        product = data.data;
+        renderProductInfo();
+      } else {
+        showError('상품 정보를 불러오는데 실패했습니다.');
+      }
+    } catch (error) {
+      showError('상품 정보를 불러오는데 실패했습니다.');
+    }
+  }
+
+  async function loadProductOptions() {
+    try {
+      const response = await fetch(`/api/products/${productId}/options`, {
+        credentials: 'include'
+      });
+      const data = await response.json();
+
+      console.log('옵션 API 응답:', data);
+
+      if (data.status === 200) {
+        options = data.data;
+        renderOptions();
+      } else {
+        console.log('옵션 API 오류:', data.message);
+      }
+    } catch (error) {
+      console.log('옵션 정보를 불러오는데 실패했습니다:', error);
+    }
+  }
+
+  function renderProductInfo() {
+    document.getElementById('product-image').src = product.imageUrl;
+    document.getElementById('product-image').alt = product.name;
+    document.getElementById('product-name').textContent = product.name;
+    document.getElementById('product-price').textContent = formatPrice(product.price) + '원';
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('order-content').style.display = 'block';
+  }
+
+  function renderOptions() {
+    const select = document.getElementById('option-select');
+
+    console.log('렌더링할 옵션들:', options);
+
+    select.innerHTML = '<option value="">옵션을 선택해주세요</option>';
+
+    if (options.length === 0) {
+      const option = document.createElement('option');
+      option.value = 'default';
+      option.textContent = '기본 옵션';
+      select.appendChild(option);
+    } else {
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.id;
+        optionElement.textContent = `${option.name} (재고: ${option.quantity}개)`;
+        select.appendChild(optionElement);
+      });
+    }
+  }
+
+  function changeQuantity(delta) {
+    const input = document.getElementById('quantity-input');
+    const newValue = parseInt(input.value) + delta;
+
+    if (newValue >= 1 && newValue <= 99) {
+      input.value = newValue;
+    }
+  }
+
+  document.getElementById('message-input').addEventListener('input', function () {
+    const count = this.value.length;
+    document.getElementById('char-count').textContent = count;
+  });
+
+  document.getElementById('order-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const optionId = document.getElementById('option-select').value;
+    const quantity = parseInt(document.getElementById('quantity-input').value);
+    const message = document.getElementById('message-input').value;
+
+    if (!optionId) {
+      alert('옵션을 선택해주세요.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          optionId: optionId === 'default' ? null : parseInt(optionId),
+          quantity: quantity,
+          message: message
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSuccess('주문이 성공적으로 완료되었습니다!');
+      } else {
+        showError(data.message || '주문 처리 중 오류가 발생했습니다.');
+      }
+
+    } catch (error) {
+      showError('주문 처리 중 오류가 발생했습니다.');
+    }
+  });
+
+  function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error';
+    errorDiv.textContent = message;
+
+    const form = document.querySelector('.order-form');
+    form.insertBefore(errorDiv, form.firstChild);
+
+    setTimeout(() => {
+      errorDiv.remove();
+    }, 5000);
+  }
+
+  function showSuccess() {
+    const orderForm = document.querySelector('.order-form');
+    const orderContent = document.getElementById('order-content');
+    const orderSuccess = document.getElementById('order-success');
+
+    if (orderForm) {
+      orderForm.style.display = 'none';
+    }
+    if (orderContent) {
+      orderContent.style.display = 'none';
+    }
+    if (orderSuccess) {
+      orderSuccess.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>

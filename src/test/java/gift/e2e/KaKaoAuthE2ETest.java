@@ -66,6 +66,6 @@ public class KaKaoAuthE2ETest {
                 org.hamcrest.Matchers.containsString("access_token=mock-access-token")))
             .andExpect(
                 header().string("Set-Cookie", org.hamcrest.Matchers.containsString("HttpOnly")))
-            .andExpect(header().string("Location", "http://localhost:8080"));
+            .andExpect(header().string("Location", "/home"));
     }
 }

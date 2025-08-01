@@ -62,7 +62,7 @@ public class PaginationE2ETest {
                 .build()
         );
 
-        this.authToken = "Bearer " + jwtUtil.generateToken(member);
+        this.authToken = jwtUtil.generateToken(member);
 
         for (int i = 1; i <= 25; i++) {
             ProductRequest product = new ProductRequest("상품" + i, i * 100,
@@ -70,7 +70,7 @@ public class PaginationE2ETest {
 
             ProductResponse created = client.post()
                 .uri("/products")
-                .header("Authorization", authToken)
+                .cookie("access_token", authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(product)
                 .retrieve()
@@ -82,7 +82,7 @@ public class PaginationE2ETest {
 
             client.post()
                 .uri("/wishes")
-                .header("Authorization", authToken)
+                .cookie("access_token", authToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(wish)
                 .retrieve()
@@ -99,7 +99,7 @@ public class PaginationE2ETest {
                 .queryParam("page", 1)
                 .queryParam("size", 10)
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .body(new ParameterizedTypeReference<CustomResponseBody<PageResponse<WishResponse>>>() {
             });
@@ -128,7 +128,7 @@ public class PaginationE2ETest {
                 .queryParam("page", 1)
                 .queryParam("size", 5)
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .body(new ParameterizedTypeReference<CustomResponseBody<PageResponse<WishResponse>>>() {
             });
@@ -156,7 +156,7 @@ public class PaginationE2ETest {
                 .queryParam("page", 3)
                 .queryParam("size", 10)
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .body(new ParameterizedTypeReference<CustomResponseBody<PageResponse<WishResponse>>>() {
             });
@@ -183,7 +183,7 @@ public class PaginationE2ETest {
                 .queryParam("page", 1)
                 .queryParam("size", 100)
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .body(new ParameterizedTypeReference<CustomResponseBody<PageResponse<WishResponse>>>() {
             });
@@ -210,7 +210,7 @@ public class PaginationE2ETest {
                 .path("/wishes")
                 .queryParam("sort", "productPrice;asc")
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .body(new ParameterizedTypeReference<>() {
             });
@@ -239,7 +239,7 @@ public class PaginationE2ETest {
                 .path("/wishes")
                 .queryParam("sort", "productName;desc")
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .body(new ParameterizedTypeReference<>() {
             });
@@ -269,7 +269,7 @@ public class PaginationE2ETest {
                 .queryParam("sort", "productPrice;asc")
                 .queryParam("sort", "productName;desc")
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .body(new ParameterizedTypeReference<>() {
             });
@@ -295,7 +295,7 @@ public class PaginationE2ETest {
                 .queryParam("page", -1)
                 .queryParam("size", 10)
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
             })
@@ -313,7 +313,7 @@ public class PaginationE2ETest {
                 .queryParam("page", 1)
                 .queryParam("size", 0)
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
             })
@@ -330,7 +330,7 @@ public class PaginationE2ETest {
                 .path("/wishes")
                 .queryParam("sort", "test;asc")
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
             })
@@ -347,7 +347,7 @@ public class PaginationE2ETest {
                 .path("/wishes")
                 .queryParam("sort", "id;test")
                 .build())
-            .header("Authorization", authToken)
+            .cookie("access_token", authToken)
             .retrieve()
             .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
             })

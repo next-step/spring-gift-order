@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public abstract class JwtFilter extends OncePerRequestFilter {
@@ -33,6 +34,12 @@ public abstract class JwtFilter extends OncePerRequestFilter {
             @NotNull HttpServletResponse httpServletResponse,
             @NotNull FilterChain filterChain
     ) throws ServletException, IOException {
+
+        if (HttpMethod.OPTIONS.name().equalsIgnoreCase(httpServletRequest.getMethod())) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
+        }
+
         if (!shouldFilter(httpServletRequest)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
@@ -65,6 +72,5 @@ public abstract class JwtFilter extends OncePerRequestFilter {
         } catch (JwtException ex) {
             writeError(httpServletResponse, "유효하지 않은 토큰입니다.");
         }
-
     }
 }

@@ -28,3 +28,14 @@
 * [X] 테스트 코드 작성
 
 ### Step 3
+
+* [X] CORS 설정
+* [X] 스크립트 작성
+* [X] 테스트 코드 작성
+
+### 실행 방법
+
+```shell
+chmod +x ./deploy.sh
+./deploy.sh
+```

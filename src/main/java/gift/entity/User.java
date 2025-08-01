@@ -25,7 +25,7 @@ public class User {
 
     private String role;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "kakao_token_id")
     private KakaoToken kakaoToken;
 

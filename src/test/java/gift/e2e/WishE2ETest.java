@@ -24,6 +24,7 @@ import gift.entity.member.Member;
 import gift.entity.member.MemberBuilder;
 import gift.repository.MemberRepository;
 import gift.service.wish.WishService;
+import jakarta.servlet.http.Cookie;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,10 +87,11 @@ class WishE2ETest {
             response);
 
         String token = jwtUtil.generateToken(testMember);
+        Cookie cookie = new Cookie("access_token", token);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/wishes")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + token)
+                .cookie(cookie)
                 .content(objectMapper.writeValueAsString(request)))
             .andReturn();
 
@@ -120,10 +122,11 @@ class WishE2ETest {
             .willThrow(new DuplicateResourceException());
 
         String token = jwtUtil.generateToken(testMember);
+        Cookie cookie = new Cookie("access_token", token);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/wishes")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + token)
+                .cookie(cookie)
                 .content(objectMapper.writeValueAsString(request)))
             .andReturn();
 
@@ -138,10 +141,11 @@ class WishE2ETest {
         WishRequest invalidRequest = new WishRequest(null, -1);
 
         String token = jwtUtil.generateToken(testMember);
+        Cookie cookie = new Cookie("access_token", token);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/wishes")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + token)
+                .cookie(cookie)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
             .andExpect(status().isBadRequest());
     }
@@ -161,10 +165,11 @@ class WishE2ETest {
     @DisplayName("위시 삭제 성공")
     void test5() throws Exception {
         String token = jwtUtil.generateToken(testMember);
+        Cookie cookie = new Cookie("access_token", token);
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.delete("/api/wishes/{productId}", 10L)
-                    .header("Authorization", "Bearer " + token))
+                    .cookie(cookie))
             .andReturn();
 
         String content = result.getResponse().getContentAsString();
@@ -179,10 +184,11 @@ class WishE2ETest {
             .when(wishService).deleteWish(eq(testMember), eq(999L));
 
         String token = jwtUtil.generateToken(testMember);
+        Cookie cookie = new Cookie("access_token", token);
 
         MvcResult result = mockMvc.perform(
                 MockMvcRequestBuilders.delete("/api/wishes/{productId}", 999L)
-                    .header("Authorization", "Bearer " + token))
+                    .cookie(cookie))
             .andReturn();
 
         String content = result.getResponse().getContentAsString();

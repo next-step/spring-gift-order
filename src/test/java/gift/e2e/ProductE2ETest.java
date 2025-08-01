@@ -57,11 +57,11 @@ public class ProductE2ETest {
                 .build()
         );
 
-        String token = "Bearer " + jwtUtil.generateToken(member);
+        String token = jwtUtil.generateToken(member);
 
         this.client = RestClient.builder()
             .baseUrl(baseUrl)
-            .defaultHeader("Authorization", token)
+            .defaultHeader("Cookie", "access_token=" + token)
             .build();
     }
 

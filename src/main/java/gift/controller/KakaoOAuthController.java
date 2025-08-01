@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api")
 public class KakaoOAuthController {
 
     private final KakaoOAuthService kakaoOAuthService;

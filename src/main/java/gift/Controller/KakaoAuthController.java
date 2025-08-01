@@ -1,8 +1,11 @@
 package gift.Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.KakaoTokenResponseDto;
+import gift.jwt.JwtUtil;
+import gift.repository.MemberRepository;
 import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +27,24 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoAuthController {
 
   private static final Logger logger = LoggerFactory.getLogger(KakaoAuthController.class);
+  private final MemberRepository memberRepository;
+  private final JwtUtil jwtUtil;
 
   @Value("${kakao-rest-api-key}")
   private String client_id;
 
+  @Value("${ec2PublicIp}")
+  private String ec2PublicIp;
+
+  public KakaoAuthController(MemberRepository memberRepository, JwtUtil jwtUtil) {
+    this.memberRepository = memberRepository;
+    this.jwtUtil = jwtUtil;
+  }
+
   @GetMapping("/")
-  public ResponseEntity<String> kakaoCallback(@RequestParam("code") String code,
-  @CookieValue(name = "Authorization", required = false) String jwtToken) {
+  public ResponseEntity<String> kakaoCallback(
+      @RequestParam("code") String code,
+      @CookieValue(name = "Authorization", required = false) String jwtToken) {
 
     logger.info("발급받은 인가코드 : " + code);
     logger.info("JWT 토큰 : " + jwtToken);
@@ -42,7 +56,7 @@ public class KakaoAuthController {
     var body = new LinkedMultiValueMap<String, String>();
     body.add("grant_type", "authorization_code");
     body.add("client_id", client_id);
-    body.add("redirect_uri", "http://localhost:8080");
+    body.add("redirect_uri", "http://" + ec2PublicIp + ":8080");
     body.add("code", code);
     var request = new RequestEntity<>(body, headers, HttpMethod.POST, URI.create(url));
 
@@ -60,10 +74,35 @@ public class KakaoAuthController {
       throw new RuntimeException(e);
     }
 
+    String accessToken = tokenDto.getAccessToken();
+    HttpHeaders kakaoTokenAuthHeaders = new HttpHeaders();
+    kakaoTokenAuthHeaders.add("Authorization", "Bearer " + accessToken);
+    RequestEntity<Void> infoRequest = new RequestEntity<>(kakaoTokenAuthHeaders, HttpMethod.GET,
+        URI.create("https://kapi.kakao.com/v1/user/access_token_info"));
+    ResponseEntity<String> infoResponse = restTemplate.exchange(infoRequest, String.class);
+
+    Long kakaoId;
+    try {
+      JsonNode json = new ObjectMapper().readTree(infoResponse.getBody());
+      kakaoId = json.get("id").asLong();
+    } catch (Exception e) {
+      throw new RuntimeException("카카오 id 추출 실패");
+    }
+
+    logger.info("kakaoId : " + kakaoId);
+    String email = jwtUtil.getEmailFromToken(jwtToken);
+
+    memberRepository.findByEmail(email).ifPresent(member -> {
+      member.setKakaoId(kakaoId);
+      memberRepository.save(member);
+      logger.info("{}에 카카오톡 ID {} 저장 완료", email, kakaoId);
+    });
+
     // DTO를 기반으로 Header에 필드별로 세팅
     HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.add("Authorization", "Bearer " +jwtToken); // 기존 JWT
-    responseHeaders.add("Kakao-AccessToken", "Kakao " +tokenDto.getAccessToken()); // 카카오 Access Token
+    responseHeaders.add("Authorization", "Bearer " + jwtToken); // 기존 JWT
+    responseHeaders.add("Kakao-AccessToken",
+        "Kakao " + tokenDto.getAccessToken()); // 카카오 Access Token
     responseHeaders.add("TokenType", tokenDto.getTokenType());
     responseHeaders.add("Refresh-Token", tokenDto.getRefreshToken());
     responseHeaders.add("Expires-In", String.valueOf(tokenDto.getExpiresIn()));

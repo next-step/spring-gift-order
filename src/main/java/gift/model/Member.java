@@ -22,6 +22,9 @@ public class Member {
   @Column(nullable = false)
   private String password;
 
+  @Column(unique = true)
+  private Long kakaoId;  // ✅ 카카오 회원 ID 추가
+
   protected Member() {
   }
 
@@ -58,6 +61,14 @@ public class Member {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public Long getKakaoId() {
+    return kakaoId;
+  }
+
+  public void setKakaoId(Long kakaoId) {
+    this.kakaoId = kakaoId;
   }
 }
 

@@ -29,3 +29,9 @@
 - [x] 클래스명 대문자 시작으로 변경
 - [x] 주문시 메세지 전송 부분 분리
 - [x] Wishlist Test 정상화 
+
+### Step3
+- [x] Step2 Review 바탕으로 코드 수정
+  - [x] loop 대신 명시적으로 KakaoAuthenticationExtractor 사용
+  - [x] KakaoAuthenticationExtractor에서 객체 만들어서 return
+- [x] 배포 스크립트 작성

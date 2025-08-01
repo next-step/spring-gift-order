@@ -6,8 +6,11 @@ import gift.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,6 +36,9 @@ public class MemberController {
 
   @Value("${kakaoRestApiKey}")
   private String restApiKey;
+
+  @Value("${ec2PublicIp}")
+  private String ec2PublicIp;
 
   public MemberController(MemberService memberService) {
     this.memberService = memberService;
@@ -76,8 +82,13 @@ public class MemberController {
     jwtCookie.setMaxAge(60 * 60);
     response.addCookie(jwtCookie);
 
+//    // EC2 instance의 public Ip주소 받아오도록 함
+//    URL url = new URL("http://169.254.169.254/latest/meta-data/public-ipv4");
+//    BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+//    String publicIp = br.readLine();
+
     // 카카오톡 인증토큰 발급
-    final String redirectUri = "http://localhost:8080";
+    final String redirectUri = "http://" + ec2PublicIp +":8080";
     String kakaoAuthUrl = "https://kauth.kakao.com/oauth/authorize" +
         "?response_type=code" +
         "&client_id=" + restApiKey +

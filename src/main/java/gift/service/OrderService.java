@@ -10,6 +10,7 @@ import gift.repository.OrderRepository;
 import gift.repository.WishItemRepository;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,14 +19,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OptionRepository optionRepository;
     private final WishItemRepository wishItemRepository;
-    private final KakaoMessageService kakaoMessageService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public OrderService(OrderRepository orderRepository, OptionRepository optionRepository,
-        WishItemRepository wishItemRepository, KakaoMessageService kakaoMessageService) {
+        WishItemRepository wishItemRepository, ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.optionRepository = optionRepository;
         this.wishItemRepository = wishItemRepository;
-        this.kakaoMessageService = kakaoMessageService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -51,11 +52,8 @@ public class OrderService {
         );
         order = orderRepository.save(order);
 
-        String message = String.format(
-            "<주문 완료> 상품 옵션 ID: %d, 수량: %d, 메시지: %s",
-            request.optionId(), request.quantity(), request.message()
-        );
-        kakaoMessageService.sendMessage(accessToken, message);
+        eventPublisher.publishEvent(new OrderCompletedEvent(this, order.getId(), request.quantity(),
+            request.message(), accessToken));
 
         return new OrderResponse(
             order.getId(),

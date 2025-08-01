@@ -1,42 +1,35 @@
 package gift.service;
 
+import gift.client.KakaoAuthApiClient;
 import gift.config.KakaoProperties;
 import gift.dto.KakaoLoginRequest;
 import gift.dto.KakaoLoginResponse;
+import gift.dto.KakaoTokenRequest;
 import gift.dto.TokenResponse;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.RestClient;
 
 @Service
 public class KakaoLoginService {
 
     private final KakaoProperties kakaoProperties;
-    private final RestClient restClient;
+    private final KakaoAuthApiClient kakaoAuthApiClient;
 
     public KakaoLoginService(KakaoProperties kakaoProperties,
-        RestClient.Builder restClientBuilder) {
+        KakaoAuthApiClient kakaoAuthApiClient) {
         this.kakaoProperties = kakaoProperties;
-        this.restClient = restClientBuilder
-            .baseUrl("https://kauth.kakao.com")
-            .build();
+        this.kakaoAuthApiClient = kakaoAuthApiClient;
     }
 
     public TokenResponse getAccessToken(KakaoLoginRequest request) {
-        LinkedMultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", "authorization_code");
-        body.add("client_id", kakaoProperties.clientId());
-        body.add("redirect_uri", kakaoProperties.redirectUri());
-        body.add("code", request.authorizationCode());
-        body.add("client_secret", kakaoProperties.clientSecret());
+        KakaoTokenRequest tokenRequest = new KakaoTokenRequest(
+            "authorization_code",
+            kakaoProperties.clientId(),
+            kakaoProperties.redirectUri(),
+            request.authorizationCode(),
+            kakaoProperties.clientSecret()
+        );
 
-        KakaoLoginResponse response = restClient.post()
-            .uri("/oauth/token")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(body)
-            .retrieve()
-            .body(KakaoLoginResponse.class);
+        KakaoLoginResponse response = kakaoAuthApiClient.getAccessToken(tokenRequest);
 
         if (response == null) {
             throw new RuntimeException("Empty response");

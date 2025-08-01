@@ -34,15 +34,15 @@
         <div class="option-block" th:each="option, iterStat : *{options}">
             <label>옵션 [[${iterStat.index} + 1]]:</label><br>
             이름: <input type="text" th:field="*{options[__${iterStat.index}__].name}">
-            <p th:if="${#fields.hasErrors('options[' + ${iterStat.index} + '].name')}"
+            <p th:if="${#fields.hasErrors('options[' + iterStat.index + '].name')}"
                th:errors="*{options[__${iterStat.index}__].name}" class="fieldError"></p>
 
             가격: <input type="number" th:field="*{options[__${iterStat.index}__].price}">
-            <p th:if="${#fields.hasErrors('options[' + ${iterStat.index} + '].price')}"
+            <p th:if="${#fields.hasErrors('options[' + iterStat.index + '].price')}"
                th:errors="*{options[__${iterStat.index}__].price}" class="fieldError"></p>
 
             수량: <input type="number" th:field="*{options[__${iterStat.index}__].quantity}">
-            <p th:if="${#fields.hasErrors('options[' + ${iterStat.index} + '].quantity')}"
+            <p th:if="${#fields.hasErrors('options[' + iterStat.index + '].quantity')}"
                th:errors="*{options[__${iterStat.index}__].quantity}" class="fieldError"></p>
         </div>
     </div>
@@ -55,7 +55,7 @@
 </form>
 
 <script>
-    let optionIndex = /*[[${#lists.size(request.options)}]]*/ 0;
+    let optionIndex = /*[[${#lists.size(request.options)}]]*/ 1;
 
     function addOption() {
         const container = document.getElementById("options");

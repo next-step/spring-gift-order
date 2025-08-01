@@ -32,20 +32,20 @@ public class ProductManageController {
         model.addAttribute("products", products);
         String currentSort = pageable.getSort().toString().replace(": ", ",").toLowerCase();
         model.addAttribute("currentSort", currentSort);
-        return "/admin/product/productList";
+        return "admin/product/productList";
     }
 
     @GetMapping("/new")
     public String createProductForm(Model model) {
         model.addAttribute("request", CreateProductRequest.empty());
-        return "/admin/product/productCreate";
+        return "admin/product/productCreate";
     }
 
 
     @PostMapping
     public String createProduct(@ModelAttribute(name = "request") @Valid CreateProductRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "/admin/product/productCreate";
+            return "admin/product/productCreate";
         }
         productManageService.saveProduct(request);
         return "redirect:/admin/products";
@@ -56,13 +56,13 @@ public class ProductManageController {
         ProductManageResponse response = productManageService.getProduct(id);
         model.addAttribute("id", id);
         model.addAttribute("request", UpdateProductRequest.from(response));
-        return "/admin/product/productUpdate";
+        return "admin/product/productUpdate";
     }
 
     @PostMapping("/{id}")
     public String updateProduct(@PathVariable Long id, @ModelAttribute(name = "request") @Valid UpdateProductRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "/admin/product/productUpdate";
+            return "admin/product/productUpdate";
         }
         productManageService.updateProduct(id, request);
         return "redirect:/admin/products";

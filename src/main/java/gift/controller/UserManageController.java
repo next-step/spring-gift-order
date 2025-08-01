@@ -29,7 +29,7 @@ public class UserManageController {
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("request", BasicLoginRequest.empty());
-        return "/admin/user/userLogin";
+        return "admin/user/userLogin";
     }
 
     @PostMapping("/login")
@@ -47,6 +47,6 @@ public class UserManageController {
     @GetMapping("/users")
     @AdminOnly
     public String mainForm() {
-        return "/admin/main";
+        return "admin/main";
     }
 }

@@ -20,6 +20,7 @@ public class KakaoMessageService {
 
     private static final Logger log = LoggerFactory.getLogger(KakaoMessageService.class);
     private static final String KAKAO_SEND_URL = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+    private static final int KAKAO_SUCCESS_CODE = 0;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ProductOptionRepository productOptionRepository;
@@ -75,8 +76,9 @@ public class KakaoMessageService {
             );
             KakaoMessageResponse body = response.getBody();
 
-            if (body == null || body.getResultCode() != 0) {
-                throw new RuntimeException("카카오 응답 실패: " + (body != null ? body.getResultCode() : "null"));
+            if (body == null || body.getResultCode() != KAKAO_SUCCESS_CODE) {
+                int code = (body != null) ? body.getResultCode() : -1;
+                throw new IllegalStateException("카카오 응답 실패: resultCode=" + code);
             }
 
             log.info("카카오톡 메시지 전송 성공: resultCode={}, templateId={}",

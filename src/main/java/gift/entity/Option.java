@@ -21,7 +21,7 @@ public class Option {
     @Pattern(regexp = "^[a-zA-Z0-9가-힣 ()\\[\\]+\\-&/_]*$", message = "상품 이름의 특수문자는 ( ), [ ], +, -, &, /, _ 이외에는 허용되지 않습니다.")
     private String name;
 
-    @OneToMany(mappedBy = "option")
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ProductOption> products = new ArrayList<>();
 
     protected Option() {}

@@ -14,8 +14,8 @@ public class Wish {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "product_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "productOption_id")
     private ProductOption productOption;
 
     private Long quantity;

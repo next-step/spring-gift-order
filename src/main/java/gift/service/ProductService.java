@@ -42,18 +42,15 @@ public class ProductService {
         this.productOptionRepository = productOptionRepository;
     }
 
-    @Transactional
     public ProductResponseDto findProductById(Long id){
         Product product = productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product", id));
         return new ProductResponseDto(product);
     }
 
-    @Transactional
     public Page<ProductResponseDto> findAllProduct(Pageable pageable){
         return productRepository.findAll(pageable).map(ProductResponseDto::new);
     }
 
-    @Transactional
     public ProductResponseDto saveProduct(ProductRequestDto requestDto){
         List<String> matched = forbiddenWords.stream().filter(requestDto.name()::contains).toList();
         if(!matched.isEmpty()){ // 금지 단어 포함돼있을 경우 예외 던지기
@@ -62,7 +59,6 @@ public class ProductService {
         return new ProductResponseDto(productRepository.save(new Product(requestDto)));
     }
 
-    @Transactional
     public ProductResponseDto updateProduct(Long id, ProductRequestDto requestDto){
         List<String> matched = forbiddenWords.stream().filter(requestDto.name()::contains).toList();
         if(!matched.isEmpty()){ // 금지 단어 포함돼있을 경우 예외 던지기
@@ -73,7 +69,6 @@ public class ProductService {
         return new ProductResponseDto(product);
     }
 
-    @Transactional
     public void deleteProduct(Long id){
         productRepository.deleteById(id);
     }
@@ -82,10 +77,10 @@ public class ProductService {
     //////////////////////////////// 상품 옵션 ///////////////////////////////////
 
 
-    @Transactional
     public Page<ProductOption> findProductOptionByProductId(Long productId, Pageable pageable) {
         return productOptionRepository.findByProductId(productId, pageable);
     }
+
     @Transactional
     public void addProductOption(Long productId, String optionName, Long value) {
         Option option;
@@ -101,13 +96,11 @@ public class ProductService {
         productOptionRepository.save(new ProductOption(product, option, value));
     }
 
-    @Transactional
     public void subtractProductOption(Long productOptionId, Long value) {
         ProductOption productOption = productOptionRepository.findById(productOptionId).orElseThrow(NotFoundException::new);
         productOption.subtract(value);
     }
 
-    @Transactional
     public void deleteProductOption(Long productOptionId) {
         productOptionRepository.deleteById(productOptionId);
     }

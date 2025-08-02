@@ -85,7 +85,6 @@ public class AuthService {
     }
 
 
-    @Transactional
     public UserResponseDto userSignUp(UserRequestDto userRequestDto) {
 
         User user;
@@ -102,7 +101,6 @@ public class AuthService {
         return new UserResponseDto(userRepository.save(user));
     }
 
-    @Transactional
     public TokenResponseDto userLogin(UserRequestDto userRequestDto) {
 
         String email;

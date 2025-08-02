@@ -29,7 +29,7 @@ public class KakaoAuthService {
     }
 
     @Transactional
-    public KakaoTokenDto accessKakaoToken(UserInfoDto userInfoDto, String code) {
+    public KakaoTokenDto linkingUserWithKakaoToken(UserInfoDto userInfoDto, String code) {
         KakaoTokenDto kakaoTokenDto = kakaoAuthClient.getKakaoToken(code);
         LocalDateTime expiresDate = LocalDateTime.now().plusSeconds(kakaoTokenDto.expiresIn());
         LocalDateTime refreshTokenExpiresDate = LocalDateTime.now().plusSeconds(kakaoTokenDto.refreshTokenExpiresIn());
@@ -50,7 +50,6 @@ public class KakaoAuthService {
         return kakaoTokenDto;
     }
 
-    @Transactional
     public KakaoUserInfoDto getKakaoUserInfo(UserInfoDto userInfoDto) {
         User user = userRepository.findById(userInfoDto.id()).orElseThrow(() -> new NotFoundException("User", userInfoDto.id()));
         return kakaoAuthClient.getKakaoUserInfo(user.getKakaoToken());

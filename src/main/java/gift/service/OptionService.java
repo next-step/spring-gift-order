@@ -16,29 +16,24 @@ public class OptionService {
         this.optionRepository = optionRepository;
     }
 
-    @Transactional
     public Option findOptionById(Long id) {
         return optionRepository.findById(id).orElseThrow(() -> new NotFoundException("옵션", id));
     }
 
-    @Transactional
     public Page<Option> findAllOptions(Pageable pageable) {
         return optionRepository.findAll(pageable);
     }
 
-    @Transactional
     public Option addOption(String name) {
         return optionRepository.save(new Option(name));
     }
 
-    @Transactional
     public Option updateOption(Long id, String name) {
         Option option = findOptionById(id);
         option.update(name);
         return option;
     }
 
-    @Transactional
     public void deleteOption(Long id) {
         optionRepository.deleteById(id);
     }

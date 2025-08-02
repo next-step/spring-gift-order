@@ -14,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -32,13 +31,11 @@ public class KakaoLoginService {
 
     private final RestTemplate restTemplate;
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public KakaoLoginService(RestTemplate restTemplate, MemberRepository memberRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
+    public KakaoLoginService(RestTemplate restTemplate, MemberRepository memberRepository, JwtTokenProvider jwtTokenProvider) {
         this.restTemplate = restTemplate;
         this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -103,7 +100,7 @@ public class KakaoLoginService {
 
     private Member registerNewKakaoMember(Long kakaoId) {
         String email = kakaoId+ "@kakao.com";
-        String password = passwordEncoder.encode(UUID.randomUUID().toString());
+        String password = UUID.randomUUID().toString();
 
         Member newMember = Member.of(email, password);
         newMember.updateKakaoId(kakaoId);

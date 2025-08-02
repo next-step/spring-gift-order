@@ -62,24 +62,20 @@ public class ProductRepositoryTest {
     Page<Product> result = repository.findAll(pageable);
 
     assertThat(result.getContent().size()).isEqualTo(5);
-    assertThat(result.getTotalElements()).isEqualTo(22);//datasql로 들어가는 초기데이터로 인해 +1
+    assertThat(result.getTotalElements()).isEqualTo(21);
     assertThat(result.getTotalPages()).isEqualTo(5);
 
-    assertThat(result.getContent().getFirst().getName()).isEqualTo("물통");
-    assertThat(result.getContent().getFirst().getPrice()).isEqualTo(1000L);
-    assertThat(result.getContent().getFirst().getImageUrl()).isEqualTo("https://www.naver.com");
+    assertThat(result.getContent().get(0).getName()).isEqualTo("product1");
+    assertThat(result.getContent().get(0).getPrice()).isEqualTo(1L);
+    assertThat(result.getContent().get(0).getImageUrl()).isEqualTo("https://asd1");
 
-    assertThat(result.getContent().get(1).getName()).isEqualTo("product1");
-    assertThat(result.getContent().get(1).getPrice()).isEqualTo(1L);
-    assertThat(result.getContent().get(1).getImageUrl()).isEqualTo("https://asd1");
+    assertThat(result.getContent().get(1).getName()).isEqualTo("product2");
+    assertThat(result.getContent().get(1).getPrice()).isEqualTo(2L);
+    assertThat(result.getContent().get(1).getImageUrl()).isEqualTo("https://asd2");
 
-    assertThat(result.getContent().get(2).getName()).isEqualTo("product2");
-    assertThat(result.getContent().get(2).getPrice()).isEqualTo(2L);
-    assertThat(result.getContent().get(2).getImageUrl()).isEqualTo("https://asd2");
-
-    assertThat(result.getContent().get(3).getName()).isEqualTo("product3");
-    assertThat(result.getContent().get(3).getPrice()).isEqualTo(3L);
-    assertThat(result.getContent().get(3).getImageUrl()).isEqualTo("https://asd3");
+    assertThat(result.getContent().get(2).getName()).isEqualTo("product3");
+    assertThat(result.getContent().get(2).getPrice()).isEqualTo(3L);
+    assertThat(result.getContent().get(2).getImageUrl()).isEqualTo("https://asd3");
 
   }
 

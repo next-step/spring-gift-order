@@ -1,5 +1,6 @@
 package gift.config;
 
+import gift.exception.notfound.MemberNotFoundException;
 import gift.repository.member.MemberJpaRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -45,6 +46,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         .getBody();
     Long memberId = Long.parseLong(claims.getSubject());
     return repository.findById(memberId)
-        .orElseThrow(() -> new IllegalStateException("토큰에 해당하는 멤버가 없습니다."));
+        .orElseThrow(() -> new MemberNotFoundException("토큰에 해당하는 멤버가 없습니다."));
   }
 }

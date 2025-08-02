@@ -5,6 +5,7 @@ import gift.config.LoginMember;
 import gift.dto.order.OrderRequestDto;
 import gift.dto.order.OrderResponseDto;
 import gift.entity.Member;
+import gift.exception.NotKakaoMemberException;
 import gift.service.order.OrderServiceImpl;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -36,6 +37,9 @@ public class OrderController {
       @Valid @RequestBody OrderRequestDto requestDto) {
     OrderResponseDto responseDto = service.order(member, requestDto);
     LOGGER.info("accestoken={}", member.getKakaoAccessToken());
+    if (member.getKakaoAccessToken() == null) {
+      throw new NotKakaoMemberException("해당멤버는 카카오 멤버가 아니여서, 카카오메시지 보내기가 불가합니다.");
+    }
     client.sendToMe(member.getKakaoAccessToken(), requestDto.getMessage());
     return new ResponseEntity<>(responseDto, HttpStatus.OK);
   }

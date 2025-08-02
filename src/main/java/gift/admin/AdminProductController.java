@@ -50,8 +50,7 @@ public class AdminProductController {
         }
 
         if (product.getOptions() != null) {
-            List<Option> options = new ArrayList<>(product.getOptions());
-            product.setOptions(options);
+            product.setOptions(product.getOptions());
         }
 
         productservice.save(product);
@@ -80,8 +79,7 @@ public class AdminProductController {
         }
 
         if (product.getOptions() != null) {
-            List<Option> options = new ArrayList<>(product.getOptions());
-            product.setOptions(options);
+            product.setOptions(product.getOptions());
         }
 
         productservice.updateProduct(id, product);

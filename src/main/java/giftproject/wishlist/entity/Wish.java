@@ -40,7 +40,7 @@ public class Wish {
     private int quantity;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(name = "creation_date", updatable = false)
     private LocalDateTime creationDate;
 
     protected Wish() {

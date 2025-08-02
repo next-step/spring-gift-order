@@ -11,15 +11,17 @@ public class Properties {
     private String authUrl;
     private String apiUrl;
     private String redirectUri;
+    private String corsAllowedOrigin;
 
     public Properties() {
     }
 
-    public Properties(String restApiKey, String authUrl, String apiUrl, String redirectUri) {
+    public Properties(String restApiKey, String authUrl, String apiUrl, String redirectUri, String corsAllowedOrigin) {
         this.restApiKey = restApiKey;
         this.authUrl = authUrl;
         this.apiUrl = apiUrl;
         this.redirectUri = redirectUri;
+        this.corsAllowedOrigin = corsAllowedOrigin;
     }
 
     public String getRestApiKey() {
@@ -38,6 +40,10 @@ public class Properties {
         return redirectUri;
     }
 
+    public String getCorsAllowedOrigin() {
+        return corsAllowedOrigin;
+    }
+
     public void setRestApiKey(String restApiKey) {
         this.restApiKey = restApiKey;
     }
@@ -52,5 +58,9 @@ public class Properties {
 
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
+    }
+
+    public void setCorsAllowedOrigin(String corsAllowedOrigin) {
+        this.corsAllowedOrigin = corsAllowedOrigin;
     }
 }

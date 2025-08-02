@@ -51,3 +51,18 @@
 - 옵션 수량에 대한 책임을 옵션 엔티티로 이동
 - 메서드 중복 호출 제거
 - optionService, orderService, wishService 간 책임 변경
+
+# step 3
+- 지속적인 배포를 위한 배포 스크립트 작성
+  - 프로젝트 디렉토리의 build.sh 쉘 스크립트를 통해 배포를 진행 가능
+  - 현재 `3.36.21.96:8080`에서 서비스 중 (단, elastic ip 의 과금 문제로 중간에 서비스를 중단할 수도 있음)
+  - 배포 과정
+    - git 레포지토리 clone
+    - application.properties에서 rest api key 값 입력
+    - 커맨드 입력
+      ```shell
+      chmod +x ./build.sh
+      ./build.sh
+- 클라이언트와 API 연동 시 발생하는 보안 문제 대응
+  - 서버와 클라이언트의 Origin이 다른 경우 SOP, CORS가 위반 시 리소스에 접근이 불가능
+  - Origin이 달라도 리소스를 공유할 수 있게 CORS 정책을 준수

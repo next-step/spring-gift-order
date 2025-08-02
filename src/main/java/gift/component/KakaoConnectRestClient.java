@@ -41,7 +41,7 @@ public class KakaoConnectRestClient implements KakaoConnectClient {
         var body = new LinkedMultiValueMap<String, String>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", properties.getRestApiKey());
-        body.add("redirect_uri", "http://localhost:8080");
+        body.add("redirect_uri", properties.getRedirectUri());
         body.add("code", code);
 
         ResponseEntity<KakaoAuthTokenResponseDto> response = client.post()

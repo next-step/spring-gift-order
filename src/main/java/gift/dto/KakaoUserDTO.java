@@ -1,4 +1,6 @@
 package gift.dto;
 
 
-public record KakaoUserDTO(Long id, String connected_at) {}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record KakaoUserDTO(Long id, @JsonProperty("connected_at") String connectedAt) {}

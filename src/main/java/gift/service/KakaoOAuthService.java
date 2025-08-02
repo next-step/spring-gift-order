@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.dto.KakaoUserDTO;
 import gift.dto.LoginRequestDTO;
+import gift.jwt.JwtTokenProvider;
 import gift.model.KakaoOAuthUtils;
 import gift.model.Role;
 import gift.model.User;
@@ -24,14 +25,15 @@ public class KakaoOAuthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final KakaoApi kakaoApi;
+    private final JwtTokenProvider jwtTokenProvider;
 
 
 
-
-    public KakaoOAuthService(KakaoApi kakaoApi, UserRepository userRepository, UserService userService) {
+    public KakaoOAuthService(JwtTokenProvider jwtTokenProvider,KakaoApi kakaoApi, UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.kakaoApi = kakaoApi;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String processKakaoLogin(String code) {
@@ -60,5 +62,9 @@ public class KakaoOAuthService {
 
     private String getAccessToken(String code) {
         return kakaoApi.getAccessToken(code);
+    }
+
+    public String getKakaoAccessTokenFromPureToken(String pureToken) {
+        return jwtTokenProvider.getKakaoAccessTokenFromToken(pureToken);
     }
 }

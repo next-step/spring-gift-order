@@ -20,21 +20,20 @@ public class UserService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
     public String login(LoginRequestDTO login) {
-        Optional<User> userOpt = userRepository.findByUserid(login.getUserid());
-        User user = userOpt.orElseThrow(() -> new RuntimeException("없음"));
-        return jwtTokenProvider.createToken(user.getUserid(),user.getPassword(),null);
+        User user = userRepository.findByUserid(login.getUserid())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다. (userId: " + login.getUserid() + ")"));
+        return jwtTokenProvider.createToken(user.getUserid(), user.getPassword(), null);
     }
 
     public String kakaoLogin(LoginRequestDTO login, String kakaoAccessToken) {
-        Optional<User> userOpt = userRepository.findByUserid(login.getUserid());
-        User user = userOpt.orElseThrow(() -> new RuntimeException("없음"));
+        User user = userRepository.findByUserid(login.getUserid())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다. (userId: " + login.getUserid() + ")"));
         return jwtTokenProvider.createToken(user.getUserid(), user.getPassword(), kakaoAccessToken);
     }
 
     public User findByUserId(String userId) {
-        Optional<User> userOpt = userRepository.findByUserid(userId);
-        User user = userOpt.orElseThrow(() -> new RuntimeException("user 찾을 수 없음"));
-        return user;
+        return userRepository.findByUserid(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다. (userId: " + userId + ")"));
     }
 
     public void createUser(User user) {

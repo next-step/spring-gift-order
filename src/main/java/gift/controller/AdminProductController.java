@@ -2,8 +2,12 @@ package gift.controller;
 
 import gift.model.Product;
 import gift.repository.ProductRepository;
+import gift.service.ProductAdminService;
 import gift.service.ProductService;
+import gift.service.external.KakaoApi;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,8 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/products")
 public class AdminProductController {
     private final ProductService productService;
+    private final ProductAdminService productAdminService;
+    private static final Logger log = LoggerFactory.getLogger(KakaoApi.class);
 
-    public AdminProductController(ProductService productService) {
+    public AdminProductController(ProductService productService, ProductAdminService productAdminService) {
+        this.productAdminService = productAdminService;
         this.productService = productService;
     }
 
@@ -39,7 +46,7 @@ public class AdminProductController {
         if (!product.getName().contains("카카오")) {
             product.setMdApproved(true);
         }
-        productService.addProductByAdmin(product);
+        productAdminService.addProduct(product);
         return "redirect:/admin/products";
     }
 
@@ -75,7 +82,8 @@ public class AdminProductController {
     public String approve(@PathVariable Long id) {
         Product product = productService.getProductById(id);
         product.setMdApproved(true);
-        productService.updateProduct(product);
+        log.info("<UNK> <UNK>: " + product.getMdApproved());
+        productAdminService.approveProduct(product);
         return "redirect:/admin/products";
     }
 

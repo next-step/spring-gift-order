@@ -48,4 +48,11 @@
 - [x] 주문하기 기능에 동시성 문제 해결을 위해 @Version(Option) 및 @Retryable(OptionService) 적용
 - [x] OrderService에 대한 테스트 추가
 - [x] KakaoMessageService에 대한 테스트 추가
-
+## 3단계 - 배포하기
+### 기능 목록
+- [x] 배포를 위해 redirect_uri 를 환경변수로 설정
+- [x] CORS 설정 추가(`MainWebConfig`)
+- [x] CORS 설정에 대한 테스트 코드 추가
+- [x] 배포를 위한 셸 스크립트 추가
+- [x] 상품 관리 화면의 옵션 추가 가능할 수 있도록 html 변경
+- [x] 상품 관리 화면의 옵션이 3개 정도 보일 수 있도록 html 변경

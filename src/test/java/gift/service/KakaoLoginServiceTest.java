@@ -49,7 +49,9 @@ class KakaoLoginServiceTest {
 
         JsonNode accessTokenNode = new ObjectMapper().readTree(accessTokenJson);
         JsonNode userInfoNode = new ObjectMapper().readTree(userInfoJson);
-        Member dummyMember = new Member("test@email.com", encodedPassword);
+        Member dummyMember = new Member("kakao_12345@email.com", encodedPassword);
+        when(memberRepository.findByEmail("kakao_12345@email.com"))
+                .thenReturn(Optional.of(dummyMember));
 
         when(kakaoClient.getAccessToken(code, "test-client-id", "http://localhost:8080"))
                 .thenReturn(accessTokenJson);

@@ -25,13 +25,13 @@ public class KakaoLoginController {
     public String redirectToKakaoAuth(@RequestParam String clientId, HttpSession session) {
 
         session.setAttribute("clientId", clientId);
-        session.setAttribute("redirectUri", "http://localhost:8080");
+        session.setAttribute("redirectUri", "http://3.104.116.47:8080");
 
         String kakaoAuthUrl = UriComponentsBuilder
                 .fromHttpUrl("https://kauth.kakao.com/oauth/authorize")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", clientId)
-                .queryParam("redirect_uri", "http://localhost:8080")
+                .queryParam("redirect_uri", "http://3.104.116.47:8080")
                 .queryParam("scope", "talk_message")
                 .build()
                 .toUriString();

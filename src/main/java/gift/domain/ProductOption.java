@@ -39,4 +39,8 @@ public class ProductOption {
     public Long getId() { return id; }
     public String getName() { return name; }
     public int getQuantity() { return quantity; }
+
+    public Object getProduct() {
+        return product;
+    }
 }

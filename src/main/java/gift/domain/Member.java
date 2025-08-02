@@ -13,6 +13,8 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    private String accessToken;
+
     public Member(String email, String password) {
         this.email = email;
         this.password = password;
@@ -27,4 +29,6 @@ public class Member {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
+    public String getAccessToken() { return accessToken; }
+    public void setAccessToken(String token) { this.accessToken = token; }
 }

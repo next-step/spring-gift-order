@@ -26,6 +26,11 @@ public class UserPageController {
 
   }
 
+  @GetMapping("/")
+  public String rootRedirect() {
+    return "redirect:/login-page";
+  }
+
   @GetMapping("/login-page")
   public String loginPage(Model model) {
     model.addAttribute("userRequestDto", new UserRequestDto());

@@ -5,3 +5,6 @@ INSERT INTO product_option (id, product_id, name, quantity)
 VALUES
   (1, 1, '검정색 / M', 10),
   (2, 1, '하얀색 / L', 5);
+
+ALTER TABLE products ALTER COLUMN id RESTART WITH 1000;
+ALTER TABLE product_option ALTER COLUMN id RESTART WITH 1000;

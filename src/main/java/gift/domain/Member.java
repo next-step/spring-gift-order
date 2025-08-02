@@ -26,6 +26,9 @@ public class Member {
     @Column(nullable = false)
     private Role role;
 
+    @Column(name = "access_token", length = 2000)
+    private String accessToken;
+
     public Member(){
     }
 
@@ -77,9 +80,6 @@ public class Member {
     public Role getRole() {
         return role;
     }
-
-    @Column(name = "access_token", length = 2000)
-    private String accessToken;
 
     public static Member createLocalMember(String email, String password) {
         Member member = new Member();

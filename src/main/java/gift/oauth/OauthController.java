@@ -28,6 +28,7 @@ public class OauthController {
     public void redirectToKakao(HttpServletResponse response) {
         String kakaoUrl = UriComponentsBuilder
             .fromUriString(kakaoProperties.kakaoAuthorizeUri())
+            .queryParam("scope", "talk_message,account_email")
             .queryParam("response_type", "code")
             .queryParam("client_id", kakaoProperties.clientId())
             .queryParam("redirect_uri", kakaoProperties.redirectUri())

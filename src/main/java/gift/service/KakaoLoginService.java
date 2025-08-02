@@ -2,9 +2,11 @@ package gift.service;
 
 import gift.dto.KakaoLoginResponse;
 import gift.entity.Member;
+import gift.jwt.JwtTokenProvider;
 import gift.repository.MemberRepository;
 import java.net.URI;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -29,10 +32,14 @@ public class KakaoLoginService {
 
     private final RestTemplate restTemplate;
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public KakaoLoginService(RestTemplate restTemplate, MemberRepository memberRepository) {
+    public KakaoLoginService(RestTemplate restTemplate, MemberRepository memberRepository, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
         this.restTemplate = restTemplate;
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     public String getAccessToken(String code) {
@@ -55,21 +62,15 @@ public class KakaoLoginService {
 
             String accessToken = response.getBody().accessToken();
 
-            Member member = memberRepository.findById(1L)
-                    .orElseThrow(() -> new RuntimeException("memberId=1 회원이 없습니다."));
+            var kakaoId = getKakaoId(accessToken);
+
+            Member member = memberRepository.findByKakaoId(kakaoId)
+                            .orElseGet(() -> registerNewKakaoMember(kakaoId));
+
             member.updateKakaoAccessToken(accessToken);
             memberRepository.save(member);
 
-            // 이메일로 회원 정보 가져와 그 회원에게 액세스 토큰 부여 ( 카카오로부터 이메일 받는 권한이 없어서 현재는 작동 X)
-
-//            String email = getKakaoEmail(accessToken);
-
-//            String email = getKakaoEmail(accessToken);
-//
-//            Member member = memberRepository.findByEmail(email)
-//                    .orElseThrow(() -> new RuntimeException("해당 이메일로 가입된 회원이 없습니다."));
-//            member.updateKakaoAccessToken(accessToken);
-//            memberRepository.save(member);
+            jwtTokenProvider.createToken(member.getEmail());
 
             return accessToken;
         } catch(HttpClientErrorException e) {
@@ -79,7 +80,7 @@ public class KakaoLoginService {
         }
     }
 
-    private String getKakaoEmail(String accessToken) {
+    private Long getKakaoId(String accessToken) {
         var url = "https://kapi.kakao.com/v2/user/me";
 
         HttpHeaders headers = new HttpHeaders();
@@ -92,13 +93,22 @@ public class KakaoLoginService {
                 url, HttpMethod.GET, request, Map.class
         );
 
-        Map<String, Object> kakaoAccount = (Map<String, Object>) response.getBody().get("kakao_account");
+        Long id = (Long) response.getBody().get("id");
 
-        if (kakaoAccount == null || !Boolean.TRUE.equals(kakaoAccount.get("has_email"))) {
-            throw new RuntimeException("카카오 계정에 이메일 정보가 없습니다.");
+        if(id == null) {
+            throw new RuntimeException("카카오 사용자 Id를 조회하지 못했습니다.");
         }
 
-        return (String) kakaoAccount.get("email");
+        return id;
     }
 
+    private Member registerNewKakaoMember(Long kakaoId) {
+        String email = kakaoId+ "@kakao.com";
+        String password = passwordEncoder.encode(UUID.randomUUID().toString());
+
+        Member newMember = Member.of(email, password);
+        newMember.updateKakaoId(kakaoId);
+
+        return memberRepository.save(newMember);
+    }
 }

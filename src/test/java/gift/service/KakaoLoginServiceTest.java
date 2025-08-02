@@ -4,6 +4,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
+import gift.entity.Member;
+import gift.repository.MemberRepository;
 import org.springframework.http.MediaType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,9 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest
 public class KakaoLoginServiceTest {
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private KakaoLoginService kakaoLoginService;
@@ -35,6 +41,8 @@ public class KakaoLoginServiceTest {
         var code = "codee";
         var expectedToken = "tokenn";
         var expectedBody = "{\"access_token\":\"" + expectedToken + "\"}";
+        var member = Member.of("aran@email.com", "1234");
+        memberRepository.save(member);
 
         this.mockServer.expect(requestTo("https://kauth.kakao.com/oauth/token"))
                 .andExpect(method(HttpMethod.POST))

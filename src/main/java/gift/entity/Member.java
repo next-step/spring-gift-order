@@ -23,6 +23,8 @@ public class Member {
 
     private String kakaoAccessToken;
 
+    private Long kakaoId;
+
     public Member() {
     }
 
@@ -56,8 +58,16 @@ public class Member {
         return kakaoAccessToken;
     }
 
+    public Long getKakaoId() {
+        return kakaoId;
+    }
+
     public void updateKakaoAccessToken(String token) {
         this.kakaoAccessToken = token;
+    }
+
+    public void updateKakaoId(Long kakaoId) {
+        this.kakaoId = kakaoId;
     }
 
     public void validatePassword(String password) throws IllegalAccessException {

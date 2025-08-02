@@ -42,7 +42,7 @@ public class KakaoLoginService {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public String getAccessToken(String code) {
+    public String getJwtToken(String code) {
         var url = "https://kauth.kakao.com/oauth/token";
 
         var headers = new HttpHeaders();
@@ -70,9 +70,8 @@ public class KakaoLoginService {
             member.updateKakaoAccessToken(accessToken);
             memberRepository.save(member);
 
-            jwtTokenProvider.createToken(member.getEmail());
+            return jwtTokenProvider.createToken(member.getEmail());
 
-            return accessToken;
         } catch(HttpClientErrorException e) {
             throw new IllegalArgumentException("잘못된 요청입니다." + e.getResponseBodyAsString());
         } catch(HttpServerErrorException e) {

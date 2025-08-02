@@ -18,8 +18,8 @@ public class KakaoLoginController {
     @GetMapping("/login/callback")
     public ResponseEntity<String> callback(@RequestParam String code) {
 
-        String accessToken = kakaoLoginService.getAccessToken(code);
+        String token = kakaoLoginService.getJwtToken(code);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(token);
     }
 }

@@ -48,7 +48,7 @@ public class OptionBuyingServiceTest {
 
     @BeforeEach
     void setup() {
-        optionBuyingService = new OptionBuyingService(optionBuyingRepository, optionRepository, optionService, socialMemberRepository, commonMemberRepository, wishService, kakaoApiClient);
+        optionBuyingService = new OptionBuyingService(optionBuyingRepository, optionRepository, optionService, socialMemberRepository, commonMemberRepository, wishService, kakaoApiClient, "baseUrl");
     }
     @Test
     void 구매시_WISH_감소_테스트() {

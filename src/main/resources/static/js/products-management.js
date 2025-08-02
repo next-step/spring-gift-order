@@ -27,16 +27,16 @@ document.getElementById('infoForm').addEventListener('submit', function(event) {
 
 // Functions communicate with the backend
 function addProduct() {
-    sendProductData('http://localhost:8080/api/products', 'POST');
+    sendProductData(`${baseUrl}/api/products`, 'POST');
 }
 
 function updateProduct(productId) {
-    sendProductData(`http://localhost:8080/api/products/${productId}`, 'PUT');
+    sendProductData(`${baseUrl}/api/products/${productId}`, 'PUT');
 }
 
 function deleteProduct(productId) {
     if (productId) {
-        fetch(`http://localhost:8080/api/products/${productId}`, {
+        fetch(`${baseUrl}/api/products/${productId}`, {
             method: 'DELETE'
         }).then(() => {
             location.reload();

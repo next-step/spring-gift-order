@@ -18,7 +18,7 @@ document.getElementById('infoForm').addEventListener('submit', function(event) {
 });
 
 function addOption() {
-    sendOptionData(`http://localhost:8080/api/products/${product.id}/options`, 'POST');
+    sendOptionData(`${baseUrl}/api/products/${product.id}/options`, 'POST');
 }
 
 function sendOptionData(url, method) {

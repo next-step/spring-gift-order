@@ -12,6 +12,7 @@ import gift.repository.OptionBuyingRepository;
 import gift.repository.OptionRepository;
 import gift.repository.member.CommonMemberRepository;
 import gift.repository.member.SocialMemberRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,9 @@ import java.util.Optional;
 @Service
 @Transactional
 public class OptionBuyingService {
+
+    private final String serverUrl;
+
     private final OptionBuyingRepository optionBuyingRepository;
     private final OptionRepository optionRepository;
     private final OptionService optionService;
@@ -28,7 +32,7 @@ public class OptionBuyingService {
     private final WishService wishService;
     private final KakaoApiClient kakaoApiClient;
 
-    public OptionBuyingService(OptionBuyingRepository optionBuyingRepository, OptionRepository optionRepository, OptionService optionService, SocialMemberRepository socialMemberRepository, CommonMemberRepository commonMemberRepository, WishService wishService, KakaoApiClient kakaoApiClient) {
+    public OptionBuyingService(OptionBuyingRepository optionBuyingRepository, OptionRepository optionRepository, OptionService optionService, SocialMemberRepository socialMemberRepository, CommonMemberRepository commonMemberRepository, WishService wishService, KakaoApiClient kakaoApiClient, @Value("${server.url}") String serverUrl) {
         this.optionBuyingRepository = optionBuyingRepository;
         this.optionRepository = optionRepository;
         this.optionService = optionService;
@@ -36,6 +40,7 @@ public class OptionBuyingService {
         this.commonMemberRepository = commonMemberRepository;
         this.wishService = wishService;
         this.kakaoApiClient = kakaoApiClient;
+        this.serverUrl = serverUrl;
     }
 
     public OptionBuyingResponseDto buyOption(long memberId, OptionBuyingRequestDto optionBuyingRequestDto) {
@@ -86,7 +91,8 @@ public class OptionBuyingService {
 
     private KakaoTemplateObjectDto makeTemplateObjectDto(OptionBuying optionBuying) {
         return new KakaoTemplateObjectDto(
-                optionBuying.createMessage()
+                optionBuying.createMessage(),
+                serverUrl
         );
     }
 }

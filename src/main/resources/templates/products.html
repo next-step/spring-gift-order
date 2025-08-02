@@ -5,6 +5,11 @@
         <link rel="stylesheet" type="text/css" href="/style/base-style.css">
         <link rel="stylesheet" type="text/css" href="/style/table-style.css">
         <link rel="stylesheet" type="text/css" href="/style/modal-style.css">
+
+        <script th:inline="javascript">
+            const product = [[${product}]];
+            const baseUrl = [[${baseUrl}]];
+        </script>
     </head>
     <body>
         <h1>Products Management</h1>

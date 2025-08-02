@@ -11,20 +11,26 @@ public class KakaoTemplateObjectDto {
     private String text;
 
     @JsonProperty("link")
-    private Links link = new Links();
+    private Links link;
 
     @JsonProperty("button_title")
     private String buttonTitle = "spring gift로";
 
-    public KakaoTemplateObjectDto(String message) {
+    public KakaoTemplateObjectDto(String message, String serverUrl) {
         text = message;
+        link = new Links(serverUrl);
     }
 
     public static class Links {
         @JsonProperty("web_url")
-        private String webUrl = "http://localhost:8080";
+        private String webUrl;
 
         @JsonProperty("mobile_web_url")
-        private String mobileWebUrl = "http://localhost:8080";
+        private String mobileWebUrl;
+
+        public Links(String serverUrl) {
+            webUrl = serverUrl;
+            mobileWebUrl = serverUrl;
+        }
     }
 }

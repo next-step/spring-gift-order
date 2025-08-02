@@ -6,15 +6,14 @@ import gift.common.mapper.DtoToEntityMapper;
 import gift.common.mapper.EntityToDtoMapper;
 import gift.common.mapper.ModelMapper;
 import gift.common.model.CustomAuth;
+import gift.common.model.CustomPage;
 import gift.common.validation.annotation.AllowedSortFields;
 import gift.dto.CustomPageRequest;
-import gift.dto.user.UserCreateRequest;
 import gift.dto.user.UserAdminResponse;
+import gift.dto.user.UserCreateRequest;
 import gift.dto.user.UserDefaultResponse;
 import gift.dto.user.UserUpdateRequest;
 import gift.entity.User;
-import gift.common.model.CustomPage;
-import gift.entity.type.UserRole;
 import gift.service.user.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static gift.entity.type.UserRole.ROLE_ADMIN;
+import static gift.entity.type.UserRole.ROLE_USER;
 
 @RestController
 @RequestMapping("/api/users")
@@ -35,7 +36,7 @@ public class UserController {
         this.userService = userService;
     }
     @GetMapping
-    @PreAuthorize(UserRole.ROLE_ADMIN)
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<CustomPage<UserAdminResponse>> getAllUsers(
             @AllowedSortFields(value = { "id", "createdAt", "updatedAt" }, showAllowedFields = true)
             @Valid @ModelAttribute CustomPageRequest request
@@ -47,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_ADMIN)
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<UserAdminResponse> getUserById(
             @NotNull(message = "사용자 ID는 필수입니다.")
             @PathVariable Long id
@@ -57,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<UserDefaultResponse> getCurrentUser(
             CustomAuth auth
         ) {
@@ -66,7 +67,7 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize(UserRole.ROLE_ADMIN)
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<UserAdminResponse> createUser(
             @Valid  @RequestBody UserCreateRequest request
     ) {
@@ -79,7 +80,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_ADMIN)
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<UserAdminResponse> updateUser(
             @PathVariable @NotNull(message = "사용자 ID는 필수입니다.") Long id,
             @Valid @RequestBody UserUpdateRequest request
@@ -93,7 +94,7 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<UserDefaultResponse> updateCurrentUser(
             CustomAuth auth,
             @Valid @RequestBody UserUpdateRequest request
@@ -107,7 +108,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_ADMIN)
+    @PreAuthorize(ROLE_ADMIN)
     public ResponseEntity<Void> deleteUser(
             @PathVariable @NotNull(message = "사용자 ID는 필수입니다.") Long id
     ) {
@@ -118,7 +119,7 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<Void> deleteCurrentUser(
             CustomAuth auth
     ) {

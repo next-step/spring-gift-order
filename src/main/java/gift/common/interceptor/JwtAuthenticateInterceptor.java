@@ -40,8 +40,8 @@ public class JwtAuthenticateInterceptor implements HandlerInterceptor {
         String token = extractToken(authorizationHeader);
 
         if (token == null) {
-            request.setAttribute("tokenInfo", new TokenInfo(authorizationHeader,
-                    null, UserRole.ROLE_GUEST, Provider.UNKNOWN));
+            request.setAttribute("tokenInfo",
+                    new TokenInfo(authorizationHeader, null, UserRole.ROLE_GUEST, null, Provider.UNKNOWN));
 
             return true; // 토큰이 없으면 인증을 건너뜁니다.
         }

@@ -1,7 +1,7 @@
 <!-- 전체 페이지 레이아웃 -->
 <!DOCTYPE html>
 <html th:replace="~{layout/base :: admin_layout('상품 상세', '상품 상세', ~{::view_product_content}, ~{}, ~{::scripts})}"
-     lang="ko" xmlns:th="http://www.w3.org/1999/html">
+      lang="ko" xmlns:th="http://www.w3.org/1999/html">
     <div th:fragment="view_product_content">
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-lg shadow-lg p-8">
@@ -176,6 +176,6 @@
     </div>
     <th:block th:fragment="scripts">
         <script th:src="@{/js/admin/index.js}"></script>
-        <script th:src="@{/js/admin/product-edit.js}"></script>
+        <script th:src="@{/js/admin/product/product-edit.js}"></script>
     </th:block>
 </html>

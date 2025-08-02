@@ -40,6 +40,10 @@ public class Order extends  BaseEntity {
     protected Order() {
     }
 
+    public Order(Long id) {
+        this(id, null, null, null, null, null);
+    }
+
     public Order(User user, Option option) {
         this(null, null, null, user, option);
     }

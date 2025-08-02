@@ -6,12 +6,14 @@ import gift.dto.user.UserCreateRequest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag("auth")
 public abstract class AbstractAuthTest extends AbstractControllerTest {
 
     protected Map<UserCreateRequest, UserAdminResponse> testUsers;

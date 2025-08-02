@@ -1,0 +1,35 @@
+services:
+  db:
+    image: docker.io/library/mysql:latest
+    container_name: mysql-db
+    environment:
+      MYSQL_DATABASE: test_gift
+      MYSQL_USER: test_user
+      MYSQL_PASSWORD: test_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "13306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./src/main/resources/sql/init-db.sql:/docker-entrypoint-initdb.d/1-init-db.sql
+      - ./src/main/resources/sql/init-dataset.sql:/docker-entrypoint-initdb.d/2-init-dataset.sql
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=test_gift
+      - DB_USER=test_user
+      - DB_PASSWORD=test_password
+      - KAKAO_OAUTH_KEY=${KAKAO_OAUTH_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - SERVER_URL=${SERVER_URL}
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+volumes:
+  db_data:

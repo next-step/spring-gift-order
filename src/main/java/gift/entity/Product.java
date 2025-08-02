@@ -31,6 +31,10 @@ public class Product extends BaseEntity {
 
     }
 
+    public Product(Long id) {
+        this(id, null, null, null, null);
+    }
+
     public Product(String name, Long price, String imageUrl) {
         this(null, name, price, imageUrl, null);
     }

@@ -5,14 +5,13 @@ import gift.common.mapper.DtoToEntityMapper;
 import gift.common.mapper.EntityToDtoMapper;
 import gift.common.mapper.ModelMapper;
 import gift.common.model.CustomAuth;
+import gift.common.model.CustomPage;
 import gift.common.validation.annotation.AllowedSortFields;
 import gift.dto.CustomPageRequest;
-import gift.dto.product.ProductResponse;
-import gift.common.model.CustomPage;
 import gift.dto.product.ProductCreateRequest;
+import gift.dto.product.ProductResponse;
 import gift.dto.product.ProductUpdateRequest;
 import gift.entity.Product;
-import gift.entity.type.UserRole;
 import gift.service.product.ProductService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -22,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import static gift.entity.type.UserRole.ROLE_USER;
 
 @Controller
 @RequestMapping("/api/products")
@@ -53,7 +54,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<ProductResponse> createProduct(
             @Valid @RequestBody ProductCreateRequest dto,
             CustomAuth auth
@@ -64,7 +65,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable @Min(value = 0, message = "상품 ID는 0 이상이어야 합니다.") Long id,
             @Valid @RequestBody ProductUpdateRequest dto,
@@ -78,7 +79,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize(UserRole.ROLE_USER)
+    @PreAuthorize(ROLE_USER)
     public ResponseEntity<Void> deleteProduct(
             @PathVariable @Min(value = 0, message = "상품 ID는 0 이상이어야 합니다.") Long id,
             CustomAuth auth

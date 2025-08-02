@@ -16,11 +16,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Objects;
 
 @Component
 public class KakaoMessageClient {
@@ -39,10 +37,38 @@ public class KakaoMessageClient {
         this.objectMapper = new ObjectMapper();
     }
 
+    public void sendMessage(Order order, String accessToken) {
+        restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .header("Authorization", "Bearer " + accessToken)
+                .body(createRequestBody(order))
+                .exchange((req, res) -> {
+                    if (res.getStatusCode().is4xxClientError() || res.getStatusCode().is5xxServerError()) {
+                        var errorResponse = res.bodyTo(KakaoApiErrorResponse.class);
 
-    private String formatInstant(Instant instant) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss"));
+                        if (errorResponse == null) {
+                            throw new KakaoApiException(
+                                    HttpStatus.valueOf(res.getStatusCode().value()),
+                                    -500,
+                                    "카카오 메시지 보내기 요청 중 알수 없는 에러가 발생해습니다."
+                            );
+                        }
+                        throw new KakaoApiException(
+                                HttpStatus.valueOf(res.getStatusCode().value()),
+                                errorResponse.code(),
+                                errorResponse.msg()
+                        );
+                    }
+                    return res.bodyTo(KakaoSendMessageResponse.class);
+                });
+    }
+
+    private MultiValueMap<String, String> createRequestBody(Order order) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("template_id", TEMPLATE_ID.toString());
+        body.add("template_args", generateTemplate(order));
+        return body;
     }
 
     private String generateTemplate(Order order) {
@@ -67,29 +93,8 @@ public class KakaoMessageClient {
         }
     }
 
-    private MultiValueMap<String, String> createRequestBody(Order order) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("template_id", TEMPLATE_ID.toString());
-        body.add("template_args", generateTemplate(order));
-        return body;
-    }
-
-    public void sendMessage(Order order, String accessToken) {
-        restClient.post()
-                .uri(url)
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .header("Authorization", "Bearer " + accessToken)
-                .body(createRequestBody(order))
-                .exchange((req, res) -> {
-                    if (res.getStatusCode().is4xxClientError() || res.getStatusCode().is5xxServerError()) {
-                        var errorResponse = res.bodyTo(KakaoApiErrorResponse.class);
-                        throw new KakaoApiException(
-                                HttpStatus.valueOf(res.getStatusCode().value()),
-                                Objects.requireNonNull(errorResponse).code(),
-                                errorResponse.msg()
-                        );
-                    }
-                    return res.bodyTo(KakaoSendMessageResponse.class);
-                });
+    private String formatInstant(Instant instant) {
+        return DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")
+                .format(instant.atZone(ZoneId.systemDefault()));
     }
 }

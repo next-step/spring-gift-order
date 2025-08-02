@@ -13,5 +13,4 @@ public interface ProductService {
     Product update(Product product, UserRole role, Long userId);
     void deleteById(Long productId, UserRole role, Long userId);
     Boolean existsById(Long productId);
-    Product getReference(Long productId);
 }

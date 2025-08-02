@@ -99,11 +99,13 @@
 
     <!-- 페이지네이션 -->
     <div class="mt-8">
-        <nav th:replace="~{layout/fragments/pagination :: pagination(${pageInfo}, ${pageStart}, ${pageEnd})}"></nav>
+        <nav th:replace="~{layout/fragments/pagination :: pagination(${pageInfo}, ${pageStart}, ${pageEnd}, ${baseUrl})}"></nav>
     </div>
+
 </div>
-
-
-    <!-- 스크립트 -->
-    <script th:src="@{/js/admin/product-delete.js}"></script>
+<!-- 스크립트 -->
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/admin/index.js}"></script>
+    <script th:src="@{/js/admin/product/product-delete.js}"></script>
+</th:block>
 </html>

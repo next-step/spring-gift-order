@@ -10,11 +10,13 @@ import gift.dto.wishlist.WishedProductResponse;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Tag("wishlist")
 public abstract class AbstractWishlistTest extends AbstractControllerTest {
     private RestAssuredUtils restAssuredUtils;
     protected List<ProductResponse> testProducts;

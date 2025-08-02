@@ -63,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product create(Product product, UserRole role, Long userId) {
-        product.setOwner(userService.getReference(userId));
+        product.setOwner(userService.findById(userId));
         return productRepository.save(product);
     }
 
@@ -98,10 +98,5 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Boolean existsById(Long productId) {
         return productRepository.existsById(productId);
-    }
-
-    @Override
-    public Product getReference(Long productId) {
-        return productRepository.getReferenceById(productId);
     }
 }

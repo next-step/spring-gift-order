@@ -5,10 +5,8 @@ import gift.entity.type.UserRole;
 import gift.repository.option.OptionRepository;
 import gift.repository.product.ProductRepository;
 import gift.repository.user.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -22,6 +20,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+@Tag("option")
 public class OptionRepositoryTest extends AbstractRepositoryTest {
     @Autowired
     private UserRepository userRepository;

@@ -41,13 +41,12 @@ public class AuthController {
     }
 
     @GetMapping("/oauth2/kakao")
-    public ResponseEntity<KakaoResponse> kakaoLogin(@ModelAttribute KakaoLoginRequest request) {
-        var res = authService.kakaoLogin(
+    public ResponseEntity<TokenResponse> kakaoLogin(@ModelAttribute KakaoLoginRequest request) {
+        String token = authService.kakaoLogin(
                 request.code(),
                 request.error(),
                 request.errorDescription()
         );
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return new ResponseEntity<>(new TokenResponse(token), HttpStatus.OK);
     }
-
 }

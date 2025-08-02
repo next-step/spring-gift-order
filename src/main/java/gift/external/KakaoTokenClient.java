@@ -13,8 +13,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 
-import java.util.Objects;
-
 @Component
 public class KakaoTokenClient {
     private final String redirectUri;
@@ -68,9 +66,18 @@ public class KakaoTokenClient {
                     if (res.getStatusCode().is4xxClientError() || res.getStatusCode().is5xxServerError()) {
                         int statusCode = res.getStatusCode().value();
                         KakaoAuthErrorResponse errorResponse = res.bodyTo(KakaoAuthErrorResponse.class);
+
+                        if (errorResponse == null || errorResponse.errorCode() == null) {
+                            throw new KakaoAuthorizationException(
+                                    HttpStatus.valueOf(statusCode),
+                                    "UNKNOWN_CODE",
+                                    "카카오 인증 서버에서 토큰을 받는 중 알수 없는 에러가 발생했습니다."
+                            );
+                        }
+
                         throw new KakaoAuthorizationException(
                                 HttpStatus.valueOf(statusCode),
-                                Objects.requireNonNull(errorResponse).errorCode(),
+                                errorResponse.errorCode(),
                                 errorResponse.errorDescription()
                         );
                     }

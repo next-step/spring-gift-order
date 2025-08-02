@@ -64,52 +64,6 @@ public class TokenProvider implements InitializingBean {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    private PublicKey getPublicKeyFromToken(String token) {
-        String[] parts = token.split("\\.");
-        if (parts.length != 3) {
-            return null;
-        }
-        ObjectMapper mapper = new ObjectMapper();
-        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]));
-        String bodyJson = new String(Base64.getUrlDecoder().decode(parts[1]));
-        try {
-            String kid = mapper.convertValue(mapper.readTree(headerJson), Map.class).get("kid").toString();
-            String iss = mapper.convertValue(mapper.readTree(bodyJson), Map.class).get("iss").toString();
-            Provider provider = providerMapper.toProvider(iss);
-            Map<String, PublicKey> publicKeys = providerMapper.getPublicKeys(provider);
-            if (publicKeys == null || !publicKeys.containsKey(kid)) {
-                log.warn("유효하지 않은 키 ID(kid): {}", kid);
-                return null;
-            }
-            return publicKeys.get(kid);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private Claims getClaimsWithVerification(String token) {
-       try {
-           return Jwts.parser()
-                   .verifyWith(this.secretKey)
-                   .build()
-                   .parseSignedClaims(token)
-                   .getPayload();
-
-       } catch(JwtException e) {
-           log.debug("비밀 키로 JWT를 파싱하는 중 오류 발생, 공개키로 재시도: {}", e.getMessage());
-              PublicKey publicKey = getPublicKeyFromToken(token);
-              if (publicKey == null) {
-                  log.debug("공개키 찾기를 실패했습니다.");
-                  throw new JwtException("유효하지 않은 JWT 토큰 입니다.");
-            }
-            return Jwts.parser()
-                    .verifyWith(publicKey)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-       }
-    }
-
     public String generateToken(Long userId, Set<UserRole> authorities, Provider provider) {
         return generateToken(userId, authorities, provider, this.expiration);
     }
@@ -138,18 +92,25 @@ public class TokenProvider implements InitializingBean {
     public TokenInfo getTokenInfo(String token) {
         Claims claims = getClaimsWithVerification(token);
 
-        // Extract  ID from claims
-        String IdString = claims.getSubject();
-        if (IdString == null || IdString.isEmpty()) {
+        try {
+            String IdString = Objects.requireNonNull(claims.getSubject());
+            Provider provider = providerMapper.toProvider(claims.getIssuer());
+            UserRole role = extractRoleFromClaims(claims, provider);
+            Long expiration = extractExpirationFromClaims(claims);
+
+            return new TokenInfo(token, IdString, role, expiration, provider);
+
+        } catch (NullPointerException e) {
+            log.warn("JWT 토큰에 필수 정보가 없습니다: {}", e.getMessage());
+            return null;
+        } catch (IllegalArgumentException e) {
+            log.warn("JWT 토큰의 형식이 잘못되었습니다: {}", e.getMessage());
             return null;
         }
+    }
 
-        // Extract provider from claims
-        String issuer = claims.getIssuer();
-        Provider provider = providerMapper.toProvider(issuer);
-
-        UserRole role = switch (provider) {
-            case UNKNOWN ->  UserRole.ROLE_GUEST; // 알 수 없는 프로바이더는 게스트로 처리
+    private UserRole extractRoleFromClaims(Claims claims, Provider provider) {
+        return switch(provider) {
             case EMAIL -> { // 이메일 인증을 통한 사용자
                 var authoritiesString = claims.get(AUTHORITIES_KEY, String.class);
                 yield Stream.of(authoritiesString.split(","))
@@ -157,10 +118,14 @@ public class TokenProvider implements InitializingBean {
                         .max(Comparator.comparing(UserRole::getPriority))
                         .orElse(UserRole.ROLE_GUEST);
             }
+            case UNKNOWN ->  UserRole.ROLE_GUEST; // 알 수 없는 프로바이더는 게스트로 처리
             default -> UserRole.ROLE_USER; // 외부 인증을 통한 사용자
         };
+    }
 
-        return new TokenInfo(token, IdString, role, provider);
+    private Long extractExpirationFromClaims(Claims claims) {
+        Date expirationDate = Objects.requireNonNull(claims.getExpiration());
+        return (expirationDate.getTime() - Instant.now().toEpochMilli()) / 1000;
     }
 
     public Boolean validateToken(String token) {
@@ -177,5 +142,55 @@ public class TokenProvider implements InitializingBean {
             log.warn("유효하지 않은 JWT 토큰입니다.");
         }
         return false;
+    }
+
+    private Claims getClaimsWithVerification(String token) {
+        try {
+            // 사용자의 비밀 키로 JWT 파싱 시도
+            return Jwts.parser()
+                    .verifyWith(this.secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch(JwtException e) {
+            // 외부 인증을 가정하여 공개 키를 찾고 이를 통해 파싱 재시도
+            log.debug("비밀 키로 JWT를 파싱하는 중 오류 발생, 공개키로 재시도: {}", e.getMessage());
+            PublicKey publicKey = getPublicKeyFromToken(token);
+            if (publicKey == null) {
+                log.debug("공개키 찾기를 실패했습니다.");
+                throw new JwtException("유효하지 않은 JWT 토큰 입니다.");
+            }
+            return Jwts.parser()
+                    .verifyWith(publicKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        }
+    }
+
+    private PublicKey getPublicKeyFromToken(String token) {
+        String[] parts = token.split("\\.");
+        if (parts.length != 3) {
+            return null;
+        }
+        // base64 디코딩으로 subject, issuer, and key ID 추출(안전하지는 않지만, Provider를 알기 위해 사용)
+        ObjectMapper mapper = new ObjectMapper();
+        String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]));
+        String bodyJson = new String(Base64.getUrlDecoder().decode(parts[1]));
+        try {
+            String kid = mapper.convertValue(mapper.readTree(headerJson), Map.class).get("kid").toString();
+            String iss = mapper.convertValue(mapper.readTree(bodyJson), Map.class).get("iss").toString();
+            Provider provider = providerMapper.toProvider(iss);
+
+            // 공급자를 통해 캐싱 되어 있는 공개 키를 가져옴
+            Map<String, PublicKey> publicKeys = providerMapper.getPublicKeys(provider);
+            if (publicKeys == null || !publicKeys.containsKey(kid)) {
+                log.warn("유효하지 않은 키 ID(kid): {}", kid);
+                return null;
+            }
+            return publicKeys.get(kid);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

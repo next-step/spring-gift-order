@@ -43,4 +43,8 @@ out/
 **/node_modules/
 
 ## environment files
-**/application-secret.properties
+.env
+.env.local
+
+##
+!/build/lib/*.jar

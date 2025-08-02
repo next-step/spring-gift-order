@@ -15,6 +15,4 @@ public interface UserService {
     User update(User user);
     void deleteById(Long userId);
     Boolean existsById(Long userId);
-    Boolean existsByClientIdAndProvider(String clientId, Provider provider);
-    User getReference(Long userId);
 }

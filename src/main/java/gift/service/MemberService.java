@@ -33,12 +33,13 @@ public class MemberService {
         return "Basic " + Base64.getEncoder().encodeToString(raw.getBytes());
     }
 
-    public Member findValidMember(String email, String password) {
+    public Member findByEmailOrRegister(String email) {
         return repository.findByEmail(email)
-                .filter(m -> m.getPassword().equals(password))
-                .orElseThrow(() -> new UnauthorizedException("인증 정보가 올바르지 않습니다."));
+                .orElseGet(() -> {
+                    Member member = new Member(email, "kakao"); // password 대체값
+                    return repository.save(member);
+                });
     }
-
 
 
 }

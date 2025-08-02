@@ -16,9 +16,13 @@ public class MemberController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Member member) {
+        String token = service.createToken(member.getEmail(), member.getPassword());
+        member.setAccessToken(token);
         service.register(member);
-        return ResponseEntity.ok("회원가입 성공!");
+
+        return ResponseEntity.ok("회원가입 성공! 발급된 토큰: " + token);
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Member member) {

@@ -4,6 +4,7 @@ import gift.shared.filter.KakaoLoginMemberArgumentHandler;
 import gift.shared.filter.LoginMemberArgumentHandler;
 import gift.shared.token.service.TokenService;
 import gift.user.service.UserService;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -32,7 +33,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOrigins("*")
                 .allowedHeaders("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
+                .allowedMethods(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name())
                 .allowCredentials(true)
                 .maxAge(1800);
     }

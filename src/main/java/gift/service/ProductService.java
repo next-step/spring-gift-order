@@ -73,7 +73,6 @@ public class ProductService {
                 productDto.imageUrl());
 
         optionsRepository.deleteAllByProductId(product.getId());
-        optionsRepository.flush();
 
         for (Options option : productDto.options()) {
             Options newOption = new Options(option.getName(), option.getQuantity());

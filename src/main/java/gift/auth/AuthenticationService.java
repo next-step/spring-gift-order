@@ -5,7 +5,9 @@ import gift.entity.Member;
 import gift.repository.MemberRepository;
 import gift.service.KakaoOAuthService;
 import gift.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class AuthenticationService {
@@ -13,10 +15,18 @@ public class AuthenticationService {
     private final MemberRepository memberRepository;
     private final KakaoOAuthService kakaoOAuthService;
 
+    @Value("${kakao.oauth.client-id}")
+    private String clientId;
+
     public AuthenticationService(JwtUtil jwtUtil, MemberRepository memberRepository, KakaoOAuthService kakaoOAuthService) {
         this.jwtUtil = jwtUtil;
         this.memberRepository = memberRepository;
         this.kakaoOAuthService = kakaoOAuthService;
+    }
+
+    @Transactional
+    public void updateKakaoAccessToken(Member member, String newAccessToken) {
+        member.setKakaoAccessToken(newAccessToken);
     }
 
     public AuthenticationResult authenticate(String authHeader) {
@@ -26,7 +36,7 @@ public class AuthenticationService {
 
         String token = authHeader.substring(7);
         if (!jwtUtil.isTokenValid(token)) {
-            Long memberId = jwtUtil.extractMemberId(token);
+            Long memberId = jwtUtil.extractMemberIdFromToken(token);
             Member member = memberRepository.findById(memberId).orElseThrow();
 
             if(kakaoOAuthService.isAccessTokenValid(member.getKakaoAccessToken())){
@@ -46,9 +56,9 @@ public class AuthenticationService {
             try {
                 KakaoTokenRefreshResponse newAccessTokens = kakaoOAuthService.refreshKakaoAccessToken(
                             member.getKakaoRefreshToken(),
-                            member.getKakaoId()
+                            clientId
                     );
-                member.setKakaoAccessToken(newAccessTokens.accessToken());
+                updateKakaoAccessToken(member, newAccessTokens.accessToken());
                 String newJwtToken = jwtUtil.generateToken(
                         member.getEmail().getValue(),
                         member.getId(),

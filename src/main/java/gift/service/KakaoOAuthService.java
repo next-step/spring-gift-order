@@ -36,14 +36,14 @@ public class KakaoOAuthService {
     @Value("${kakao.oauth.redirect-uri}")
     private String redirectUri;
 
-    private final String authUrl = "https://kauth.kakao.com/oauth/authorize";
-    private final String tokenUrl = "https://kauth.kakao.com/oauth/token";
-    private final String UserInfoUrl = "https://kapi.kakao.com/v2/user/me";
-    private final String AccessTokenInfoUrl = "https://kapi.kakao.com/v1/user/access_token_info";
-    private final String RefreshAccessTokenUrl = "https://kauth.kakao.com/oauth/token";
+    private final String AUTH_URL = "https://kauth.kakao.com/oauth/authorize";
+    private final String TOKEN_URL = "https://kauth.kakao.com/oauth/token";
+    private final String USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
+    private final String ACCESS_TOKEN_INFO_URL = "https://kapi.kakao.com/v1/user/access_token_info";
+    private final String REFRESH_ACCESS_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
 
     public URI buildKakaoAuthUri() {
-        return UriComponentsBuilder.fromUriString(authUrl)
+        return UriComponentsBuilder.fromUriString(AUTH_URL)
                 .queryParam("scope", "talk_message")
                 .queryParam("response_type", "code")
                 .queryParam("client_id", clientId)
@@ -60,7 +60,7 @@ public class KakaoOAuthService {
         body.add("code", code);
 
         return restClient.post()
-                .uri(tokenUrl)
+                .uri(TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(body)
                 .retrieve()
@@ -69,7 +69,7 @@ public class KakaoOAuthService {
 
     private KakaoUserInfo getUserInfo(String accessToken) {
         return restClient.get()
-                .uri(UserInfoUrl)
+                .uri(USER_INFO_URL)
                 .header("Authorization", "Bearer " + accessToken)
                 .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                 .retrieve()
@@ -105,7 +105,7 @@ public class KakaoOAuthService {
     public boolean isAccessTokenValid(String accessToken) {
         try {
             restClient.get()
-                    .uri(AccessTokenInfoUrl)
+                    .uri(ACCESS_TOKEN_INFO_URL)
                     .header("Authorization", "Bearer " + accessToken)
                     .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                     .retrieve()
@@ -123,7 +123,7 @@ public class KakaoOAuthService {
         body.add("refresh_token", refreshToken);
 
         return restClient.post()
-                .uri(RefreshAccessTokenUrl)
+                .uri(REFRESH_ACCESS_TOKEN_URL)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(body)
                 .retrieve()

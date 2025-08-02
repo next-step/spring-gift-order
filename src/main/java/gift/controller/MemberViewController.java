@@ -74,7 +74,7 @@ public class MemberViewController {
     }
 
     @GetMapping("/wishlist")
-    public ResponseEntity<?> getWishlist(@EmailFromJwtToken String token) {
+    public ResponseEntity<?> getWishlist(@EmailFromJwtToken String email) {
 
         List<String> wishlist = new ArrayList<>();
         return ResponseEntity.ok(wishlist);

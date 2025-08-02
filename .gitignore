@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 src/main/resources/application-dev.properties
+src/main/java/gift/controller/MemberViewController.java
 
 ### STS ###
 .apt_generated

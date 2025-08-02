@@ -40,7 +40,7 @@ public class KakaoAuth {
                 + "&scope=account_email,talk_message";
     }
 
-    public KakaoTokenResponseDto getAccessToken(String code) {
+    public KakaoTokenResponseDto getKakaoLoginResponse(String code) {
         String url = "https://kauth.kakao.com/oauth/token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -88,14 +88,20 @@ public class KakaoAuth {
     public void sendOrderMessage(String accessToken, OrderResponseDto orderResponseDto) {
         String url = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
 
-        String text = String.format(
-                "주문ID: %d\n옵션ID: %d\n수량: %d\n주문일시: %s\n메시지: %s",
+        String text = String.format("""
+                주문ID: %d
+                옵션ID: %d
+                수량: %d
+                주문일시: %s
+                메시지: %s
+                """,
                 orderResponseDto.id(),
                 orderResponseDto.optionId(),
                 orderResponseDto.quantity(),
                 orderResponseDto.orderDateTime(),
                 orderResponseDto.message()
         );
+
 
         Link link = new Link("https://productWeb.com", "https://productMobileWeb.com");
         KakaoMessageTextTemplateRequestDto textTemplateObject = new KakaoMessageTextTemplateRequestDto("text", text, link, "확인");
@@ -104,7 +110,7 @@ public class KakaoAuth {
         try {
             json = objectMapper.writeValueAsString(textTemplateObject);
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(e.getMessage());
         }
 
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();

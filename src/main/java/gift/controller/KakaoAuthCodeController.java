@@ -28,7 +28,7 @@ public class KakaoAuthCodeController {
 
     @GetMapping
     public ResponseEntity<KakaoTokenWithJwtResponseDto> getAccessToken(@RequestParam("code") String code) {
-        KakaoTokenResponseDto kakaoTokenResponseDto = kakaoApiService.getAccessToken(code);
+        KakaoTokenResponseDto kakaoTokenResponseDto = kakaoApiService.getKakaoLoginResponse(code);
         String accessToken = kakaoTokenResponseDto.accessToken();
         String email = kakaoApiService.getUserEmail(accessToken);
         Member member = new Member(email, "12345678", true);

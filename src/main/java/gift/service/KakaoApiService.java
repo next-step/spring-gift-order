@@ -1,6 +1,5 @@
 package gift.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import gift.auth.KakaoAuth;
 import gift.dto.KakaoTokenResponseDto;
 import gift.dto.OrderResponseDto;
@@ -20,9 +19,14 @@ public class KakaoApiService {
         return kakaoAuth.getKakaoLoginLink();
     }
 
-    public KakaoTokenResponseDto getAccessToken(String code) {
+    public KakaoTokenResponseDto getKakaoLoginResponse(String code) {
 
-        return kakaoAuth.getAccessToken(code);
+        return kakaoAuth.getKakaoLoginResponse(code);
+    }
+
+    public String getAccessToken(String code) {
+        KakaoTokenResponseDto responseDto = kakaoAuth.getKakaoLoginResponse(code);
+        return responseDto.accessToken();
     }
 
     public String getUserEmail(String accessToken) {

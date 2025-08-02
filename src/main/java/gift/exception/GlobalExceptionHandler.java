@@ -63,10 +63,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EncryptFailedException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public String handleUnprocessableEntity(EncryptFailedException e) { return e.getMessage(); }
-    @ExceptionHandler(OutOfStockException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public String handleUnprocessableEntity(OutOfStockException e) { return e.getMessage(); }
-
 
     // UNAUTHORIZED 응답하는 예외처리 핸들러
     @ExceptionHandler({LoginFailedException.class, TokenUnauthorizedException.class})

@@ -13,14 +13,14 @@ import org.springframework.web.service.annotation.PostExchange;
 @HttpExchange()
 public interface KakaoMessageInterface {
 
-    @PostExchange(value = "${custom.kakao-sendTo-myself}",
+    @PostExchange(value = "${https://kapi.kakao.com/v2/api/talk/memo/default/send}",
         contentType = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     ResponseEntity<Map<String, Object>> sendMessageToMySelf(
         @RequestHeader("Authorization") String token,
         @RequestParam("template_object") String request
     );
 
-    @GetExchange(value = "${custom.kakao-user-info}")
+    @GetExchange(value = "https://kapi.kakao.com/v2/user/me")
     ResponseEntity<KakaoUserInfoResponse> getUserInfo(
         @RequestHeader("Authorization") String token
     );

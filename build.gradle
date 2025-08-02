@@ -35,3 +35,13 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+jar {
+    archiveBaseName.set("spring-gift-order")
+    archiveVersion.set("")
+    enabled = false
+}
+
+bootJar {
+    mainClass.set('gift.Application')
+}

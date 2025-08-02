@@ -26,14 +26,12 @@ public class KakaoClientConfig {
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
             .build();
     }
-
     @Bean
     public RestClient.Builder kakaoMessageRequestClient() {
         return RestClient.builder()
             .baseUrl(kakao_self_message)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
     }
-
     @Bean
     public KakaoMessageInterface createKakaoMessageClient(RestClient kakaoRestClient) {
 

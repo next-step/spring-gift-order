@@ -85,4 +85,11 @@ public class OptionService {
         }
         optionRepository.delete(option);
     }
+
+    @Transactional
+    public void subtractQuantity(Long optionId, int quantity) {
+        Option option = optionRepository.findById(optionId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 옵션을 찾을 수 없습니다: " + optionId));
+        option.subtractQuantity(quantity);
+    }
 }

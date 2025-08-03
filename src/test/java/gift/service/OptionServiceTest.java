@@ -71,7 +71,6 @@ class OptionServiceTest {
 
         // when
         optionService.subtractQuantity(savedOption.id(), 10);
-
         // then
         Option updatedOption = optionRepository.findById(savedOption.id()).get();
         assertThat(updatedOption.getQuantity()).isEqualTo(90);

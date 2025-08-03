@@ -12,6 +12,6 @@ spring:
       hibernate:
         format_sql: true
 kakao:
-  client-id: 7e8434e24863c4463127e7dd2f162857
+  client-id: your-token-id
   redirect-uri: http://localhost:8080
 

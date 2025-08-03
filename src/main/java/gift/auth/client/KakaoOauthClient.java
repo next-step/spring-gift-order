@@ -6,6 +6,9 @@ import gift.exception.ErrorCode;
 import gift.exception.KakaoApiErrorException;
 import gift.exception.KakaoClientErrorException;
 import gift.exception.KakaoLoginErrorException;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class KakaoOauthClient {
@@ -22,6 +26,7 @@ public class KakaoOauthClient {
   private static final String KAKAO_TOKEN_URL = "https://kauth.kakao.com/oauth/token";
   private static final String KAKAO_USER_INFO_URL = "https://kapi.kakao.com/v2/user/me";
   private static final String KAKAO_MESSAGE_URL = "https://kapi.kakao.com/v2/api/talk/memo/default/send";
+  private static final Logger LOG = LoggerFactory.getLogger(KakaoOauthClient.class);
 
   private final String clientId;
   private final String redirectUrl;
@@ -43,11 +48,17 @@ public class KakaoOauthClient {
   }
 
   public String getKakaoLoginUrl() {
-    return KAKAO_AUTH_URL + "/oauth/authorize" +
-        "?scope=talk_message,account_email" +
-        "&response_type=code" +
-        "&redirect_uri=" + redirectUrl +
-        "&client_id=" + clientId;
+    List<String> scopes = List.of("talk_message", "account_email");
+
+    return UriComponentsBuilder
+        .fromUriString(KAKAO_AUTH_URL)
+        .path("/oauth/authorize")
+        .queryParam("scope", String.join(",", scopes))
+        .queryParam("response_type", "code")
+        .queryParam("redirect_uri", redirectUrl)
+        .queryParam("client_id", clientId)
+        .encode()
+        .toUriString();
   }
 
   public KakaoTokenResponseDto getAccessToken(String authorizationCode) {
@@ -57,51 +68,21 @@ public class KakaoOauthClient {
     body.add("redirect_uri", redirectUrl);
     body.add("code", authorizationCode);
 
-    return restClient.post()
-        .uri(KAKAO_TOKEN_URL)
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .body(body)
-        .retrieve()
-        .onStatus(HttpStatusCode::is4xxClientError, (request, responseEntity) -> {
-          throw new KakaoClientErrorException();
-        })
-        .onStatus(HttpStatusCode::is5xxServerError, (request, responseEntity) -> {
-          throw new KakaoLoginErrorException(ErrorCode.KAKAO_LOGIN_ERROR);
-        })
-        .body(KakaoTokenResponseDto.class);
+    return executeKakaoApiRequest("POST", KAKAO_TOKEN_URL, null, body,
+        KakaoTokenResponseDto.class, ErrorCode.KAKAO_LOGIN_ERROR);
   }
 
   public KakaoUserInfoDto getUserInfo(String accessToken) {
-    return restClient.get()
-        .uri(KAKAO_USER_INFO_URL)
-        .header("Authorization", "Bearer " + accessToken)
-        .retrieve()
-        .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-          throw new KakaoClientErrorException();
-        })
-        .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-          throw new KakaoApiErrorException(ErrorCode.KAKAO_API_ERROR);
-        })
-        .body(KakaoUserInfoDto.class);
+    return executeKakaoApiRequest("GET", KAKAO_USER_INFO_URL, accessToken, null,
+        KakaoUserInfoDto.class, ErrorCode.KAKAO_API_ERROR);
   }
 
   public void sendKakaoTalkMessage(String accessToken, String templateObject) {
     final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
     body.add("template_object", templateObject);
 
-    restClient.post()
-        .uri(KAKAO_MESSAGE_URL)
-        .header("Authorization", "Bearer " + accessToken)
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .body(body)
-        .retrieve()
-        .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
-          throw new KakaoClientErrorException();
-        })
-        .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-          throw new KakaoApiErrorException(ErrorCode.KAKAO_API_ERROR);
-        })
-        .toBodilessEntity();
+    executeKakaoApiRequest("POST", KAKAO_MESSAGE_URL, accessToken, body,
+        Void.class, ErrorCode.KAKAO_API_ERROR);
   }
 
   public KakaoTokenResponseDto refreshAccessToken(String refreshToken) {
@@ -110,17 +91,51 @@ public class KakaoOauthClient {
     body.add("client_id", clientId);
     body.add("refresh_token", refreshToken);
 
-    return restClient.post()
-        .uri(KAKAO_TOKEN_URL)
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .body(body)
-        .retrieve()
-        .onStatus(HttpStatusCode::is4xxClientError, (request, responseEntity) -> {
+    return executeKakaoApiRequest("POST", KAKAO_TOKEN_URL, null, body,
+        KakaoTokenResponseDto.class, ErrorCode.KAKAO_LOGIN_ERROR);
+  }
+
+  private <T> T executeKakaoApiRequest(String method, String url, String accessToken,
+      MultiValueMap<String, String> body,
+      Class<T> responseType, ErrorCode serverErrorCode) {
+    RestClient.RequestHeadersSpec<?> requestSpec;
+
+    if ("GET".equals(method)) {
+      requestSpec = restClient.get().uri(url);
+    } else {
+      requestSpec = restClient.post()
+          .uri(url)
+          .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+          .body(body);
+    }
+
+    if (accessToken != null) {
+      requestSpec = requestSpec.header("Authorization", "Bearer " + accessToken);
+    }
+
+    RestClient.ResponseSpec responseSpec = requestSpec.retrieve()
+        .onStatus(HttpStatusCode::is4xxClientError, (request, response) -> {
+          LOG.error("카카오 토큰 요청실패로 4xx 에러 발생 상태 : {} Url : {}",
+              response.getStatusCode(),url);
           throw new KakaoClientErrorException();
         })
-        .onStatus(HttpStatusCode::is5xxServerError, (request, responseEntity) -> {
-          throw new KakaoLoginErrorException(ErrorCode.KAKAO_LOGIN_ERROR);
-        })
-        .body(KakaoTokenResponseDto.class);
+        .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+          if (serverErrorCode == ErrorCode.KAKAO_LOGIN_ERROR) {
+            LOG.error("카카오 로그인 실패로 5xx 에러 발생 상태 : {}, Url : {}",
+                response.getStatusCode(),url);
+            throw new KakaoLoginErrorException(serverErrorCode);
+          } else {
+            LOG.error("카카오 API 서버 에러 발생 상태 : {}, Url : {}",
+                response.getStatusCode(), url);
+            throw new KakaoApiErrorException(serverErrorCode);
+          }
+        });
+
+    if (responseType == Void.class) {
+      responseSpec.toBodilessEntity();
+      return null;
+    } else {
+      return responseSpec.body(responseType);
+    }
   }
 }

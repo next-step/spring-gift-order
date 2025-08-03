@@ -26,13 +26,14 @@ public class KakaoClient {
 
     public KakaoClient(
             ObjectMapper objectMapper,
+            KakaoProperties kakaoProperties,
             @Value("${kakao.api.base-url:https://kapi.kakao.com}") String apiBaseUrl
     ) {
         this.objectMapper = objectMapper;
+        this.kakaoProperties = kakaoProperties;
         this.restClient = RestClient.builder()
                 .baseUrl(apiBaseUrl)
                 .build();
-        this.kakaoProperties = new KakaoProperties();
     }
 
     public void sendOrderMessage(String kakaoAccessToken, Order order) {

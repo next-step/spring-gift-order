@@ -8,7 +8,7 @@ spring:
       path: /h2-console
 
   datasource:
-    url: jdbc:h2:mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-0
+    url: jdbc:h2:mem:test;MODE=MYSQL;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -33,7 +33,7 @@ jwt:
   expiration: 3600000 #1시간(ms단위)
 
 kakao:
-  client-id: (my api code)
-  redirect-uri: http://localhost:8080/callback
-  link-url: http://localhost:8080
+  client-id: 71ad85ed78c82915ffeb529b00e34988
+  redirect-uri: http://52.78.57.212:8080/callback
+  link-url: http://52.78.57.212:8080
   button-title: 주문 확인

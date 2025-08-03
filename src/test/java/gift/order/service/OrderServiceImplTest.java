@@ -50,13 +50,14 @@ class OrderServiceImplTest {
         // given
         Long memberId = 1L;
         Long optionId = 2L;
+        String accessToken = "Bearer test-access-token";
         OrderRequestDto dto = new OrderRequestDto(optionId, 3, "테스트 주문 완료!");
 
         Option opt = new Option(null, "낱개", 10);
         when(optionRepository.findById(optionId)).thenReturn(Optional.of(opt));
 
         // when
-        OrderResponseDto resp = service.createOrder(memberId, dto);
+        OrderResponseDto resp = service.createOrder(memberId, dto, accessToken);
 
         // then
         assertEquals(7, opt.getQuantity());
@@ -85,10 +86,11 @@ class OrderServiceImplTest {
         // given
         when(optionRepository.findById(anyLong())).thenReturn(Optional.empty());
         OrderRequestDto dto = new OrderRequestDto(99L, 1, "테스트 주문 완료!");
+        String accessToken = "Bearer test-access-token";
 
         // when & then
         assertThrows(OptionNotFoundException.class,
-                () -> service.createOrder(1L, dto));
+                () -> service.createOrder(1L, dto, accessToken));
 
         verify(orderRepository, never()).save(any());
         verify(publisher, never()).publishEvent(any());

@@ -25,7 +25,8 @@ public class KakaoAuthViewController {
         String url = AUTHORIZE_URL
                 + "?response_type=code"
                 + "&client_id=" + clientId
-                + "&redirect_uri=" + redirectUri;
+                + "&redirect_uri=" + redirectUri
+                + "&scope=talk_message";
         return "redirect:" + url;
     }
 }

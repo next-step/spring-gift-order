@@ -4,6 +4,7 @@ import gift.order.entity.Order;
 
 public record OrderCreatedEvent(
         Long memberId,
-        Order order
+        Order order,
+        String accessToken
 ) {
 }

@@ -22,6 +22,7 @@ public class Interceptor implements HandlerInterceptor {
         String token = request.getHeader("Authorization");
         if (token != null) {
             try {
+                token = token.replace("Bearer ", "");
                 Long memberId = jwtProvider.validateToken(token);
                 request.setAttribute("memberId", memberId);
             } catch (Exception e) {

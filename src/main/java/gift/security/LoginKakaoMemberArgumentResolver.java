@@ -8,10 +8,12 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
+import org.springframework.http.HttpHeaders;
 
 @Component
 public class LoginKakaoMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
+  private static final String BEARER = "Bearer ";
   private final KakaoOAuthService kakaoOAuthService;
 
   public LoginKakaoMemberArgumentResolver(KakaoOAuthService kakaoOAuthService) {
@@ -30,13 +32,13 @@ public class LoginKakaoMemberArgumentResolver implements HandlerMethodArgumentRe
       NativeWebRequest webRequest,
       WebDataBinderFactory binderFactory) {
 
-    String authHeader = webRequest.getHeader("Authorization");
+    String authHeader = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    if (authHeader == null || !authHeader.startsWith(BEARER)) {
       throw new IllegalStateException("Authorization 헤더가 없거나 잘못되었습니다.");
     }
 
-    String accessToken = authHeader.substring(7);
+    String accessToken = authHeader.substring(BEARER.length());
     return kakaoOAuthService.findMemberByAccessToken(accessToken);
   }
 }

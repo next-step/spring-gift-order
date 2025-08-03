@@ -1,10 +1,14 @@
 package gift.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gift.domain.Order;
 import gift.domain.UserKakaoToken;
 import gift.repository.UserKakaoTokenRepository;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,19 +20,22 @@ public class KakaoMessageServiceImpl implements KakaoMessageService {
 
   private final RestClient restClient;
 
-  private final UserKakaoTokenRepository userKakaoTokenRepository;
+  private final KakaoTokenService kakaoTokenService;
 
-  public KakaoMessageServiceImpl(RestClient.Builder restClientBuilder, UserKakaoTokenRepository userKakaoTokenRepository) {
+  private final ObjectMapper objectMapper;
+
+  public KakaoMessageServiceImpl(RestClient.Builder restClientBuilder, KakaoTokenService kakaoTokenService, ObjectMapper objectMapper) {
     this.restClient = restClientBuilder
         .baseUrl("https://kapi.kakao.com")
         .build();
-    this.userKakaoTokenRepository = userKakaoTokenRepository;
+    this.kakaoTokenService = kakaoTokenService;
+    this.objectMapper = objectMapper;
   }
 
   @Override
   @Transactional(readOnly = true)
   public void sendOrderMessage(Long memberId, Order order) {
-    String accessToken = getAccessToken(memberId);
+    String accessToken = kakaoTokenService.getMemberAccessToken(memberId);
 
     String templateJson = createTemplateJson(order);
     String formBody = "template_object=" + UriUtils.encode(templateJson, StandardCharsets.UTF_8);
@@ -43,24 +50,22 @@ public class KakaoMessageServiceImpl implements KakaoMessageService {
   }
 
   private String createTemplateJson(Order order) {
-    return "{"
-        + "\"object_type\":\"text\","
-        + "\"text\":\"주문이 완료되었습니다. 옵션ID: " + order.getOptionId()
+    Map<String, Object> template = new HashMap<>();
+    template.put("object_type", "text");
+    template.put("text", "주문이 완료되었습니다. 옵션ID: " + order.getOptionId()
         + ", 수량: " + order.getQuantity()
-        + ", 메세지: " + order.getMessage() + "\","
-        + "\"link\":{\"web_url\":\"https://your-service-url.com/orders\"},"
-        + "\"button_title\":\"주문 내역 확인\""
-        + "}";
-  }
-  @Transactional(readOnly = true)
-  private String getAccessToken(Long memberId) {
-    UserKakaoToken token = userKakaoTokenRepository.findById(memberId)
-        .orElseThrow(() -> new IllegalStateException("해당 사용자의 카카오 토큰이 존재하지 않습니다."));
+        + ", 메세지: " + order.getMessage());
 
-    if (token.getAccessTokenExpiresAt() != null && token.getAccessTokenExpiresAt().isBefore(Instant.now())) {
-      throw new IllegalStateException("액세스 토큰이 만료되었습니다. 리프레시 필요.");
+    Map<String, String> link = new HashMap<>();
+    link.put("web_url", "https://your-service-url.com/orders");
+    template.put("link", link);
+
+    template.put("button_title", "주문 내역 확인");
+
+    try {
+      return objectMapper.writeValueAsString(template);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("JSON 변환 실패", e);
     }
-
-    return token.getAccessToken();
   }
 }

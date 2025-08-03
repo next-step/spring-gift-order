@@ -136,8 +136,8 @@ public class MemberServiceImpl implements MemberService {
           existingToken.updateToken(
               tokenDto.accessToken(),
               tokenDto.refreshToken(),
-              now.plusSeconds(tokenDto.expiresIn()),
-              now.plusSeconds(tokenDto.refreshTokenExpiresIn())
+              now.plusSeconds(tokenDto.expiresIn()), // Second
+              now.plusSeconds(tokenDto.refreshTokenExpiresIn()) // Second
           );
           return existingToken;
         })

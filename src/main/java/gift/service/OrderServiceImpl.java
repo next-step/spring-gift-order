@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
     if (currentQuantity < orderQuantity) {
       throw new InvalidOptionQuantityException(currentQuantity, orderQuantity);
     }
-    else{
+    else {
       option.decreaseQuantity(orderQuantity);
       optionRepository.save(option);
     }

@@ -38,3 +38,26 @@
 - [x] [Security] @LoginKakaoMember 어노테이션 생성 및 이를 처리하는 Resolver 생성 
 - [x] [Security] LoginKakaoMemberArgumentResolver를 기존 WebConfig에 등록
 - [x] [Security] JwtAuthenticationFilter에서 "/api/orders" 로 시작하는 경로에 대해서 검사하지 않도록 수정(order는 jwt 토큰이 아니라 access token으로 검증 진행하기 때문에)
+
+### 2단계 피드백 반영 목록
+- [x] [README.md] 2단계 피드백 요구사항에 따른 작업 목록 작성
+- [x] [Domain] Order Entity의 @PrePersist 대신 JPA Auditing기능 사용토록 수정하고 최상위 Application에 @EnableJpaAuditing 추가
+- [x] [Dto] KakaoOAuthResponseDto에서 @JsonProperty 대신 @JsonNaming(SnakeCaseStrategy.class) 써서 코드 간소화
+- [x] [Dto] OrderRequestDto 에서 id>=1 검증하는 어노테이션 삭제 (어차피 Service에서 옵션 유효 검증하기 때문)
+- [x] [Security] LoginKakaoMemberArgumentResolver에서 Authorization, Bearer에 대해 상수 처리
+- [x] [Service] KakaoTokenService 인터페이스, 구현체 생성(기존 KakaoMessageService의 getAccessToken의 Transactional 어노테이션 미적용 해결하기 위함)
+- [x] [Service] 이에 따라 KakaoMessageServiceImpl 에 KakaoTokenService 사용토록 코드 수정 및 Map 이용한 JsonString 생성하도록 코드 수정
+- [x] [Service] MemberServiceImpl에서 토큰 만료시간의 반환 단위를 "초"로 명시하는 주석 추가
+- [x] [Service] OrderServiceImpl에서 기존 코드 컨벤션 맞추기 위해 공백 추가
+- [x] [Service] KakaoApiClientService 인터페이스, 구현체 생성(기존 KakaoOAuthService의 관심사에는 부합하지 않아 별도로 분리), 이에 따라 KakaoOAuthServiceImpl에서 KakaoApiClientService 주입받도록 수정
+
+### 3단계 기능 구현 사항 목록
+- [x] deploy.sh 작성
+- [x] WebConfig에 CORS 관련 설정 추가
+
+### 3단계 피드백 반영 목록
+- [x] [Security] LoginKakaoMemberArgumentResolver에서 BEARER의 상수값을 "Bearer" 에서 "Bearer " 으로 수정 및 이에 따른 변경 사항 추가
+- [x] [Security] WebConfig에서 maxAge 설정할 때 리터럴이 아닌 상수 값 사용토록 수정
+- [x] [Service] 기존 KakaoApiClientService와 KakaoApiClientServiceImpl의 이름에서 접미사 "Service" 삭제 / 이로 인한 KakaoOAuthServiceImpl 에서 사용되는 이름 변경
+- [x] [Config & Service] OAuth, API client 설정하는 KakaoClientConfig 추가 및 이에 따른 KakaoApiClientImpl 생성자 주입 코드 수정
+- [x] [Domain & Service] UserKakaoToken에서 토큰 만료에 대한 책임을 담당하는 isExpired 함수 추가 및 이에 따른 KakaoTokenServiceImpl 수정

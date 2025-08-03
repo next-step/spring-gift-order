@@ -53,4 +53,8 @@ public class UserKakaoToken {
   public Member getMember(){
     return member;
   }
+
+  public boolean isExpired() {
+    return accessTokenExpiresAt != null && accessTokenExpiresAt.isBefore(Instant.now());
+  }
 }

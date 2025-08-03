@@ -2,8 +2,11 @@ package gift.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "orders")
 public class Order {
 
@@ -16,7 +19,7 @@ public class Order {
   private Integer quantity;
 
   private String message;
-
+  @CreatedDate
   private LocalDateTime orderDateTime;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -56,11 +59,6 @@ public class Order {
 
   public Member getMember() {
     return member;
-  }
-
-  @PrePersist
-  public void prePersist() {
-    this.orderDateTime = LocalDateTime.now();
   }
 
   public void assignMember(Member member) {

@@ -1,13 +1,24 @@
 package gift.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TextLink {
-    private String web_url;
-    private String mobile_web_url;
+    @JsonProperty("web_url")
+    private String webUrl;
+
+    @JsonProperty("mobile_web_url")
+    private String mobileWebUrl;
 
     public TextLink(String url) {
-        this.web_url = url;
-        this.mobile_web_url = url;
+        this.webUrl = url;
+        this.mobileWebUrl = url;
     }
-    public String getWeb_url() { return web_url; }
-    public String getMobile_web_url() { return mobile_web_url; }
+
+    public String getWebUrl() {
+        return webUrl;
+    }
+
+    public String getMobileWebUrl() {
+        return mobileWebUrl;
+    }
 }

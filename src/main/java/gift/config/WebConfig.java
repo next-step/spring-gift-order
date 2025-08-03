@@ -7,6 +7,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import java.time.Duration;
 import java.util.List;
@@ -31,7 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
     public FilterRegistrationBean<JwtAuthFilter> jwtFilter() {
         FilterRegistrationBean<JwtAuthFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(jwtAuthFilter);
-        registration.addUrlPatterns("/api/products/*", "/admin/*", "/wishlist/*", "/api/orders/*");
+        registration.addUrlPatterns("/admin/*", "/wishlist/*", "/api/orders/*");
+        registration.setOrder(1);
         return registration;
     }
 
@@ -44,5 +46,14 @@ public class WebConfig implements WebMvcConfigurer {
         return RestClient.builder()
                 .requestFactory(factory)
                 .build();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .maxAge(3600);
     }
 }

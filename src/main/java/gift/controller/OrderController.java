@@ -3,7 +3,7 @@ package gift.controller;
 import gift.config.LoginMember;
 import gift.dto.OrderRequestDto;
 import gift.dto.OrderResponseDto;
-import gift.service.OrderService;
+import gift.service.KakaoOrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/orders")
 public class OrderController {
     
-    private final OrderService orderService;
+    private final KakaoOrderService kakaoOrderService;
     
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
+    public OrderController(KakaoOrderService kakaoOrderService) {
+        this.kakaoOrderService = kakaoOrderService;
     }
     
     //주문 생성
@@ -25,9 +25,9 @@ public class OrderController {
             @LoginMember Long memberId,
             @Valid @RequestBody OrderRequestDto requestDto) {
         
-        OrderResponseDto responseDto = orderService.createOrder(memberId, requestDto);
+        OrderResponseDto orderResponse = kakaoOrderService.createOrderWithMessage(memberId, requestDto);
         
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseDto);
+                .body(orderResponse);
     }
 } 

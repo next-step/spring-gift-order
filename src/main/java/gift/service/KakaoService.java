@@ -18,12 +18,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class SocialService {
+public class KakaoService {
 
     private final KakaoProperties properties;
     private final RestTemplate restTemplate;
 
-    public SocialService(KakaoProperties properties, RestTemplate restTemplate) {
+    public KakaoService(KakaoProperties properties, RestTemplate restTemplate) {
         this.properties = properties;
         this.restTemplate = restTemplate;
     }

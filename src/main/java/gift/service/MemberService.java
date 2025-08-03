@@ -5,6 +5,7 @@ import gift.dto.SocialInfoDto;
 import gift.exception.EmailAlreadyExistsException;
 import gift.exception.InvalidPasswordException;
 import gift.exception.MemberNotFoundException;
+import gift.model.MemberToken;
 import gift.util.JwtUtil;
 import gift.util.PasswordUtil;
 import gift.dto.RegisterRequest;
@@ -86,7 +87,9 @@ public class MemberService {
             () -> new IllegalStateException(
                 "조회된 사용자가 없습니다. socialId : " + socialInfoDto.getSocialId()));
 
-        member.updateSocialInfo(socialInfoDto.getSocialId(), socialInfoDto.getProviderType(),
-            socialInfoDto.getSocialAccessToken());
+        member.updateSocialInfo(socialInfoDto.getSocialId(), socialInfoDto.getProviderType());
+
+        MemberToken token = new MemberToken(socialInfoDto.getSocialAccessToken());
+        member.addSocialToken(token);
     }
 }

@@ -4,22 +4,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.model.Member;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @DataJpaTest
+@Transactional
 public class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @BeforeEach
-    void setUp() {
-        memberRepository.deleteAll(); // 테스트마다 DB 초기화
-    }
 
     @Test
     void save() {
@@ -53,6 +52,8 @@ public class MemberRepositoryTest {
     @Test
     void findAll() {
         // given
+        long before = memberRepository.count();
+
         Member member1 = new Member("kim@naver.com", "1234");
         Member member2 = new Member("lee@naver.com", "5678");
         memberRepository.save(member1);
@@ -63,10 +64,10 @@ public class MemberRepositoryTest {
 
         // then
         assertAll(
-            () -> assertThat(members).hasSize(2),
+            () -> assertThat(members).hasSize((int) (2 + before)),
             () -> assertThat(members)
                 .extracting(Member::getEmail)
-                .containsExactlyInAnyOrder("kim@naver.com", "lee@naver.com")
+                .contains("kim@naver.com", "lee@naver.com")
         );
     }
 }

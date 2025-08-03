@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import gift.model.Member;
 import gift.model.Product;
 import gift.model.Wishlist;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @DataJpaTest
+@Transactional
 class WishlistRepositoryTest {
 
     @Autowired
@@ -29,11 +33,6 @@ class WishlistRepositoryTest {
 
     @Autowired
     ProductRepository productRepository;
-
-    @BeforeEach
-    void setUp() {
-        productRepository.deleteAll(); // 테스트마다 DB 초기화
-    }
 
     private Member saveMember() {
         Member member = new Member("kim@naver.com", "1234");

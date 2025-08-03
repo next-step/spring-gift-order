@@ -3,7 +3,6 @@ package gift.service;
 import gift.dto.LoginMemberDto;
 import gift.dto.OrderRequest;
 import gift.dto.OrderResponse;
-import gift.model.Member;
 import gift.model.Option;
 import gift.model.Order;
 import gift.repository.OrderRepository;
@@ -18,15 +17,15 @@ public class OrderService {
 
     private final MemberService memberService;
     private final OptionService optionService;
-    private final SocialService socialService;
+    private final KakaoService kakaoService;
     private final WishlistService wishlistService;
 
     public OrderService(OrderRepository orderRepository, MemberService memberService,
-        OptionService optionService, SocialService socialService, WishlistService wishlistService) {
+        OptionService optionService, KakaoService kakaoService, WishlistService wishlistService) {
         this.orderRepository = orderRepository;
         this.memberService = memberService;
         this.optionService = optionService;
-        this.socialService = socialService;
+        this.kakaoService = kakaoService;
         this.wishlistService = wishlistService;
     }
 
@@ -42,9 +41,11 @@ public class OrderService {
 
         wishlistService.deleteWishlist(memberDto, option.getProduct().getId());
 
-        Member member = memberService.findByEmail(memberDto.getEmail());
+        String kakaoAccessToken = memberService.findByEmail(memberDto.getEmail())
+            .getSocialToken().getAccessToken();
         request.setImageUrl(option.getProduct().getImageUrl());
-        socialService.sendMessage(member.getSocialAccessToken(), request);
+
+        kakaoService.sendMessage(kakaoAccessToken, request);
 
         Order order = new Order(option, request.getQuantity(), LocalDateTime.now(),
             request.getMessage());

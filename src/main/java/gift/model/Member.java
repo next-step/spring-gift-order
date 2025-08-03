@@ -1,14 +1,16 @@
 package gift.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Member")
+@Table(name = "member")
 public class Member {
 
     @Id
@@ -27,35 +29,36 @@ public class Member {
     @Column(name = "provider_type")
     private String providerType;
 
-    @Column(name = "social_access_token")
-    private String socialAccessToken;
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MemberToken socialToken;
 
     public Member() {
     }
 
     public Member(String email, String password) {
-        this(null, email, password, -1L, null, null);
+        this(null, email, password, -1L, null);
     }
 
-    public Member(String email, String password, Long socialId, String providerType,
-        String socialAccessToken) {
-        this(null, email, password, socialId, providerType, socialAccessToken);
+    public Member(String email, String password, Long socialId, String providerType) {
+        this(null, email, password, socialId, providerType);
     }
 
-    public Member(Long id, String email, String password, Long socialId, String providerType,
-        String socialAccessToken) {
+    public Member(Long id, String email, String password, Long socialId, String providerType) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.socialId = socialId;
         this.providerType = providerType;
-        this.socialAccessToken = socialAccessToken;
     }
 
-    public void updateSocialInfo(Long socialId, String providerType, String socialAccessToken) {
+    public void updateSocialInfo(Long socialId, String providerType) {
         this.socialId = socialId;
         this.providerType = providerType;
-        this.socialAccessToken = socialAccessToken;
+    }
+
+    public void addSocialToken(MemberToken token) {
+        this.socialToken = token;
+        token.setMember(this);
     }
 
     public Long getId() {
@@ -78,8 +81,7 @@ public class Member {
         return providerType;
     }
 
-    public String getSocialAccessToken() {
-        return socialAccessToken;
+    public MemberToken getSocialToken() {
+        return socialToken;
     }
-
 }

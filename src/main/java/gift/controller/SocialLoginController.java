@@ -3,7 +3,7 @@ package gift.controller;
 import gift.dto.KakaoUserInfoResponseDto;
 import gift.dto.SocialInfoDto;
 import gift.dto.TokenResponse;
-import gift.service.SocialService;
+import gift.service.KakaoService;
 import gift.service.MemberService;
 import java.net.URI;
 import org.springframework.http.HttpStatus;
@@ -15,19 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SocialLoginController {
 
-    private final SocialService socialService;
+    private final KakaoService kakaoService;
     private final MemberService memberService;
 
-    public SocialLoginController(SocialService socialService, MemberService memberService) {
-        this.socialService = socialService;
+    public SocialLoginController(KakaoService kakaoService, MemberService memberService) {
+        this.kakaoService = kakaoService;
         this.memberService = memberService;
     }
 
     @GetMapping
     public ResponseEntity<TokenResponse> callback(@RequestParam("code") String code) {
-        String socialAccessToken = socialService.getAccessTokenFromKakao(code);
+        String socialAccessToken = kakaoService.getAccessTokenFromKakao(code);
 
-        KakaoUserInfoResponseDto userInfo = socialService.getUserInfo(socialAccessToken);
+        KakaoUserInfoResponseDto userInfo = kakaoService.getUserInfo(socialAccessToken);
         Long socialId = userInfo.getId();
 
         if (!memberService.isSocialIdExists(socialId)) {

@@ -4,23 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import gift.model.Product;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @DataJpaTest
+@Transactional
 public class ProductRepositoryTest {
 
     @Autowired
     private ProductRepository productRepository;
-
-    @BeforeEach
-    void setUp() {
-        productRepository.deleteAll(); // 테스트마다 DB 초기화
-    }
 
     @Test
     void save() {
@@ -60,6 +59,8 @@ public class ProductRepositoryTest {
     @Test
     void findAll() {
         // given
+        long before = productRepository.count();
+
         Product product1 = new Product("test_coffee", 2500, "https://test_coffee.jpg", false);
         Product product2 = new Product("test_tea", 2000, "https://test_tea.jpg", false);
         productRepository.save(product1);
@@ -70,10 +71,10 @@ public class ProductRepositoryTest {
 
         // then
         assertAll(
-            () -> assertThat(members).hasSize(2),
+            () -> assertThat(members).hasSize((int) (2 + before)),
             () -> assertThat(members)
                 .extracting(Product::getName)
-                .containsExactlyInAnyOrder("test_coffee", "test_tea")
+                .contains("test_coffee", "test_tea")
         );
     }
 

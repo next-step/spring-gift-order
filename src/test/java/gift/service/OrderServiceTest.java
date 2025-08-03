@@ -2,21 +2,30 @@ package gift.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 
 import gift.dto.LoginMemberDto;
 import gift.dto.OrderRequest;
 import gift.dto.OrderResponse;
 import gift.model.Member;
+import gift.model.MemberToken;
 import gift.model.Option;
+import gift.model.Order;
 import gift.model.Product;
+import gift.repository.OrderRepository;
+import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
@@ -29,6 +38,15 @@ class OrderServiceTest {
     @Mock
     private OptionService optionService;
 
+    @Mock
+    private WishlistService wishlistService;
+
+    @Mock
+    private KakaoService kakaoService;
+
+    @Mock
+    private OrderRepository orderRepository;
+
     private LoginMemberDto loginMember;
     private Product product;
     private Member member;
@@ -40,6 +58,8 @@ class OrderServiceTest {
         product = new Product("test_coffee", 1000, "https://coffee.jpg", false);
         option = new Option(product, "ice", 100);
         member = new Member("test@email.com", "1234");
+        String accessToken = "kakao-access-token";
+        member.addSocialToken(new MemberToken(accessToken));
     }
 
     @Test
@@ -47,7 +67,14 @@ class OrderServiceTest {
         // given
         OrderRequest request = new OrderRequest(option.getId(), 25, "생일축하해");
         given(optionService.getOption(option.getId())).willReturn(option);
+        doNothing().when(wishlistService).deleteWishlist(loginMember, option.getProduct().getId());
         given(memberService.findByEmail(loginMember.getEmail())).willReturn(member);
+        given(kakaoService.sendMessage(member.getSocialToken().getAccessToken(), request))
+            .willReturn(true);
+
+        Order savedOrder = new Order(option, request.getQuantity(), LocalDateTime.now(),
+            request.getMessage());
+        given(orderRepository.save(any(Order.class))).willReturn(savedOrder);
 
         // when
         OrderResponse response = orderService.order(request, loginMember);

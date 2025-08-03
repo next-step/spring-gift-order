@@ -5,6 +5,7 @@ import gift.member.entity.Member;
 import gift.wish.dto.CreateWishRequest;
 import gift.wish.dto.CreateWishResponse;
 import gift.wish.dto.WishResponse;
+import gift.wish.repository.WishRepository;
 import gift.wish.service.WishService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,15 @@ public class WishRestController {
 
     WishRestController(WishService wishService) {
         this.wishService = wishService;
+    }
+
+    @GetMapping("/{wishId}")
+    public ResponseEntity<WishResponse> showWish(
+        @PathVariable("wishId") Long wishId,
+        @LoginMember Member member
+    ) {
+        WishResponse wish = wishService.findWish(member.getId(), wishId);
+        return new ResponseEntity<>(wish, HttpStatus.OK);
     }
 
     @GetMapping

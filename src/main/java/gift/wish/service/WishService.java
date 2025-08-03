@@ -16,5 +16,7 @@ public interface WishService {
 
     Page<WishResponse> findAll(Long memberId, Pageable pageable);
 
+    WishResponse findWish(Long memberId, Long id);
+
     void deleteWish(Long wishId, Long memberId);
 }

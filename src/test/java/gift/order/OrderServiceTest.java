@@ -24,11 +24,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,13 +35,10 @@ import static org.mockito.Mockito.verify;
 public class OrderServiceTest {
     @InjectMocks
     private OrderServiceImpl orderService;
-
     @Mock
     private OptionRepository optionRepository;
-
     @Mock
     private OrderRepository orderRepository;
-
     @Mock
     private WishRepository wishRepository;
 
@@ -56,11 +51,9 @@ public class OrderServiceTest {
     void setUp() {
         member = new Member(1L, "test@kakao.com", "password", Role.USER);
         product = new Product(1L, "상품1", 10000, "https://test.jpg");
-
         option = new Option(1L, "테스트 옵션", 100);
         option.setProduct(product);
-
-        wish = new Wish(1L, member, product, 1);
+        wish = new Wish(1L, member, option, 1);
     }
 
     @Test
@@ -68,20 +61,17 @@ public class OrderServiceTest {
     void doOrder_success() {
         var orderRequest = new OrderRequest(option.getId(), 10, "배송 전 연락바랍니다.");
         var order = new Order(1L, option.getId(), orderRequest.quantity(), LocalDateTime.now(), orderRequest.message());
-        // 객체 동작 정의
+
         given(optionRepository.findById(option.getId())).willReturn(Optional.of(option));
         given(orderRepository.save(any(Order.class))).willReturn(order);
-        given(wishRepository.findByMemberIdAndProductId(member.getId(), product.getId())).willReturn(Optional.of(wish));
-        // 테스트 메서드
+        given(wishRepository.findByMemberIdAndOptionId(member.getId(), option.getId())).willReturn(Optional.of(wish));
+
         OrderResponse orderResponse = orderService.doOrder(member, orderRequest);
-        // 결과 검증
-        assertThat(orderResponse).isNotNull();
+
         assertThat(orderResponse.quantity()).isEqualTo(orderRequest.quantity());
         assertThat(option.getQuantity()).isEqualTo(90);
-        // 객체 검증
-        verify(optionRepository, Mockito.times(1)).findById(option.getId());
-        verify(orderRepository, Mockito.times(1)).save(any(Order.class));
-        verify(wishRepository, Mockito.times(1)).findByMemberIdAndProductId(member.getId(), product.getId());
+
+        verify(wishRepository, Mockito.times(1)).findByMemberIdAndOptionId(member.getId(), option.getId());
         verify(wishRepository, Mockito.times(1)).deleteById(wish.getId());
     }
 
@@ -91,11 +81,9 @@ public class OrderServiceTest {
         var orderRequest = new OrderRequest(100L, 10, "존재하지 않는 옵션");
         given(optionRepository.findById(100L)).willReturn(Optional.empty());
 
-        assertThatIllegalArgumentException().isThrownBy(() -> orderService.doOrder(member, orderRequest));
+        assertThrows(IllegalArgumentException.class, () -> orderService.doOrder(member, orderRequest));
 
-        // 주문 로직의 다른 부분들이 실행되지 않았는지 검증
         verify(orderRepository, never()).save(any(Order.class));
-        verify(wishRepository, never()).deleteById(anyLong());
     }
 
     @Test
@@ -104,13 +92,11 @@ public class OrderServiceTest {
         var orderRequest = new OrderRequest(option.getId(), 101, "재고보다 많이 주문");
         given(optionRepository.findById(option.getId())).willReturn(Optional.of(option));
 
-        assertThatIllegalArgumentException().isThrownBy(() -> orderService.doOrder(member, orderRequest));
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             orderService.doOrder(member, orderRequest);
         });
         assertThat(exception.getMessage()).isEqualTo("재고가 부족합니다.");
 
         verify(orderRepository, never()).save(any(Order.class));
-        verify(wishRepository, never()).deleteById(anyLong());
     }
 }

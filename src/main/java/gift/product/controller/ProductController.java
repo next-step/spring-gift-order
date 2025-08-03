@@ -1,80 +1,52 @@
 package gift.product.controller;
 
-import gift.product.dto.CreateOptionRequest;
-import gift.product.dto.OptionResponseDto;
-import gift.product.dto.ProductRequestDto;
 import gift.product.dto.ProductResponseDto;
-import gift.product.repository.ProductRepository;
-import gift.product.service.OptionService;
 import gift.product.service.ProductService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/products")
+@Controller
+@RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
-    private final OptionService optionService;
-    private final ProductRepository productRepository;
 
-    public ProductController(ProductService productService, OptionService optionService, ProductRepository productRepository) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
-        this.optionService = optionService;
-        this.productRepository = productRepository;
     }
 
-    @PostMapping
-    public ResponseEntity<ProductResponseDto> createProduct(@Valid @RequestBody ProductRequestDto requestDto) {
-        return new ResponseEntity<>(productService.saveProduct(requestDto), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/{productId}")
-    public ResponseEntity<ProductResponseDto> getProduct(@PathVariable("productId") Long productId) {
-        return new ResponseEntity<>(productService.findProductById(productId), HttpStatus.OK);
-    }
-
+    /**
+     * 상품 목록 페이지를 보여줍니다.
+     * 페이지네이션과 정렬 기능을 지원합니다.
+     */
     @GetMapping
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        return new ResponseEntity<>(productService.findAllProducts(), HttpStatus.OK);
+    public String showProductListPage(Model model,
+                                      @PageableDefault(size = 10, page = 0, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        // 1. 서비스에서 Pageable 객체를 사용하여 상품 데이터를 조회합니다.
+        Page<ProductResponseDto> products = productService.findAll(pageable);
+        model.addAttribute("products", products);
+
+        String currentSort = pageable.getSort().stream()
+            .map(order -> order.getProperty() + "," + order.getDirection().name().toLowerCase())
+            .findFirst()
+            .orElse("id,desc");
+
+        model.addAttribute("currentSort", currentSort);
+        model.addAttribute("currentSize", pageable.getPageSize());
+
+        return "user/product/list";
     }
 
-    @PutMapping("/{productId}")
-    public ResponseEntity<ProductResponseDto> updateProduct(
-        @PathVariable("productId") Long productId,
-        @Valid @RequestBody ProductRequestDto requestDto
-    ) {
-        productService.updateProduct(productId, requestDto);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable("productId") Long productId) {
-        productService.deleteProductById(productId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAllProducts() {
-        productService.deleteAllProducts();
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{productId}/options")
-    public ResponseEntity<List<OptionResponseDto>> getProductOptions(@PathVariable("productId") Long productId) {
-        List<OptionResponseDto> options = optionService.getOptionsByProductId(productId);
-        return new ResponseEntity<>(options, HttpStatus.OK);
-    }
-
-    @PostMapping("/{productId}/options")
-    public ResponseEntity<OptionResponseDto> addOption(
-        @PathVariable("productId") Long productId,
-        @Valid @RequestBody CreateOptionRequest requestDto
-    ) {
-        OptionResponseDto createdOption = optionService.addOptionToProduct(productId, requestDto);
-        return new ResponseEntity<>(createdOption, HttpStatus.CREATED);
+    @GetMapping("/{id}")
+    public String showProductDetailPage(@PathVariable("id") Long productId, Model model) {
+        ProductResponseDto product = productService.findProductById(productId);
+        model.addAttribute("product", product);
+        return "user/product/detail";
     }
 }

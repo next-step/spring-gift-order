@@ -10,6 +10,7 @@ import gift.order.repository.OrderRepository;
 import gift.product.entity.Option;
 import gift.product.repository.OptionRepository;
 import gift.wish.repository.WishRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,9 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final WishRepository wishRepository;
     private final KakaoApiClient kakaoApiClient;
+
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+    private String redirectUri;
 
     OrderServiceImpl(OptionRepository optionRepository, OrderRepository orderRepository, WishRepository wishRepository, KakaoApiClient kakaoApiClient) {
         this.optionRepository = optionRepository;
@@ -37,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
         Order newOrder = OrderMapper.toOrder(orderRequest);
         Order savedOrder = orderRepository.save(newOrder);
 
-        wishRepository.findByMemberIdAndProductId(member.getId(), option.getProduct().getId())
+        wishRepository.findByMemberIdAndOptionId(member.getId(), option.getId())
             .ifPresent(wish -> wishRepository.deleteById(wish.getId()));
 
         sendKakaoTalkOrderConfirmation(member, savedOrder);
@@ -59,12 +63,12 @@ public class OrderServiceImpl implements OrderService {
                 "object_type": "text",
                 "text": "주문이 성공적으로 완료되었습니다!\\n\\n- 상품명: %s\\n- 옵션: %s\\n- 수량: %d개\\n- 메시지: %s",
                 "link": {
-                    "web_url": "http://localhost:8080",
-                    "mobile_web_url": "http://localhost:8080"
+                    "web_url": "%s",
+                    "mobile_web_url": "%s"
                 },
                 "button_title": "주문 내역 보기"
             }
-            """.formatted(productName, optionName, quantity, message);
+            """.formatted(productName, optionName, quantity, message, redirectUri, redirectUri);
 
         String kakaoAccessToken = member.getKakaoAccessToken();
         if (kakaoAccessToken != null) {

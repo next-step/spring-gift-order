@@ -3,6 +3,8 @@ package gift.auth;
 import gift.auth.dto.KakaoTokenCreationRequest;
 import gift.auth.dto.KakaoTokenResponse;
 import gift.auth.dto.KakaoUserInfoResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -13,6 +15,8 @@ import static gift.global.config.AuthConstants.BEARER_PREFIX;
 
 @Component
 public class KakaoApiClient {
+    private static final Logger log = LoggerFactory.getLogger(KakaoApiClient.class);
+
     private static final String SEND_MESSAGE_TO_ME_PATH = "/v2/api/talk/memo/default/send";
     private static final String TOKEN_CREATION_PATH = "https://kauth.kakao.com/oauth/token";
     private static final String USER_INFO_PATH = "https://kapi.kakao.com/v2/user/me";
@@ -48,7 +52,8 @@ public class KakaoApiClient {
 
     /**
      * '나에게 보내기' API를 호출하여 카카오톡 메시지를 전송합니다.
-     * @param accessToken 사용자의 카카오 액세스 토큰
+     *
+     * @param accessToken        사용자의 카카오 액세스 토큰
      * @param templateObjectJson 메시지 템플릿 내용을 담은 JSON 형식의 문자열
      */
     public void sendMessageToMe(String accessToken, String templateObjectJson) {
@@ -66,6 +71,6 @@ public class KakaoApiClient {
             .body(String.class);
 
         // 성공 시 {"result_code":0} 응답이 오지만, 여기서는 간단히 로그로 출력
-        System.out.println("Kakao Message API Response: " + response);
+        log.info("Kakao Message API Response: {}", response);
     }
 }

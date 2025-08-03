@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WishRepository extends JpaRepository<Wish, Long> {
-    Optional<Wish> findByMemberIdAndProductId(Long memberId, Long productId);
+    Optional<Wish> findByMemberIdAndId(Long memberId, Long wishId);
+
+    Optional<Wish> findByMemberIdAndOptionId(Long memberId, Long optionId);
 
     List<Wish> findAllByMemberId(Long memberId);
 

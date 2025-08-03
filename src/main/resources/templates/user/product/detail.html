@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${product.name} + ' - 상품 상세'"></title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+    :root {
+      --bg-color: #f4f7fa; --card-bg-color: #ffffff; --primary-color: #6a82fb;
+      --primary-hover-color: #5468d4; --secondary-color: #43d9a0; --secondary-hover-color: #35ad80;
+      --text-color: #333; --text-light-color: #777; --border-color: #e9ecef; --shadow-color: rgba(106, 130, 251, 0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Nunito', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding: 2rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .header h1 { font-size: 2.2rem; font-weight: 700; color: var(--primary-color); }
+    .btn-back { background-color: var(--secondary-color); color: white; text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 50px; font-weight: 600; transition: background-color 0.2s; }
+    .btn-back:hover { background-color: var(--secondary-hover-color); }
+
+    /* --- 상세 페이지 전용 스타일 --- */
+    .detail-card { background-color: var(--card-bg-color); border-radius: 16px; box-shadow: 0 8px 30px var(--shadow-color); padding: 2.5rem; display: flex; gap: 2.5rem; }
+    .detail-image { width: 300px; height: 300px; object-fit: cover; border-radius: 12px; flex-shrink: 0; }
+    .detail-info { display: flex; flex-direction: column; flex-grow: 1; }
+    .product-name { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3; }
+    .product-price { font-size: 1.8rem; font-weight: 600; color: var(--primary-color); border-top: 1px solid var(--border-color); padding-top: 1.5rem; margin: 1.5rem 0; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .form-group label { font-weight: 600; color: var(--text-light-color); }
+    .form-group select, .form-group input { width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: 'Nunito', sans-serif; font-size: 1rem; }
+    .detail-actions { margin-top: auto; }
+    .action-btn { width: 100%; padding: 1rem; border-radius: 8px; border: none; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s ease; background-color: var(--primary-color); color: white; }
+    .action-btn:hover { background-color: var(--primary-hover-color); }
+    .action-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header class="header">
+    <h1 th:text="${product.name}">상품 이름</h1>
+    <a th:href="@{/products}" class="btn-back">목록으로</a>
+  </header>
+
+  <main>
+    <div class="detail-card">
+      <img th:src="${product.imageUrl}" alt="Product Image" class="detail-image">
+      <div class="detail-info">
+        <p class="product-price" th:text="|${#numbers.formatInteger(product.price, 3, 'COMMA')}원|"></p>
+
+        <div class="form-group">
+          <label for="option-selector">옵션 선택</label>
+          <select id="option-selector" name="optionId">
+            <option value="" selected disabled>옵션을 불러오는 중...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="quantity-input">수량</label>
+          <input type="number" id="quantity-input" name="quantity" value="1" min="1">
+        </div>
+
+        <div class="detail-actions">
+          <button type="button" id="add-to-wishlist-btn" class="action-btn" disabled>
+            위시리스트에 담기
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const product = /*[[${product}]]*/ null;
+  const productId = product.id;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const optionSelector = document.getElementById('option-selector');
+    const quantityInput = document.getElementById('quantity-input');
+    const addToWishlistBtn = document.getElementById('add-to-wishlist-btn');
+
+    // 페이지 로드 시 상품 ID로 옵션 목록을 API로 요청
+    fetch(`/api/products/${productId}/options`)
+            .then(response => {
+              if (!response.ok) throw new Error('옵션을 불러오지 못했습니다.');
+              return response.json();
+            })
+            .then(options => {
+              optionSelector.innerHTML = '<option value="" selected disabled>옵션을 선택해주세요</option>'; // 기본 옵션 설정
+              if (options && options.length > 0) {
+                options.forEach(option => {
+                  const optionElement = document.createElement('option');
+                  optionElement.value = option.id;
+                  optionElement.textContent = `${option.name} (재고: ${option.quantity}개)`;
+                  optionSelector.appendChild(optionElement);
+                });
+              } else {
+                optionSelector.innerHTML = '<option value="" selected disabled>선택 가능한 옵션이 없습니다</option>';
+              }
+            })
+            .catch(error => {
+              console.error('Error fetching options:', error);
+              optionSelector.innerHTML = '<option value="" selected disabled>옵션을 불러올 수 없습니다</option>';
+            });
+
+    // 옵션을 선택해야 '담기' 버튼 활성화
+    optionSelector.addEventListener('change', () => {
+      if (optionSelector.value) {
+        addToWishlistBtn.disabled = false;
+      } else {
+        addToWishlistBtn.disabled = true;
+      }
+    });
+
+    // '위시리스트 담기' 버튼 클릭 이벤트
+    addToWishlistBtn.addEventListener('click', () => {
+      const selectedOptionId = optionSelector.value;
+      const quantity = quantityInput.value;
+
+      if (!selectedOptionId) {
+        alert('옵션을 선택해주세요.');
+        return;
+      }
+
+      const wishRequest = {
+        optionId: parseInt(selectedOptionId),
+        quantity: parseInt(quantity)
+      };
+
+      fetch('/api/wishes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(wishRequest)
+      })
+              .then(response => {
+                if (response.ok) {
+                  alert('위시리스트에 추가되었습니다!');
+                } else if (response.status === 401) {
+                  alert('로그인이 필요합니다.');
+                  window.location.href = '/login';
+                } else {
+                  response.json().then(err => alert('추가 실패: ' + (err.message || '이미 위시리스트에 있습니다.')));
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                alert('요청 중 오류가 발생했습니다.');
+              });
+    });
+  });
+  /*]]>*/
+</script>
+
+</body>
+</html>

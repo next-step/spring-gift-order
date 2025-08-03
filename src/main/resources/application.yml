@@ -20,7 +20,7 @@ spring:
     init:
       mode: always
   profiles:
-    active: local, kakao
+    active: local
 
 logging:
   level:

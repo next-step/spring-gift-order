@@ -1,14 +1,17 @@
 jwt:
-  secret: 8xtOlOopfQzGZniJOLdDV6FdFsa8TFTG0WTDUuCdrmcpElTEEM6SNYmQ6gO5dH0rpefkWS1OtR7SSHb7by3eQ==b
+  secret: ${jwt.secret}
   expiration_ms: 3600000
 
 spring:
+  config:
+    import: optional:application-secret.yml
   security:
     oauth2:
       client:
         registration:
           kakao:
-            redirect-uri: http://localhost:8080
+            redirect-uri: ${kakao.redirect-uri}
+            client-id: ${kakao.client-id}
         provider:
           kakao:
             token-uri: https://kauth.kakao.com/oauth/token

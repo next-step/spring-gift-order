@@ -1,7 +1,7 @@
 package gift.wish.dto;
 
 public record CreateWishRequest(
-    long productId,
+    Long optionId,
     int quantity
 ) {
 }

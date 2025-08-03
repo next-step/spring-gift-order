@@ -14,7 +14,9 @@ public class WishMapper {
 
         return new WishResponse(
             wish.getId(),
+            wish.getOption().getId(),
             toProductDto(wish.getProduct()),
+            wish.getOption().getName(),
             wish.getQuantity()
         );
     }

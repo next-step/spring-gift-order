@@ -37,7 +37,7 @@
             <th style="width: 10%">ID</th>
             <th style="width: 25%">상품명</th>
             <th style="width: 15%">가격</th>
-            <th style="width: 35%">이미지 주소</th>
+            <th style="width: 35%">이미지</th>
             <th style="width: 15%"></th>
           </tr>
           </thead>
@@ -47,9 +47,7 @@
             <td th:text="${product.name()}"></td>
             <td th:text="${#numbers.formatInteger(product.price(), 0, 'COMMA') + '원'}"></td>
             <td>
-              <div class="text-truncate" style="max-width: 300px;" th:title="${product.imageUrl()}"
-                   th:text="${product.imageUrl()}">
-              </div>
+              <img th:src="${product.imageUrl()}" width="100"/>
             </td>
             <td>
               <button type="button" class="btn btn-outline-warning"

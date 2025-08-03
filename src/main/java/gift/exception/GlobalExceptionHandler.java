@@ -10,6 +10,8 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -57,6 +59,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDto(ErrorStatus.VALIDATION_ERROR.getCode(), message));
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponseDto> handleMethodArgumentTypeMismatch() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(ErrorStatus.VALIDATION_ERROR.getCode(),
+                        ErrorStatus.VALIDATION_ERROR.getDefaultMessage()));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDto> handleBodyMissing() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -70,6 +79,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(new ErrorResponseDto(ErrorStatus.METHOD_NOT_ALLOWED.getCode(),
                         ErrorStatus.METHOD_NOT_ALLOWED.getDefaultMessage()));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotFound() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponseDto(
+                        ErrorStatus.NOT_FOUND.getCode(),
+                        ErrorStatus.NOT_FOUND.getDefaultMessage()
+                ));
     }
 
     @ExceptionHandler(Exception.class)

@@ -25,9 +25,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 @SuppressWarnings("NonAsciiCharacters")
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class OptionServiceTest {
 
     @Mock
@@ -176,7 +178,7 @@ class OptionServiceTest {
 
         assertThatThrownBy(() -> optionService.subtractOptionQuantity(optionId, quantity))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("최소 1개의 수량은 남아 있어야 합니다.");
+                .hasMessage("재고가 부족합니다.");
 
         verify(optionRepository, times(1)).findById(optionId);
     }

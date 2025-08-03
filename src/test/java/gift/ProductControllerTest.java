@@ -3,22 +3,26 @@ package gift;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gift.common.dto.PageResponseDto;
 import gift.product.dto.ProductCreateRequestDto;
 import gift.product.dto.ProductItemDto;
 import gift.product.dto.ProductUpdateRequestDto;
 import java.util.List;
+import org.springframework.core.ParameterizedTypeReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class ProductControllerTest {
 
     @LocalServerPort
@@ -98,18 +102,23 @@ public class ProductControllerTest {
 
         var response = restClient.get().uri(baseUrl)
                 .retrieve()
-                .toEntity(ProductItemDto[].class);
+                .toEntity(new ParameterizedTypeReference<PageResponseDto<ProductItemDto>>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+        
+        PageResponseDto<ProductItemDto> pageResponse = response.getBody();
+        assertThat(pageResponse.content()).isNotNull();
+        assertThat(pageResponse.content().size()).isGreaterThanOrEqualTo(2);
+        assertThat(pageResponse.totalElements()).isGreaterThanOrEqualTo(2);
 
-        var products = List.of(response.getBody());
-        assertThat(products).isNotEmpty();
-
-        assertThat(products).anyMatch(p -> p.id().equals(product1Response.getBody().id()) &&
+        List<ProductItemDto> products = pageResponse.content();
+        assertThat(products).anyMatch(p ->
+                p.id().equals(product1Response.getBody().id()) &&
                 p.name().equals(product1Response.getBody().name()) &&
                 p.price().equals(product1Response.getBody().price()));
-        assertThat(products).anyMatch(p -> p.id().equals(product2Response.getBody().id()) &&
+        assertThat(products).anyMatch(p ->
+                p.id().equals(product2Response.getBody().id()) &&
                 p.name().equals(product2Response.getBody().name()) &&
                 p.price().equals(product2Response.getBody().price()));
     }

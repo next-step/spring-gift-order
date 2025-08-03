@@ -17,8 +17,6 @@ public class OrderEntity {
     private String message;
     private LocalDateTime orderDateTime = LocalDateTime.now();
 
-    public OrderEntity() {}
-
     public OrderEntity(ProductOption option, int quantity, String message) {
         this.option = option;
         this.quantity = quantity;

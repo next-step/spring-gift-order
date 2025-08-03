@@ -26,7 +26,6 @@ public class OrderController {
     public ResponseEntity<OrderResponse> create(@RequestBody OrderRequest request,
                                                 @LoginMember Member member) {
         OrderResponse response = orderService.createOrder(member, request);
-        System.out.println(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

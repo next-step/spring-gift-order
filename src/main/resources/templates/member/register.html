@@ -60,7 +60,7 @@
               const token = response.data.token;
               localStorage.setItem("accessToken", token);
               alert("회원가입 성공!");
-              window.location.href = "/productManagement.html"; // 또는 /products.html
+                window.location.href = "/products/manage";
             })
             .catch(console.error);
   });

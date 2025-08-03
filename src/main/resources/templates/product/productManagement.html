@@ -64,15 +64,26 @@
         const token = localStorage.getItem("accessToken");
 
         fetch('/api/products', {
+
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json' ,
-                'Authorization': `Bearer ${token}`
+
             },
             body: JSON.stringify(payload)
         })
             .then(res => {
                 if(!res.ok){
+
+                    if (res.status === 401) {
+                        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+                        window.location.href = "/members/register";
+                        return;
+                    } else if (res.status === 403) {
+                        alert("이 기능을 사용할 권한이 없습니다.");
+                        return;
+                    }
+
                     return res.json().then(error=>{
                         if (error && error.data) {
                             const errorMessages = Object.entries(error.data)
@@ -103,7 +114,7 @@
         fetch('/api/products',{
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `${token}`
             }
         })
             .then(res => res.json())
@@ -128,12 +139,12 @@
     // 상품 삭제
     function deleteProduct(id) {
 
-        const token = localStorage.getItem("accessToken");
+        const token = "Bearer " + localStorage.getItem("accessToken");
 
         fetch(`/api/products/${id}`, {
             method: 'DELETE',
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `${token}`
             }
         })
             .then(() => fetchProducts());
@@ -152,7 +163,7 @@
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `${token}`
             },
             body: JSON.stringify(payload)
         })
@@ -188,6 +199,17 @@
 
         document.querySelector('button[type="submit"]').textContent = '상품 수정';
     }
+
+    function getAuthHeaders(contentType = "application/json") {
+        const token = localStorage.getItem("accessToken");
+        const headers = {};
+
+        if (contentType) headers['Content-Type'] = contentType;
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        return headers;
+    }
+
 
     window.onload = fetchProducts;
 </script>
